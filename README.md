@@ -1,2 +1,2 @@
 # BrawlBracket
-A webapp to simplify running Brawlhalla tournaments through Challonge!
+A web app to simplify running Brawlhalla tournaments through Challonge!

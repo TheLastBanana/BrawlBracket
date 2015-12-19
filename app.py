@@ -29,6 +29,7 @@ def user_login(tourneyName):
     tourneyId = tourneys[tourneyName]
     tourneyData = challonge.tournaments.show(tourneyId)
     prettyName = tourneyData['name']
+    tourneyURL = tourneyData['full-challonge-url']
     
     participants = challonge.participants.index(tourneyId)
     participantNames = [ participant['name'] for participant in participants ]
@@ -38,7 +39,8 @@ def user_login(tourneyName):
 
     return render_template('user-login.html',
                            tourneyName=prettyName,
-                           participants=participantPairs)
+                           participants=participantPairs,
+                           challongeURL=tourneyURL)
 
 if __name__ == '__main__':
     app.debug = True

@@ -6,6 +6,7 @@ from bidict import bidict
 
 import os
 import challonge
+import brawlapi
 
 # Bi-directional map from tournament's Challonge URL suffix to its ID.
 # We'll actually build this from the Challonge API later.
@@ -23,6 +24,7 @@ def page_not_found(e):
 @app.route('/index')
 def index():
     return render_template('index.html')
+    brawlapi.init_example_db()
 
 # Login in a tourney participant
 @app.route('/login/<tourneyName>')             

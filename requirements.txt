@@ -1,3 +1,4 @@
 python-dateutil==2.2
 flask
 bidict
+flask-login

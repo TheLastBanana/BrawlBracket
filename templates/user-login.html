@@ -32,16 +32,16 @@
       <div class="login-box-body">
         <p class="login-box-msg"><b>You are logging in for:</b><br />{{ tourneyName }}</p>
         
-        <form action="app/user/" method="post">
+        <form action="" method="post">
           <div class="form-group">
             <label>Please select your name:</label><br />
-            <select class="form-control select2" style="width: 100%;">
-              {% for name in participants %}
+            <select class="form-control select2" style="width: 100%;" name="user">
+              {% for participant in participants %}
                 <option
-                {% if name[1] %}
+                {% if participant[2] %}
                   disabled="disabled"
                 {% endif %}
-                >{{ name[0] }}</option>
+                value="{{ participant[1] }}">{{ participant[0] }}</option>
               {% endfor %}
             </select>
             <p class="text-muted">

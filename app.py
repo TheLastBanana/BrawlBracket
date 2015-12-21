@@ -4,49 +4,42 @@ from flask import request
 from flask import abort
 from flask import redirect
 from flask import url_for
-import flask.ext.login as flask_login
+from flask import session
+from flask import g
+from flask_socketio import SocketIO
 from bidict import bidict
 
 import os
 import challonge
 import brawlapi
 
-class User(flask_login.UserMixin):
-    def __init__(self, id):
-        self.id = id
-
 # Bi-directional map from tournament's Challonge URL suffix to its ID.
 # We'll actually build this from the Challonge API later.
 tourneys = bidict({ 'thelastbanana_test': '2119181' })
 
-# User data from Challonge participant id
-onlineUsers = {}
+# Set of online participant IDs
+onlineUsers = set()
 
 challonge.set_credentials(os.environ.get('BB_CHALLONGE_USER'), os.environ.get('BB_CHALLONGE_API_KEY'))
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('BB_SECRET_KEY')
+socketio = SocketIO(app)
 
-login_manager = flask_login.LoginManager()
-login_manager.login_view = 'index'
-login_manager.init_app(app)
-
-@login_manager.user_loader
-def user_loader(user_id):
-    return onlineUsers.get(user_id)
-
+    
+#----- Flask routing -----#
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
 @app.route('/')
-@app.route('/index')
+@app.route('/index/')
 def index():
     return render_template('index.html')
     brawlapi.init_example_db()
 
 # Log in a tourney participant
-@app.route('/login/<tourneyName>', methods=['GET', 'POST'])
+@app.route('/<tourneyName>/', methods=['GET', 'POST'])
 def user_login(tourneyName):
     if tourneyName not in tourneys:
         abort(404)
@@ -66,23 +59,48 @@ def user_login(tourneyName):
                                participants=participants,
                                challongeURL=tourneyURL)
    
-    elif request.method == 'POST':
-        userId = request.form['user']
-        user = User(userId)
-        onlineUsers[userId] = user
-        flask_login.login_user(user)
-        
-        return redirect(url_for('user_landing', tourneyName=tourneyName))
+    # POST was used
+    # TODO: validate user ID
+    userId = request.form['user']
+    session['participantId'] = userId
+    
+    return redirect(url_for('user_landing', tourneyName=tourneyName))
 
-# User landing page
-@app.route('/app/<tourneyName>/user/')
-@flask_login.login_required
+# User app page
+@app.route('/<tourneyName>/app/')
 def user_landing(tourneyName):
-    if request.method == 'GET':
-        return 'Please implement me!'
+    return render_template('user-app.html')
+
+    
+#----- SocketIO events -----#
+@socketio.on('connect', namespace='/participant')
+def participant_connect():
+    pId = session.get('participantId')
+    
+    if not pId:
+        print('Participant id missing; connection rejected')
+        return False
+    
+    if pId in onlineUsers:
+        print('Participant #{} rejected'.format(pId))
+        return False
         
-    return render_template('user-landing.html')
+    onlineUsers.add(pId)
+    
+    print('Participant #{} connected'.format(pId))
+    
+@socketio.on('disconnect', namespace='/participant')
+def participant_disconnect():
+    pId = session.get('participantId')
+    
+    # No pId, so we're not online anyway
+    if pId == None:
+        return
+    
+    onlineUsers.remove(pId)
+
+    print('Participant disconnected')
 
 if __name__ == '__main__':
     app.debug = True
-    app.run()
+    socketio.run(app)

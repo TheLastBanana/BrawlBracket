@@ -9,6 +9,8 @@ setup(
         'python-dateutil==2.2',
         'bidict==0.9.0.post1',
         'Flask==0.10.1',
-        'Flask-Login==0.3.2'
+        'Flask-Login==0.3.2',
+        'Flask-SocketIO==1.2',
+        'eventlet==0.17.4'
     ]
 )

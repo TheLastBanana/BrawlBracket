@@ -32,15 +32,14 @@ def get_credentials():
 
 def fetch(method, uri, params_prefix=None, **params):
     """Fetch the given uri and return the contents of the response."""
-    params = urllib.parse.urlencode(_prepare_params(params, params_prefix))
+    params = urllib.parse.urlencode(_prepare_params(params, params_prefix)).encode('utf-8')
 
     # build the HTTP request
     url = "https://%s/%s.xml" % (CHALLONGE_API_URL, uri)
     if method == "GET":
         req = urllib.request.Request("%s?%s" % (url, params))
     else:
-        req = urllib.request.Request(url)
-        req.add_data(params)
+        req = urllib.request.Request(url, data=params)
     req.get_method = lambda: method
 
     # use basic authentication

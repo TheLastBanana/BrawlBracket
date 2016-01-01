@@ -3026,11 +3026,35 @@ table.text-center th {
   left: 79.167%;
 }
 .widget-user .widget-user-image > img,
-.widget-user .widget-user-image-versus-1 > img,
-.widget-user .widget-user-image-versus-2 > img {
+.widget-user .widget-user-image-versus-circle {
+  border: 3px solid #fff;
+}
+.widget-user .widget-user-image-versus-circle {
+  width: 84px;
+  height: 84px;
+  background-color: darkslategray;
+}
+.widget-user .widget-user-image > img {
   width: 90px;
   height: auto;
-  border: 3px solid #fff;
+}
+.widget-user .widget-user-image-versus-1 > img,
+.widget-user .widget-user-image-versus-2 > img {
+  position: absolute;
+  bottom: 3px;
+  margin-left: -47px;
+  margin-bottom: -47px;
+  -ms-transform: scale(0.8);
+  -webkit-transform: scale(0.8);
+  transform: scale(0.8);
+}
+.widget-user .widget-user-image-versus-2 {
+  -moz-transform: scaleX(-1);
+  -o-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+  filter: FlipH;
+  -ms-filter: "FlipH";
 }
 .widget-user .box-footer {
   padding-top: 30px;

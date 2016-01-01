@@ -3059,6 +3059,16 @@ table.text-center th {
 .widget-user .box-footer {
   padding-top: 30px;
 }
+.widget-user .description-score {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.widget-user .description-block .btn-app {
+  margin-top: -5px;
+  margin-bottom: -5px;
+  margin-left: 0px;
+  margin-right: 0px;
+}
 .widget-user-2 .widget-user-header {
   padding: 20px;
   border-top-right-radius: 3px;

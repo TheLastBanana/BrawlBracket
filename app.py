@@ -70,6 +70,11 @@ def user_login(tourneyName):
 @app.route('/<tourneyName>/app/')
 def user_landing(tourneyName):
     return render_template('user-app.html')
+    
+# Lobby content
+@app.route('/lobby')
+def lobby():
+    return render_template('lobby.html')
 
     
 #----- SocketIO events -----#

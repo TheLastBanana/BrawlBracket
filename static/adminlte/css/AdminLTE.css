@@ -3042,19 +3042,22 @@ table.text-center th {
 .widget-user .widget-user-image-versus-2 > img {
   position: absolute;
   bottom: 3px;
-  margin-left: -47px;
   margin-bottom: -47px;
-  -ms-transform: scale(0.8);
-  -webkit-transform: scale(0.8);
-  transform: scale(0.8);
+  filter: blur(0); /* Fix blurry scaled images */
 }
-.widget-user .widget-user-image-versus-2 {
-  -moz-transform: scaleX(-1);
-  -o-transform: scaleX(-1);
-  -webkit-transform: scaleX(-1);
-  transform: scaleX(-1);
-  filter: FlipH;
-  -ms-filter: "FlipH";
+.widget-user .widget-user-image-versus-1 > img {
+  -moz-transform: scale(0.8, 0.8);
+  -o-transform: scale(0.8, 0.8);
+  -webkit-transform: scale(0.8, 0.8);
+  transform: scale(0.8, 0.8);
+  margin-left: -47px;
+}
+.widget-user .widget-user-image-versus-2 > img {
+  -moz-transform: scale(-0.8, 0.8);
+  -o-transform: scale(-0.8, 0.8);
+  -webkit-transform: scale(-0.8, 0.8);
+  transform: scale(-0.8, 0.8);
+  margin-left: -45px; /* This has to be different because flipping causes a slight offset for some reason */
 }
 .widget-user .box-footer {
   padding-top: 30px;

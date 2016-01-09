@@ -5,10 +5,10 @@ function participantConnect() {
     pSocket = io.connect(window.location.origin + '/participant');
 
     pSocket.on('error', function() {
-        console.log('rejected');
+        $(".content").load("/app-content/lobby-error");
     });
     
     pSocket.on('connect', function() {
-        console.log('connected');
+        $(".content").load("/app-content/lobby");
     });
 }

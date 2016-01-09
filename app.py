@@ -72,9 +72,14 @@ def user_landing(tourneyName):
     return render_template('user-app.html')
     
 # Lobby content
-@app.route('/lobby')
+@app.route('/app-content/lobby')
 def lobby():
-    return render_template('lobby.html')
+    return render_template('app-content/lobby.html')
+    
+# Lobby connect error
+@app.route('/app-content/lobby-error')
+def lobby_error():
+    return render_template('app-content/lobby-error.html')
 
     
 #----- SocketIO events -----#

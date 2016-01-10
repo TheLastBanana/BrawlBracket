@@ -9,6 +9,23 @@ function participantConnect() {
     });
     
     pSocket.on('connect', function() {
-        $(".content").load("/app-content/lobby");
+        console.log('connected');
     });
+    
+    pSocket.on('join lobby', function(lobbyData) {
+        console.log(lobbyData)
+        $(".content").load("/app-content/lobby", function() {
+            $("#player1-report-win").on('click', function() {
+                reportWin(lobbyData["player1-id"]);
+            });
+            
+            $("#player2-report-win").on('click', function() {
+                reportWin(lobbyData["player2-id"]);
+            });
+        });
+    });
+}
+
+function reportWin(playerId) {
+    pSocket.emit('report win', { 'player-id': playerId });
 }

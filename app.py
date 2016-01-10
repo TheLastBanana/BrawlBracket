@@ -8,6 +8,7 @@ from flask import session
 from flask import g
 from flask_socketio import SocketIO
 from flask_socketio import join_room, leave_room
+from flask_socketio import emit
 from bidict import bidict
 
 import os
@@ -122,7 +123,8 @@ def participant_connect():
     for match in matchesData:
         print(pId, match['player1-id'], match['player2-id'], type(match['winner-id']))
         if int(pId) in [match['player1-id'], match['player2-id']] \
-                and match['winner-id'] is None:
+                and match['winner-id'] is None \
+                and match['player1-id'] is not None and match['player2-id'] is not None:
             matchData = match
             break
     
@@ -132,6 +134,13 @@ def participant_connect():
     
     print('Participant #{} connected, joined room #{}'
         .format(pId, matchData['id']))
+        
+    lobbyData = {
+        'player1-id': matchData['player1-id'],
+        'player2-id': matchData['player2-id']
+    }
+        
+    emit('join lobby', lobbyData)
     
 @socketio.on('disconnect', namespace='/participant')
 def participant_disconnect():
@@ -144,6 +153,11 @@ def participant_disconnect():
     onlineUsers.remove(pId)
 
     print('Participant disconnected')
+
+# A participant win was reported
+@socketio.on('report win', namespace='/participant')
+def participant_report_win(data):
+    print('{} won a match'.format(data['player-id']))
 
 if __name__ == '__main__':
     app.debug = True

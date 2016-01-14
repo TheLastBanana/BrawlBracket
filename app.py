@@ -18,7 +18,11 @@ import brawlapi
 # Bi-directional map from tournament's Challonge URL suffix to its ID.
 # We'll actually build this from the Challonge API later.
 tourneys = bidict({ 'thelastbanana_test': '2119181' })
+
+
 tourneyDatas = {}
+matchDatas = {}
+participantDatas = {}
 
 # Set of online participant IDs
 onlineUsers = set()
@@ -29,6 +33,48 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('BB_SECRET_KEY')
 socketio = SocketIO(app)
 
+
+# Get data for a match. If matchId is None, returns the match index.
+# TODO: Fetch this data more than once so it can update
+def getMatchData(tourneyId, matchId = None):
+    if tourneyId not in matchDatas \
+            or matchId not in matchDatas[tourneyId]:
+        tourneyData = {}
+        
+        mIndex = challonge.matches.index(tourneyId)
+        tourneyData[None] = mIndex
+        
+        for mData in mIndex:
+            tourneyData[mData['id']] = mData
+            
+        matchDatas[tourneyId] = tourneyData
+        
+    if tourneyId not in matchDatas \
+            or matchId not in matchDatas[tourneyId]:
+        return None
+
+    return matchDatas[tourneyId][matchId]
+
+# Get data for a participant. If participantId is None, returns the match index.
+# TODO: Fetch this data more than once so it can update
+def getParticipantData(tourneyId, participantId = None):
+    if tourneyId not in participantDatas \
+            or participantId not in participantDatas[tourneyId]:
+        tourneyData = {}
+        
+        pIndex = challonge.participants.index(tourneyId)
+        tourneyData[None] = pIndex
+        
+        for pData in pIndex:
+            tourneyData[pData['id']] = pData
+            
+        participantDatas[tourneyId] = tourneyData
+        
+    if tourneyId not in participantDatas \
+            or participantId not in participantDatas[tourneyId]:
+        return None
+
+    return participantDatas[tourneyId][participantId]
     
 #----- Flask routing -----#
 @app.errorhandler(404)
@@ -118,7 +164,7 @@ def participant_connect():
         leave_room(str(session['matchId']))
     
     # Find current match
-    matchesData = challonge.matches.index(tId)
+    matchesData = getMatchData(tId)
     matchData = None
     for match in matchesData:
         print(pId, match['player1-id'], match['player2-id'], type(match['winner-id']))
@@ -135,9 +181,23 @@ def participant_connect():
     print('Participant #{} connected, joined room #{}'
         .format(pId, matchData['id']))
         
+    # Get participant info
+    p1Id = matchData['player1-id']
+    p2Id = matchData['player2-id']
+    p1Data = getParticipantData(tId, p1Id)
+    p2Data = getParticipantData(tId, p2Id)
+    
+    gravatarBase = 'http://www.gravatar.com/avatar/{}?d=identicon'
+        
     lobbyData = {
-        'player1-id': matchData['player1-id'],
-        'player2-id': matchData['player2-id']
+        'player1-id': p1Id,
+        'player2-id': p2Id,
+        'player1-name': p1Data['display-name'],
+        'player2-name': p2Data['display-name'],
+        
+        # Note the 'or' here. If the player has no email hash, we use their participant ID as a unique Gravatar hash.
+        'player1-avatar': gravatarBase.format(p1Data['email-hash'] or p1Id),
+        'player2-avatar': gravatarBase.format(p2Data['email-hash'] or p2Id)
     }
         
     emit('join lobby', lobbyData)

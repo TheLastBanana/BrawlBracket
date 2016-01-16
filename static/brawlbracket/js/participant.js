@@ -29,6 +29,8 @@ function participantConnect() {
             $(".widget-user-username-versus-2").text(lobbyData["player2-name"]);
             $("#participant-1-avatar").attr("src", lobbyData["player1-avatar"]);
             $("#participant-2-avatar").attr("src", lobbyData["player2-avatar"]);
+        
+            $("#picker-content").load("/app-content/lobby-roster");
         });
     });
 }
@@ -36,3 +38,7 @@ function participantConnect() {
 function reportWin(playerId) {
     pSocket.emit('report win', { 'player-id': playerId });
 }
+
+$(window).on('beforeunload', function() {
+    pSocket.close();
+});

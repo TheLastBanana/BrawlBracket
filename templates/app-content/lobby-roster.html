@@ -1,0 +1,18 @@
+<div class="box box-primary color-palette-box">
+  <div class="box-header with-border">
+    <h3 class="box-title"><i class="fa fa-user"></i> Pick your legend</h3>
+  </div>
+  <div class="box-body">
+    <ul class="legend-roster">
+      {% for legend in legendData %}
+        <li class="legend-icon">
+          <a href="#">
+            <img class="legend-image" src="/static/brawlbracket/img/legends/{{ legend[1] }}.png">
+            <div class="legend-circle"></div>
+            <p class="legend-name">{{ legend[0] }}</p>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>

@@ -2984,66 +2984,29 @@ table.text-center th {
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
 }
-.widget-user .widget-user-username,
-.widget-user .widget-user-username-versus-1,
-.widget-user .widget-user-username-versus-2,
-.widget-user .widget-user-username-versus-center {
+.widget-user .widget-user-username {
   margin-top: 0;
   margin-bottom: 5px;
   font-size: 25px;
   font-weight: 300;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
-.widget-user .widget-user-username-versus-1,
-.widget-user .widget-user-username-versus-2,
-.widget-user .widget-user-username-versus-center {
-  position: absolute;
-  -webkit-transform: translate(-50%, 0%);
-  -ms-transform: translate(-50%, 0%);
-  -o-transform: translate(-50%, 0%);
-  transform: translate(-50%, 0%);
-}
-.widget-user .widget-user-username-versus-center {
-  left: 50%;
-}
 .widget-user .widget-user-desc {
   margin-top: 0;
 }
-.widget-user .widget-user-image,
-.widget-user .widget-user-image-versus-1,
-.widget-user .widget-user-image-versus-2 {
+.widget-user .widget-user-image {
   position: absolute;
   top: 65px;
   left: 50%;
   margin-left: -45px;
 }
-.widget-user .widget-user-username-versus-1,
-.widget-user .widget-user-image-versus-1 {
-  left: 20.833%;
-}
-.widget-user .widget-user-username-versus-2,
-.widget-user .widget-user-image-versus-2 {
-  left: 79.167%;
-}
-.widget-user .widget-user-image > img,
-.widget-user .widget-user-image-versus-1 > img,
-.widget-user .widget-user-image-versus-2 > img {
+.widget-user .widget-user-image > img {
   width: 90px;
   height: auto;
   border: 3px solid #fff;
 }
 .widget-user .box-footer {
   padding-top: 30px;
-}
-.widget-user .description-score {
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
-.widget-user .description-block .btn-app {
-  margin-top: -5px;
-  margin-bottom: -5px;
-  margin-left: 0px;
-  margin-right: 0px;
 }
 .widget-user-2 .widget-user-header {
   padding: 20px;

@@ -1,6 +1,6 @@
-<!-- User info and score reporting -->
 <div class="row">
-  <div class="col-md-8"> <!--class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">-->
+  <div class="col-md-9 col-md-push-3">
+    <!-- User info and score reporting -->
     <div class="box box-widget widget-user">
       <div class="widget-user-header bg-green-active">
         <h3 class="widget-user-username-versus-1"></h3>
@@ -38,9 +38,13 @@
         </div><!-- /.row -->
       </div>
     </div>
+    
+    <div id="picker-content">
+    </div>
   </div>
-  
-  <div class="col-md-4">
+
+  <div class="col-md-3 col-md-pull-9" id="sidebar-content">
+    <!-- Game info -->
     <div class="info-box">
       <span class="info-box-icon bg-light-blue"><i class="fa fa-users"></i></span>
       <div class="info-box-content">
@@ -56,54 +60,54 @@
         <span class="info-box-number">Kings Pass</span>
       </div><!-- /.info-box-content -->
     </div><!-- /.info-box -->
+    
+    <!-- Chat box -->
+    <div class="box box-primary direct-chat direct-chat-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Direct Chat</h3>
+        <div class="box-tools pull-right">
+          <span data-toggle="tooltip" title="3 New Messages" class="badge bg-light-blue">3</span>
+          <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+        </div>
+      </div><!-- /.box-header -->
+      <div class="box-body">
+        <!-- Conversations are loaded here -->
+        <div class="direct-chat-messages">
+          <!-- Message. Default to the left -->
+          <div class="direct-chat-msg">
+            <div class="direct-chat-info clearfix">
+              <span class="direct-chat-name pull-left">Brynn</span>
+              <span class="direct-chat-timestamp pull-right">23 Jan 2:00 pm</span>
+            </div><!-- /.direct-chat-info -->
+            <img class="direct-chat-img" src="http://www.gravatar.com/avatar/?d=mm" alt="message user image"><!-- /.direct-chat-img -->
+            <div class="direct-chat-text">
+              lol i rek u scrub
+            </div><!-- /.direct-chat-text -->
+          </div><!-- /.direct-chat-msg -->
+
+          <!-- Message to the right -->
+          <div class="direct-chat-msg right">
+            <div class="direct-chat-info clearfix">
+              <span class="direct-chat-name pull-right">Asuri</span>
+              <span class="direct-chat-timestamp pull-left">23 Jan 2:05 pm</span>
+            </div><!-- /.direct-chat-info -->
+            <img class="direct-chat-img" src="http://www.gravatar.com/avatar/?d=mm" alt="message user image"><!-- /.direct-chat-img -->
+            <div class="direct-chat-text">
+              no u dont i rek u
+            </div><!-- /.direct-chat-text -->
+          </div><!-- /.direct-chat-msg -->
+        </div><!--/.direct-chat-messages-->
+      </div><!-- /.box-body -->
+      <div class="box-footer">
+        <form action="#" method="post">
+          <div class="input-group">
+            <input type="text" name="message" placeholder="Type Message ..." class="form-control">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-primary btn-flat">Send</button>
+            </span>
+          </div>
+        </form>
+      </div><!-- /.box-footer-->
+    </div><!--/.direct-chat -->
   </div>
 </div>
-
-<!-- Chat box -->
-<div class="box box-primary direct-chat direct-chat-primary">
-  <div class="box-header with-border">
-    <h3 class="box-title">Direct Chat</h3>
-    <div class="box-tools pull-right">
-      <span data-toggle="tooltip" title="3 New Messages" class="badge bg-light-blue">3</span>
-      <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-    </div>
-  </div><!-- /.box-header -->
-  <div class="box-body">
-    <!-- Conversations are loaded here -->
-    <div class="direct-chat-messages">
-      <!-- Message. Default to the left -->
-      <div class="direct-chat-msg">
-        <div class="direct-chat-info clearfix">
-          <span class="direct-chat-name pull-left">Brynn</span>
-          <span class="direct-chat-timestamp pull-right">23 Jan 2:00 pm</span>
-        </div><!-- /.direct-chat-info -->
-        <img class="direct-chat-img" src="http://www.gravatar.com/avatar/?d=mm" alt="message user image"><!-- /.direct-chat-img -->
-        <div class="direct-chat-text">
-          lol i rek u scrub
-        </div><!-- /.direct-chat-text -->
-      </div><!-- /.direct-chat-msg -->
-
-      <!-- Message to the right -->
-      <div class="direct-chat-msg right">
-        <div class="direct-chat-info clearfix">
-          <span class="direct-chat-name pull-right">Asuri</span>
-          <span class="direct-chat-timestamp pull-left">23 Jan 2:05 pm</span>
-        </div><!-- /.direct-chat-info -->
-        <img class="direct-chat-img" src="http://www.gravatar.com/avatar/?d=mm" alt="message user image"><!-- /.direct-chat-img -->
-        <div class="direct-chat-text">
-          no u dont i rek u
-        </div><!-- /.direct-chat-text -->
-      </div><!-- /.direct-chat-msg -->
-    </div><!--/.direct-chat-messages-->
-  </div><!-- /.box-body -->
-  <div class="box-footer">
-    <form action="#" method="post">
-      <div class="input-group">
-        <input type="text" name="message" placeholder="Type Message ..." class="form-control">
-        <span class="input-group-btn">
-          <button type="button" class="btn btn-primary btn-flat">Send</button>
-        </span>
-      </div>
-    </form>
-  </div><!-- /.box-footer-->
-</div><!--/.direct-chat -->

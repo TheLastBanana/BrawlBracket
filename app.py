@@ -15,11 +15,37 @@ import os
 import challonge
 import brawlapi
 
+# Mapping from legend id to (formatted name, internal name)
+legendData = {
+    0:      ('Random',      'random'),
+    1:      ('Bödvar',      'bodvar'),
+    2:      ('Cassidy',     'cassidy'),
+    3:      ('Orion',       'orion'),
+    4:      ('Lord Vraxx',  'vraxx'),
+    5:      ('Gnash',       'gnash'),
+    6:      ('Nai',         'nai'),
+    7:      ('Hattori',     'hattori'),
+    8:      ('Sir Roland',  'roland'),
+    9:      ('Scarlet',     'scarlet'),
+    10:     ('Thatch',      'thatch'),
+    11:     ('Ada',         'ada'),
+    12:     ('Sentinel',    'sentinel'),
+    13:     ('Lucien',      'lucien'),
+    14:     ('Teros',       'teros'),
+    15:     ('Brynn',       'brynn'),
+    16:     ('Asuri',       'asuri'),
+    17:     ('Barraza',     'barraza'),
+    18:     ('Ember',       'ember'),
+    19:     ('Azoth',       'azoth')
+}
+legendOrder = list(range(1, len(legendData))) + [0] # Always put random last
+orderedLegends = [legendData[id] for id in legendOrder]
+
 # Bi-directional map from tournament's Challonge URL suffix to its ID.
 # We'll actually build this from the Challonge API later.
 tourneys = bidict({ 'thelastbanana_test': '2119181' })
 
-
+# Cached Challonge data
 tourneyDatas = {}
 matchDatas = {}
 participantDatas = {}
@@ -139,6 +165,11 @@ def lobby():
 @app.route('/app-content/lobby-error')
 def lobby_error():
     return render_template('app-content/lobby-error.html')
+    
+# Lobby legend roster
+@app.route('/app-content/lobby-roster')
+def lobby_roster():
+    return render_template('app-content/lobby-roster.html', legendData=orderedLegends)
 
     
 #----- SocketIO events -----#

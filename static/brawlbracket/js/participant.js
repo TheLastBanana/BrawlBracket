@@ -30,7 +30,7 @@ function participantConnect() {
             $("#participant-1-avatar").attr("src", lobbyData["player1-avatar"]);
             $("#participant-2-avatar").attr("src", lobbyData["player2-avatar"]);
         
-            $("#picker-content").load("/app-content/lobby-roster");
+            $("#picker-content").load("/app-content/lobby-realms");
         });
     });
 }

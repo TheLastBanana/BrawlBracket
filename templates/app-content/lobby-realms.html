@@ -1,0 +1,17 @@
+<div class="box box-primary color-palette-box">
+  <div class="box-header with-border">
+    <h3 class="box-title"><i class="fa fa-map"></i> Ban a map</h3>
+  </div>
+  <div class="box-body">
+    <ul class="realm-picker">
+      {% for realm in realmData %}
+        <li>
+          <a href="#">
+            <img src="/static/brawlbracket/img/realms/{{ realm[1] }}.png">
+            <p>{{ realm[0] }}</p>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>

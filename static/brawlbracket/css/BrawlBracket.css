@@ -79,13 +79,14 @@ Player info
 }
 
 /*
-Roster icons
+Legend picker
 */
 .legend-roster {
   margin: 0px;
   padding: 0px;
   text-align: center;
 }
+
 .legend-roster > li {
   display: inline-block;
   text-align: left;
@@ -93,16 +94,17 @@ Roster icons
   margin-right: 10px;
   margin-bottom: 10px;
 }
+
 .legend-roster > li .legend-circle {
   width: 98px;
   height: 98px;
   border: 5px solid #FFFFFF;
   margin-bottom: 0px;
-  background-color: #3C8DBC;
+  background-color: #367FA9;
   border-radius: 50%;
 }
 
-.legend-roster > li .legend-image {
+.legend-roster > li img {
   position: absolute;
   margin-top: -35px;
   margin-left: -40px;
@@ -113,7 +115,7 @@ Roster icons
   pointer-events: none;
 }
 
-.legend-roster > li .legend-name {
+.legend-roster > li p {
   text-align: center;
   font-weight: bold;
   font-size: 14px;
@@ -121,14 +123,56 @@ Roster icons
   margin: 0px;
 }
 
-.legend-roster > li a .legend-name {
-  color: #555;
+.legend-roster > li a p {
+  color: #333;
 }
 
 .legend-roster > li a:hover .legend-circle {
-  background-color: #367FA9;
+  background-color: #3C8DBC;
 }
 
-.legend-roster > li a:hover .legend-name {
+.legend-roster > li a:hover p {
+  color: #555;
+}
+
+/*
+Realm picker
+*/
+.realm-picker {
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
+}
+
+.realm-picker > li {
+  display: inline-block;
+  text-align: left;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.realm-picker > li img {
+  border-radius: 5px;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.realm-picker > li p {
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin: 0px;
+}
+
+.realm-picker > li a p {
   color: #333;
+}
+
+.realm-picker > li a:hover img {
+  filter: opacity(75%);
+}
+
+.realm-picker > li a:hover p {
+  color: #555;
 }

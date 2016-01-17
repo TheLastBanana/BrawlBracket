@@ -5,11 +5,11 @@
   <div class="box-body">
     <ul class="legend-roster">
       {% for legend in legendData %}
-        <li class="legend-icon">
+        <li>
           <a href="#">
-            <img class="legend-image" src="/static/brawlbracket/img/legends/{{ legend[1] }}.png">
+            <img src="/static/brawlbracket/img/legends/{{ legend[1] }}.png">
             <div class="legend-circle"></div>
-            <p class="legend-name">{{ legend[0] }}</p>
+            <p>{{ legend[0] }}</p>
           </a>
         </li>
       {% endfor %}

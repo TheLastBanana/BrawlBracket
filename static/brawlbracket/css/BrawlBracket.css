@@ -55,6 +55,30 @@ Player versus player widget
 }
 
 /*
+Player info
+*/
+/* First column holds seed */
+.table-players > tbody > tr > td:nth-child(1) {
+  width: 38px;
+  text-align: center;
+  padding-right: 0px;
+}
+
+/* Second column holds icon */
+.table-players > tbody > tr > td:nth-child(2) {
+  width: 38px;
+}
+
+.table-players > tbody > tr > td:nth-child(2) > img {
+  background-color: #406080;
+  border-radius: 5px;
+}
+
+.table-players > tbody > tr > td {
+  vertical-align: middle;
+}
+
+/*
 Roster icons
 */
 .legend-roster {

@@ -77,6 +77,9 @@ tourneyDatas = {}
 matchDatas = {}
 participantDatas = {}
 
+# Data for each lobby
+lobbyDatas = {}
+
 # Set of online participant IDs
 onlineUsers = set()
 
@@ -128,6 +131,65 @@ def getParticipantData(tourneyId, participantId = None):
         return None
 
     return participantDatas[tourneyId][participantId]
+
+# Get lobby data for a given match, or if it doesn't exist, create it and store it in lobbyDatas.
+def getLobbyData(tourneyId, matchId):
+    matchPair = (tourneyId, matchId)
+    
+    #if matchPair in lobbyDatas:
+    #    return lobbyDatas[matchPair]
+
+    # Not found, so make a new lobby
+    matchData = getMatchData(tourneyId, matchId)
+
+    # Get participant info
+    p1Id = matchData['player1-id']
+    p2Id = matchData['player2-id']
+    p1Data = getParticipantData(tourneyId, p1Id)
+    p2Data = getParticipantData(tourneyId, p2Id)
+    
+    gravatarBase = 'http://www.gravatar.com/avatar/{}?d=identicon'
+        
+    lobbyData = {
+        'participants': [
+            {
+                'name': playerData['display-name'],
+                'id': playerData['id'],
+                'seed': playerData['seed'],
+                'ready': False,
+                'wins': 0,
+                
+                # Note the 'or' here. If the player has no email hash, 
+                # we use their participant ID as a unique Gravatar hash.
+                'avatar': gravatarBase.format(playerData['email-hash'] or p1Id)
+            } for playerData in [p1Data, p2Data]
+        ],
+        
+        # Players are individual users, while participants may be teams (though we don't support them yet).
+        # For now, they're basically the same, but this field holds data that would only apply to one person.
+        'players': [
+            {
+                'name': playerData['display-name'],
+                'status': 'Online' if playerData['id'] in onlineUsers else 'Offline',
+                'legend': 'none'
+            } for playerData in [p1Data, p2Data]
+        ],
+        
+        # This is a dictionary in case it needs to hold state-specific data later
+        'state': {
+            'name': 'waitingForPlayers'
+        },
+        
+        'chatlog': [],
+        'realmBans': [],
+        
+        'roomNumber': 1337,
+        'currentRealm': 'Thundergard Stadium'
+    }
+    
+    lobbyDatas[matchPair] = lobbyData
+    
+    return lobbyData
     
 #----- Flask routing -----#
 @app.errorhandler(404)
@@ -218,7 +280,7 @@ def participant_connect():
         print('Participant #{} rejected (already connected)'.format(pId))
         return False
         
-    onlineUsers.add(pId)
+    onlineUsers.add(int(pId))
     
     # Leave old room
     if 'matchId' in session:
@@ -228,40 +290,23 @@ def participant_connect():
     
     # Find current match
     matchesData = getMatchData(tId)
-    matchData = None
+    matchId = None
     for match in matchesData:
         print(pId, match['player1-id'], match['player2-id'], type(match['winner-id']))
         if int(pId) in [match['player1-id'], match['player2-id']] \
                 and match['winner-id'] is None \
                 and match['player1-id'] is not None and match['player2-id'] is not None:
-            matchData = match
+            matchId = match['id']
             break
     
     # Join new room
-    session['matchId'] = matchData['id']
-    join_room(str(matchData['id']))
+    session['matchId'] = matchId
+    join_room(str(matchId))
     
     print('Participant #{} connected, joined room #{}'
-        .format(pId, matchData['id']))
+        .format(pId, matchId))
         
-    # Get participant info
-    p1Id = matchData['player1-id']
-    p2Id = matchData['player2-id']
-    p1Data = getParticipantData(tId, p1Id)
-    p2Data = getParticipantData(tId, p2Id)
-    
-    gravatarBase = 'http://www.gravatar.com/avatar/{}?d=identicon'
-        
-    lobbyData = {
-        'player1-id': p1Id,
-        'player2-id': p2Id,
-        'player1-name': p1Data['display-name'],
-        'player2-name': p2Data['display-name'],
-        
-        # Note the 'or' here. If the player has no email hash, we use their participant ID as a unique Gravatar hash.
-        'player1-avatar': gravatarBase.format(p1Data['email-hash'] or p1Id),
-        'player2-avatar': gravatarBase.format(p2Data['email-hash'] or p2Id)
-    }
+    lobbyData = getLobbyData(tId, matchId)
         
     emit('join lobby', lobbyData)
     
@@ -273,7 +318,7 @@ def participant_disconnect():
     if pId == None:
         return
     
-    onlineUsers.remove(pId)
+    onlineUsers.remove(int(pId))
 
     print('Participant disconnected')
 

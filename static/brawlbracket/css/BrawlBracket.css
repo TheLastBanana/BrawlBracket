@@ -9,15 +9,21 @@ Player versus player widget
   font-size: 25px;
   font-weight: 300;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-}
-.widget-user .widget-user-username-versus-1,
-.widget-user .widget-user-username-versus-2,
-.widget-user .widget-user-username-versus-center {
   position: absolute;
   -webkit-transform: translate(-50%, 0%);
   -ms-transform: translate(-50%, 0%);
   -o-transform: translate(-50%, 0%);
   transform: translate(-50%, 0%);
+}
+.widget-user .widget-user-username-versus-1 h3,
+.widget-user .widget-user-username-versus-2 h3 {
+  text-align: center;
+  
+  /* Deal with large names by cutting them off with an ellipsis */
+  text-overflow: ellipsis;
+  width: 34%;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .widget-user .widget-user-username-versus-center {
   left: 50%;
@@ -31,11 +37,11 @@ Player versus player widget
 }
 .widget-user .widget-user-username-versus-1,
 .widget-user .widget-user-image-versus-1 {
-  left: 20.833%;
+  left: 20.5%;
 }
 .widget-user .widget-user-username-versus-2,
 .widget-user .widget-user-image-versus-2 {
-  left: 79.167%;
+  left: 79.5%;
 }
 .widget-user .widget-user-image-versus-1 > img,
 .widget-user .widget-user-image-versus-2 > img {
@@ -48,10 +54,7 @@ Player versus player widget
   margin-bottom: 0px;
 }
 .widget-user .description-block .btn-app {
-  margin-top: -5px;
-  margin-bottom: -5px;
-  margin-left: 0px;
-  margin-right: 0px;
+  margin: 5px 0px 0px 0px;
 }
 
 /*
@@ -59,14 +62,14 @@ Player info
 */
 /* First column holds seed */
 .table-players > tbody > tr > td:nth-child(1) {
-  width: 38px;
-  text-align: center;
-  padding-right: 0px;
+  width: 12px;
 }
 
 /* Second column holds icon */
 .table-players > tbody > tr > td:nth-child(2) {
   width: 38px;
+  padding-left: 0px;
+  padding-right: 0px;
 }
 
 .table-players > tbody > tr > td:nth-child(2) > img {
@@ -76,6 +79,25 @@ Player info
 
 .table-players > tbody > tr > td {
   vertical-align: middle;
+}
+
+.table-players .player-status {
+  width: 12px;
+  height: 12px;
+  margin: auto;
+  border-radius: 50%;
+}
+
+.table-players .player-status[data-original-title="Online"] {
+  background-color: green;
+}
+
+.table-players .player-status[data-original-title="In another match"] {
+  background-color: goldenrod;
+}
+
+.table-players .player-status[data-original-title="Offline"] {
+  background-color: lightgrey;
 }
 
 /*

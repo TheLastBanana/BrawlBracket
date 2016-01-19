@@ -274,10 +274,14 @@ def participant_connect():
     
     if not pId:
         print('Participant id missing; connection rejected')
+        emit('error', {'code': 'bad-participant'},
+            broadcast=False, include_self=True)
         return False
     
     if pId in onlineUsers:
         print('Participant #{} rejected (already connected)'.format(pId))
+        emit('error', {'code': 'already-connected'},
+            broadcast=False, include_self=True)
         return False
         
     onlineUsers.add(int(pId))

@@ -302,6 +302,13 @@ def participant_connect():
                 and match['player1-id'] is not None and match['player2-id'] is not None:
             matchId = match['id']
             break
+        
+    # Handle no match found
+    if matchId == None:
+        print('Participant #{} connected but found no match.'.format(pId))
+        emit('error', {'code': 'no-match'},
+            broadcast=False, include_self=True)
+        return False
     
     # Join new room
     session['matchId'] = matchId

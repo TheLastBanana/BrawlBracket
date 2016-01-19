@@ -297,7 +297,7 @@ def participant_connect():
     matchId = None
     for match in matchesData:
         print(pId, match['player1-id'], match['player2-id'], type(match['winner-id']))
-        if int(pId) in [match['player1-id'], match['player2-id']] \
+        if int(pId) in (match['player1-id'], match['player2-id']) \
                 and match['winner-id'] is None \
                 and match['player1-id'] is not None and match['player2-id'] is not None:
             matchId = match['id']

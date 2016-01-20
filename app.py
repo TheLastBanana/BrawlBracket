@@ -12,7 +12,6 @@ from flask_socketio import emit
 from bidict import bidict
 
 import os
-import challonge
 import brawlapi
 
 # Mapping from legend id to (formatted name, internal name)
@@ -72,124 +71,9 @@ orderedRealms = [realmData[id] for id in eslRealms]
 # We'll actually build this from the Challonge API later.
 tourneys = bidict({ 'thelastbanana_test': '2119181' })
 
-# Cached Challonge data
-tourneyDatas = {}
-matchDatas = {}
-participantDatas = {}
-
-# Data for each lobby
-lobbyDatas = {}
-
-# Set of online participant IDs
-onlineUsers = set()
-
-challonge.set_credentials(os.environ.get('BB_CHALLONGE_USER'), os.environ.get('BB_CHALLONGE_API_KEY'))
-
 app = Flask(__name__)
 app.secret_key = os.environ.get('BB_SECRET_KEY')
 socketio = SocketIO(app)
-
-
-# Get data for a match. If matchId is None, returns the match index.
-# TODO: Fetch this data more than once so it can update
-def getMatchData(tourneyId, matchId = None):
-    if tourneyId not in matchDatas \
-            or matchId not in matchDatas[tourneyId]:
-        tourneyData = {}
-        
-        mIndex = challonge.matches.index(tourneyId)
-        tourneyData[None] = mIndex
-        
-        for mData in mIndex:
-            tourneyData[mData['id']] = mData
-            
-        matchDatas[tourneyId] = tourneyData
-        
-    if tourneyId not in matchDatas \
-            or matchId not in matchDatas[tourneyId]:
-        return None
-
-    return matchDatas[tourneyId][matchId]
-
-# Get data for a participant. If participantId is None, returns the match index.
-# TODO: Fetch this data more than once so it can update
-def getParticipantData(tourneyId, participantId = None):
-    if tourneyId not in participantDatas \
-            or participantId not in participantDatas[tourneyId]:
-        tourneyData = {}
-        
-        pIndex = challonge.participants.index(tourneyId)
-        tourneyData[None] = pIndex
-        
-        for pData in pIndex:
-            tourneyData[pData['id']] = pData
-            
-        participantDatas[tourneyId] = tourneyData
-        
-    if tourneyId not in participantDatas \
-            or participantId not in participantDatas[tourneyId]:
-        return None
-
-    return participantDatas[tourneyId][participantId]
-
-# Get lobby data for a given match, or if it doesn't exist, create it and store it in lobbyDatas.
-def getLobbyData(tourneyId, matchId):
-    matchPair = (tourneyId, matchId)
-    
-    #if matchPair in lobbyDatas:
-    #    return lobbyDatas[matchPair]
-
-    # Not found, so make a new lobby
-    matchData = getMatchData(tourneyId, matchId)
-
-    # Get participant info
-    p1Id = matchData['player1-id']
-    p2Id = matchData['player2-id']
-    p1Data = getParticipantData(tourneyId, p1Id)
-    p2Data = getParticipantData(tourneyId, p2Id)
-    
-    gravatarBase = 'http://www.gravatar.com/avatar/{}?d=identicon'
-        
-    lobbyData = {
-        'participants': [
-            {
-                'name': playerData['display-name'],
-                'id': playerData['id'],
-                'seed': playerData['seed'],
-                'ready': False,
-                'wins': 0,
-                
-                # Note the 'or' here. If the player has no email hash, 
-                # we use their participant ID as a unique Gravatar hash.
-                'avatar': gravatarBase.format(playerData['email-hash'] or p1Id)
-            } for playerData in [p1Data, p2Data]
-        ],
-        
-        # Players are individual users, while participants may be teams (though we don't support them yet).
-        # For now, they're basically the same, but this field holds data that would only apply to one person.
-        'players': [
-            {
-                'name': playerData['display-name'],
-                'status': 'Online' if playerData['id'] in onlineUsers else 'Offline',
-                'legend': 'none'
-            } for playerData in [p1Data, p2Data]
-        ],
-        
-        # This is a dictionary in case it needs to hold state-specific data later
-        'state': {
-            'name': 'waitingForPlayers'
-        },
-        
-        'chatlog': [],
-        'realmBans': [],
-        
-        'roomNumber': None,
-        'currentRealm': None
-    }
-    
-    lobbyDatas[matchPair] = lobbyData
-    
-    return lobbyData
     
 #----- Flask routing -----#
 @app.errorhandler(404)
@@ -211,21 +95,14 @@ def user_login(tourneyName):
     tourneyId = tourneys[tourneyName]
     
     if request.method == 'GET':
+        prettyName = brawlapi.getTournamentName(tourneyId)
+        tourneyURL = brawlapi.getTournamentURL(tourneyId)
         
-        # This should request from the database after checking the memory cache
-        # and before going to Challonge
-        if tourneyId not in tourneyDatas:
-            tourneyData = challonge.tournaments.show(tourneyId)
-            tourneyDatas[tourneyId] = tourneyData
-        else:
-            tourneyData = tourneyDatas[tourneyId]
-        
-        prettyName = tourneyData['name']
-        tourneyURL = tourneyData['full-challonge-url']
-        
-        participantData = challonge.participants.index(tourneyId)
+        participantData = brawlapi.getParticipants(tourneyId)
         # Boolean value is whether the user is already logged in
-        participants = [ (p['name'], p['id'], False) for p in participantData ]
+        participants = [(p[0], p[1], 
+                        brawlapi.isUserOnline(int(p[1])))
+                            for p in participantData]
 
         return render_template('user-login.html',
                                tourneyName=prettyName,
@@ -234,8 +111,8 @@ def user_login(tourneyName):
    
     # POST was used
     # TODO: validate user ID
-    userId = request.form['user']
-    session['participantId'] = userId
+    participantId = request.form['user']
+    session['participantId'] = participantId
     session['tourneyId'] = tourneyId
     
     return redirect(url_for('user_landing', tourneyName=tourneyName))
@@ -278,22 +155,16 @@ def participant_connect():
             broadcast=False, include_self=True)
         return False
     
-    if pId in onlineUsers:
+    if brawlapi.isUserOnline(pId):
         print('Participant #{} rejected (already connected)'.format(pId))
         emit('error', {'code': 'already-connected'},
             broadcast=False, include_self=True)
         return False
-        
-    onlineUsers.add(int(pId))
+    
+    brawlapi.addOnlineUser(pId)
     
     # Find current match
-    matchesData = getMatchData(tId)
-    matchId = None
-    for match in matchesData:
-        if int(pId) in (match['player1-id'], match['player2-id']) \
-                and match['winner-id'] is None:
-            matchId = match['id']
-            break
+    matchId = brawlapi.getParticipantMatch(tId, pId)
         
     # Handle no match found
     if matchId is None:
@@ -309,7 +180,7 @@ def participant_connect():
     print('Participant #{} connected, joined room #{}'
         .format(pId, matchId))
         
-    lobbyData = getLobbyData(tId, matchId)
+    lobbyData = brawlapi.getLobbyData(tId, matchId)
         
     emit('join lobby', lobbyData,
         broadcast=False, include_self=True)
@@ -322,7 +193,7 @@ def participant_disconnect():
     if pId == None:
         return
     
-    onlineUsers.remove(int(pId))
+    brawlapi.removeOnlineUser(pId)
 
     print('Participant disconnected')
 

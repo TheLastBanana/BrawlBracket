@@ -183,8 +183,8 @@ def getLobbyData(tourneyId, matchId):
         'chatlog': [],
         'realmBans': [],
         
-        'roomNumber': 1337,
-        'currentRealm': 'Thundergard Stadium'
+        'roomNumber': None,
+        'currentRealm': None
     }
     
     lobbyDatas[matchPair] = lobbyData

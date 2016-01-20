@@ -290,15 +290,14 @@ def participant_connect():
     matchesData = getMatchData(tId)
     matchId = None
     for match in matchesData:
-        print(pId, match['player1-id'], match['player2-id'], type(match['winner-id']))
         if int(pId) in (match['player1-id'], match['player2-id']) \
                 and match['winner-id'] is None \
-                and match['player1-id'] is not None and match['player2-id'] is not None:
+                and None not in (match['player1-id'], match['player2-id']):
             matchId = match['id']
             break
         
     # Handle no match found
-    if matchId == None:
+    if matchId is None:
         print('Participant #{} connected but found no match.'.format(pId))
         emit('error', {'code': 'no-match'},
             broadcast=False, include_self=True)

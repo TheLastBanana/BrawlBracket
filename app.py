@@ -291,8 +291,7 @@ def participant_connect():
     matchId = None
     for match in matchesData:
         if int(pId) in (match['player1-id'], match['player2-id']) \
-                and match['winner-id'] is None \
-                and None not in (match['player1-id'], match['player2-id']):
+                and match['winner-id'] is None):
             matchId = match['id']
             break
         

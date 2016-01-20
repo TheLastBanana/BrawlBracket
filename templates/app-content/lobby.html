@@ -1,150 +1,160 @@
-<div class="row">
-  <div class="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
-    <!-- Player info -->
-    <div class="box box-solid">
-      <div class="box-header with-border">
-        <h4 class="box-title">Players</h4>
-      </div>
-      <div class="box-body no-padding">
-        <table class="table table-striped table-players">
-          <tbody>
-            <tr>
-              <td><div id="bb-pla1-status" class="player-status" data-toggle="tooltip" data-original-title="Offline"></div></td>
-              <td><img id="bb-pla1-legend" src="/static/brawlbracket/img/legends-small/none.png"></td>
-              <td id="bb-pla1-name"></td>
-            </tr>
-            <tr>
-              <td><div id="bb-pla2-status" class="player-status" data-toggle="tooltip" data-original-title="Offline"></div></td>
-              <td><img id="bb-pla2-legend" src="/static/brawlbracket/img/legends-small/none.png"></td>
-              <td id="bb-pla2-name"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    Match #XXX
+  </h1>
+</section>
 
-  <div class="col-xs-12 col-lg-9 pull-right">
-    <div class="row">
-      <div class="col-lg-8">
-        <!-- Participant info and score reporting -->
-        <div class="box box-widget widget-user">
-          <div class="widget-user-header bg-green-active">
-            <h3 class="widget-user-username-versus-1" id="bb-par1-name"></h3>
-            <h3 class="widget-user-username-versus-center">vs</h3>
-            <h3 class="widget-user-username-versus-2" id="bb-par2-name"></h3>
-          </div>
-          <div class="widget-user-image-versus-1">
-            <img class="img-circle" id="bb-par1-avatar" src="http://www.gravatar.com/avatar/?d=mm" alt="User Avatar">
-          </div>
-          <div class="widget-user-image-versus-2">
-            <img class="img-circle" id="bb-par2-avatar" src="http://www.gravatar.com/avatar/?d=mm" alt="User Avatar">
-          </div>
-          <div class="box-footer">
-            <div class="row">
-              <div class="col-xs-5 border-right">
-                <div class="description-block">
-                  <a class="btn btn-app">
-                    <i class="fa fa-trophy" id="bb-par1-report-win"></i> Report Win
-                  </a>
-                </div><!-- /.description-block -->
-              </div><!-- /.col -->
-              <div class="col-xs-2 border-right">
-                <div class="description-block" style="margin: 0px">
-                  <h2 class="description-score">2-1</h2>
-                  <span class="description-text">BEST OF 5</span>
-                </div><!-- /.description-block -->
-              </div><!-- /.col -->
-              <div class="col-xs-5">
-                <div class="description-block">
-                  <a class="btn btn-app">
-                    <i class="fa fa-trophy" id="bb-par2-report-win"></i> Report Win
-                  </a>
-                </div><!-- /.description-block -->
-              </div><!-- /.col -->
-            </div><!-- /.row -->
-          </div>
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
+      <!-- Player info -->
+      <div class="box box-solid">
+        <div class="box-header with-border">
+          <h4 class="box-title">Players</h4>
         </div>
-      </div>
-    
-      <div class="col-lg-4">
-        <div class="row">
-          <div class="col-sm-6 col-lg-12">
-            <!-- Game info -->
-            <div class="info-box">
-              <span class="info-box-icon bg-light-blue"><i class="fa fa-users"></i></span>
-              <div class="info-box-content">
-                <span class="info-box-text">Room Number</span>
-                <span class="info-box-number" id="bb-room-number"></span>
-              </div><!-- /.info-box-content -->
-            </div><!-- /.info-box -->
-          </div>
-          
-          <div class="col-sm-6 col-lg-12">
-            <div class="info-box">
-              <span class="info-box-icon bg-light-blue"><i class="fa fa-map"></i></span>
-              <div class="info-box-content">
-                <span class="info-box-text">Current Map</span>
-                <span class="info-box-number" id="bb-current-realm"></span>
-              </div><!-- /.info-box-content -->
-            </div><!-- /.info-box -->
-          </div>
+        <div class="box-body no-padding">
+          <table class="table table-striped table-players">
+            <tbody>
+              <tr>
+                <td><div id="bb-pla1-status" class="player-status" data-toggle="tooltip" data-original-title="Offline"></div></td>
+                <td><img id="bb-pla1-legend" src="/static/brawlbracket/img/legends-small/none.png"></td>
+                <td id="bb-pla1-name"></td>
+              </tr>
+              <tr>
+                <td><div id="bb-pla2-status" class="player-status" data-toggle="tooltip" data-original-title="Offline"></div></td>
+                <td><img id="bb-pla2-legend" src="/static/brawlbracket/img/legends-small/none.png"></td>
+                <td id="bb-pla2-name"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-    
-    <div id="bb-picker-content">
-    </div>
-  </div>
-  
-  <div class="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
-    <!-- Chat box -->
-    <div class="box box-primary direct-chat direct-chat-primary">
-      <div class="box-header with-border">
-        <h3 class="box-title">Direct Chat</h3>
-        <div class="box-tools pull-right">
-          <span data-toggle="tooltip" title="3 New Messages" class="badge bg-light-blue">3</span>
-          <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-        </div>
-      </div><!-- /.box-header -->
-      <div class="box-body">
-        <!-- Conversations are loaded here -->
-        <div class="direct-chat-messages">
-          <!-- Message. Default to the left -->
-          <div class="direct-chat-msg">
-            <div class="direct-chat-info clearfix">
-              <span class="direct-chat-name pull-left">Brynn</span>
-              <span class="direct-chat-timestamp pull-right">23 Jan 2:00 pm</span>
-            </div><!-- /.direct-chat-info -->
-            <img class="direct-chat-img" src="http://www.gravatar.com/avatar/?d=mm" alt="message user image"><!-- /.direct-chat-img -->
-            <div class="direct-chat-text">
-              lol i rek u scrub
-            </div><!-- /.direct-chat-text -->
-          </div><!-- /.direct-chat-msg -->
 
-          <!-- Message to the right -->
-          <div class="direct-chat-msg right">
-            <div class="direct-chat-info clearfix">
-              <span class="direct-chat-name pull-right">Asuri</span>
-              <span class="direct-chat-timestamp pull-left">23 Jan 2:05 pm</span>
-            </div><!-- /.direct-chat-info -->
-            <img class="direct-chat-img" src="http://www.gravatar.com/avatar/?d=mm" alt="message user image"><!-- /.direct-chat-img -->
-            <div class="direct-chat-text">
-              no u dont i rek u
-            </div><!-- /.direct-chat-text -->
-          </div><!-- /.direct-chat-msg -->
-        </div><!--/.direct-chat-messages-->
-      </div><!-- /.box-body -->
-      <div class="box-footer">
-        <form action="#" method="post">
-          <div class="input-group">
-            <input type="text" name="message" placeholder="Type Message ..." class="form-control">
-            <span class="input-group-btn">
-              <button type="button" class="btn btn-primary btn-flat">Send</button>
-            </span>
+    <div class="col-xs-12 col-lg-9 pull-right">
+      <div class="row">
+        <div class="col-lg-8">
+          <!-- Participant info and score reporting -->
+          <div class="box box-widget widget-user">
+            <div class="widget-user-header bg-green-active">
+              <h3 class="widget-user-username-versus-1" id="bb-par1-name"></h3>
+              <h3 class="widget-user-username-versus-center">vs</h3>
+              <h3 class="widget-user-username-versus-2" id="bb-par2-name"></h3>
+            </div>
+            <div class="widget-user-image-versus-1">
+              <img class="img-circle" id="bb-par1-avatar" src="http://www.gravatar.com/avatar/?d=mm" alt="User Avatar">
+            </div>
+            <div class="widget-user-image-versus-2">
+              <img class="img-circle" id="bb-par2-avatar" src="http://www.gravatar.com/avatar/?d=mm" alt="User Avatar">
+            </div>
+            <div class="box-footer">
+              <div class="row">
+                <div class="col-xs-5 border-right">
+                  <div class="description-block">
+                    <a class="btn btn-app">
+                      <i class="fa fa-trophy" id="bb-par1-report-win"></i> Report Win
+                    </a>
+                  </div><!-- /.description-block -->
+                </div><!-- /.col -->
+                <div class="col-xs-2 border-right">
+                  <div class="description-block" style="margin: 0px">
+                    <h2 class="description-score">2-1</h2>
+                    <span class="description-text">BEST OF 5</span>
+                  </div><!-- /.description-block -->
+                </div><!-- /.col -->
+                <div class="col-xs-5">
+                  <div class="description-block">
+                    <a class="btn btn-app">
+                      <i class="fa fa-trophy" id="bb-par2-report-win"></i> Report Win
+                    </a>
+                  </div><!-- /.description-block -->
+                </div><!-- /.col -->
+              </div><!-- /.row -->
+            </div>
           </div>
-        </form>
-      </div><!-- /.box-footer-->
-    </div><!--/.direct-chat -->
+        </div>
+      
+        <div class="col-lg-4">
+          <div class="row">
+            <div class="col-sm-6 col-lg-12">
+              <!-- Game info -->
+              <div class="info-box">
+                <span class="info-box-icon bg-light-blue"><i class="fa fa-users"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Room Number</span>
+                  <span class="info-box-number" id="bb-room-number"></span>
+                </div><!-- /.info-box-content -->
+              </div><!-- /.info-box -->
+            </div>
+            
+            <div class="col-sm-6 col-lg-12">
+              <div class="info-box">
+                <span class="info-box-icon bg-light-blue"><i class="fa fa-map"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Current Map</span>
+                  <span class="info-box-number" id="bb-current-realm"></span>
+                </div><!-- /.info-box-content -->
+              </div><!-- /.info-box -->
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="bb-picker-content">
+      </div>
+    </div>
+    
+    <div class="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
+      <!-- Chat box -->
+      <div class="box box-primary direct-chat direct-chat-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title">Direct Chat</h3>
+          <div class="box-tools pull-right">
+            <span data-toggle="tooltip" title="3 New Messages" class="badge bg-light-blue">3</span>
+            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+          <!-- Conversations are loaded here -->
+          <div class="direct-chat-messages">
+            <!-- Message. Default to the left -->
+            <div class="direct-chat-msg">
+              <div class="direct-chat-info clearfix">
+                <span class="direct-chat-name pull-left">Brynn</span>
+                <span class="direct-chat-timestamp pull-right">23 Jan 2:00 pm</span>
+              </div><!-- /.direct-chat-info -->
+              <img class="direct-chat-img" src="http://www.gravatar.com/avatar/?d=mm" alt="message user image"><!-- /.direct-chat-img -->
+              <div class="direct-chat-text">
+                lol i rek u scrub
+              </div><!-- /.direct-chat-text -->
+            </div><!-- /.direct-chat-msg -->
+
+            <!-- Message to the right -->
+            <div class="direct-chat-msg right">
+              <div class="direct-chat-info clearfix">
+                <span class="direct-chat-name pull-right">Asuri</span>
+                <span class="direct-chat-timestamp pull-left">23 Jan 2:05 pm</span>
+              </div><!-- /.direct-chat-info -->
+              <img class="direct-chat-img" src="http://www.gravatar.com/avatar/?d=mm" alt="message user image"><!-- /.direct-chat-img -->
+              <div class="direct-chat-text">
+                no u dont i rek u
+              </div><!-- /.direct-chat-text -->
+            </div><!-- /.direct-chat-msg -->
+          </div><!--/.direct-chat-messages-->
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+          <form action="#" method="post">
+            <div class="input-group">
+              <input type="text" name="message" placeholder="Type Message ..." class="form-control">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-primary btn-flat">Send</button>
+              </span>
+            </div>
+          </form>
+        </div><!-- /.box-footer-->
+      </div><!--/.direct-chat -->
+    </div>
   </div>
-</div>
+</section><!-- /.content -->

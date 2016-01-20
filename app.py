@@ -312,7 +312,8 @@ def participant_connect():
         
     lobbyData = getLobbyData(tId, matchId)
         
-    emit('join lobby', lobbyData)
+    emit('join lobby', lobbyData,
+        broadcast=False, include_self=True)
     
 @socketio.on('disconnect', namespace='/participant')
 def participant_disconnect():

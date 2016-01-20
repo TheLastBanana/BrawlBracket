@@ -90,10 +90,18 @@
           <!-- Sidebar Menu -->
           <ul class="sidebar-menu">
             <li class="header">MENU</li>
-            <!-- Optionally, you can add icons to the links -->
-            <li class="active"><a href="#"><i class="fa fa-gamepad"></i> <span>Match #XXX</span></a></li>
-            <li><a href="#"><i class="fa fa-trophy"></i> <span>Bracket</span></a></li>
-            <li><a href="#"><i class="fa fa-bullhorn"></i> <span>Contact Admin</span></a></li>
+            
+            <li class="bb-menu-option active" id="bb-menu-show-lobby"><a href="#" onclick="showPage('lobby');">
+              <i class="fa fa-gamepad"></i> <span>Match #XXX</span>
+            </a></li>
+            
+            <li class="bb-menu-option" id="bb-menu-show-bracket"><a href="#" onclick="showPage('bracket');">
+              <i class="fa fa-trophy"></i> <span>Bracket</span>
+            </a></li>
+            
+            <li class="bb-menu-option" id="bb-menu-show-admin-chat"><a href="#" onclick="showPage('admin-chat');">
+              <i class="fa fa-bullhorn"></i> <span>Contact Admin</span>
+            </a></li>
           </ul><!-- /.sidebar-menu -->
         </section>
         <!-- /.sidebar -->

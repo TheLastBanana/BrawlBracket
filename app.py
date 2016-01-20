@@ -286,12 +286,6 @@ def participant_connect():
         
     onlineUsers.add(int(pId))
     
-    # Leave old room
-    if 'matchId' in session:
-        print('Participant #{} connecting, left old room #{}'
-            .format(pId, session['matchId']))
-        leave_room(str(session['matchId']))
-    
     # Find current match
     matchesData = getMatchData(tId)
     matchId = None

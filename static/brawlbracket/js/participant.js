@@ -45,6 +45,13 @@ var pageSetup = {
     }
 };
 
+$(window).on('beforeunload', function() {
+    pSocket.close();
+});
+
+/*
+    Connect to the server. Called when the app is first loaded.
+*/
 function participantConnect() {
     pSocket = io.connect(window.location.origin + '/participant');
 
@@ -60,11 +67,12 @@ function participantConnect() {
         lobbyData = newLobbyData;
         showPage('lobby');
     });
+    
+    // Add functionality to menu options
+    $('.bb-menu-option').on('click', function() {
+        showPage($(this).attr('page'));
+    });
 }
-
-$(window).on('beforeunload', function() {
-    pSocket.close();
-});
 
 /*
     Report a win to the server.
@@ -78,8 +86,7 @@ function reportWin(playerId) {
 */
 function showPage(pageName) {
     $('.bb-menu-option').removeClass('active');
-    $('#bb-menu-show-' + pageName).addClass('active');
-    
+    $('.bb-menu-option[page="' + pageName + '"]').addClass('active');
     
     $('.content-wrapper').load('/app-content/' + pageName, pageSetup[pageName]);
         

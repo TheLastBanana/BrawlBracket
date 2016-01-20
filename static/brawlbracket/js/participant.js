@@ -14,7 +14,7 @@ function participantConnect() {
     
     pSocket.on('join lobby', function(lobbyData) {
         console.log(lobbyData)
-        $(".content").load("/app-content/lobby", function() {
+        $(".content-wrapper").load("/app-content/lobby", function() {
             // Activate Report Win buttons
             $("#bb-par1-report-win").on('click', function() {
                 reportWin(lobbyData.participants[0].id);

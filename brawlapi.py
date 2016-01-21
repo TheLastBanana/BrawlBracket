@@ -16,6 +16,27 @@ lobbyDatas = {}
 # Set of online participant IDs
 onlineUsers = set()
 
+# +------------------+
+# | Helper Functions |
+# +------------------+
+
+def matchIdToNumber(matchId):
+    """
+    Convert a match's letter identifier to numbers.
+    """
+    idSum = 0
+    
+    for letter in matchId:
+        value = ord(letter.upper()) - 64
+        
+        if value < 1 or value > 26:
+            raise ValueError("Match identifier should only contain letters (got '{}')".format(letter))
+    
+        # A = 65, but we want A = 1
+        idSum += value
+        
+    return idSum
+
 # +---------------+
 # | User Managing |
 # +---------------+
@@ -237,7 +258,8 @@ def getLobbyData(tourneyId, matchId):
         
         'chatlog': [],
         'realmBans': [],
-        
+
+        'challongeId': matchIdToNumber(matchData['identifier']),
         'roomNumber': None,
         'currentRealm': None
     }

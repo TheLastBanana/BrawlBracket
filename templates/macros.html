@@ -1,13 +1,13 @@
 {% macro header(pageName) -%}
   <!-- Content Header (Page header) -->
   <section class="content-header">
-    <h1>
+    <h1 class="bb-page-name">
       {{ pageName }}
     </h1>
     
     <ol class="breadcrumb">
-      <li><a href="#">{{ tourneyFullName }}</a></li>
-      <li class="active">{{ pageName }}</li>
+      <li>{{ tourneyFullName }}</li>
+      <li class="active bb-page-name">{{ pageName }}</li>
     </ol>
   </section>
 {%- endmacro %}

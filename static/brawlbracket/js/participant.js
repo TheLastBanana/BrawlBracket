@@ -48,6 +48,9 @@ var pageSetup = {
         $("#bb-pla1-status").attr("data-original-title", lobbyData.players[0].status);
         $("#bb-pla2-status").attr("data-original-title", lobbyData.players[1].status);
         
+        matchName = "Match #" + lobbyData.challongeId;
+        $(".bb-page-name").text(matchName);
+        
         currentPage = "lobby";
         
         // DEBUG

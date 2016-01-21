@@ -120,7 +120,11 @@ def user_login(tourneyName):
 # User app page
 @app.route('/<tourneyName>/app/')
 def user_landing(tourneyName):
-    return render_template('user-app.html')
+    pData = brawlapi.getParticipantData(session['tourneyId'], session['participantId'])
+
+    return render_template('user-app.html',
+                           userName=pData['display-name'],
+                           userAvatar=brawlapi.getParticipantAvatar(pData))
     
 # Lobby content
 @app.route('/app-content/lobby')

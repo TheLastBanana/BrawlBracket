@@ -207,7 +207,6 @@ def getLobbyData(tourneyId, matchId):
     # Only add if
     pDatas = [p for p in [p1Data, p2Data] if p is not None]
     
-    gravatarBase = 'http://www.gravatar.com/avatar/{}?d=identicon'
         
     lobbyData = {
         'participants': [
@@ -217,10 +216,7 @@ def getLobbyData(tourneyId, matchId):
                 'seed': playerData['seed'],
                 'ready': False,
                 'wins': 0,
-                
-                # Note the 'or' here. If the player has no email hash, 
-                # we use their participant ID as a unique Gravatar hash.
-                'avatar': gravatarBase.format(playerData['email-hash'] or p1Id)
+                'avatar': getParticipantAvatar(playerData)
             } for playerData in pDatas
         ],
         
@@ -315,6 +311,16 @@ def getParticipantMatch(tourneyId, participantId):
             break
     
     return matchId
+    
+def getParticipantAvatar(pData):
+    """
+    Build the avatar URL for a participant.
+    """
+    gravatarBase = 'http://www.gravatar.com/avatar/{}?d=identicon'
+    
+    # Note the 'or' here. If the player has no email hash, we use their
+    # participant ID as a unique Gravatar hash.
+    return gravatarBase.format(pData['email-hash'] or pData['id'])
     
 def init_example_db():
     db = db_wrapper.DBWrapper('dbname', filepath='.')

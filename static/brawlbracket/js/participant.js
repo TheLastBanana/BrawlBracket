@@ -70,12 +70,22 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     
     pSocket.on('join lobby', function(newLobbyData) {
         lobbyData = newLobbyData;
-        showPage('lobby');
+        
+        // Get menu option/page from URL hash
+        hashPage = window.location.hash.substring(1);
+        
+        if ($('.bb-menu-option[page="' + hashPage + '"]').length > 0) {
+            showPage(hashPage);
+        }
+        else {
+            showPage('lobby');
+        }
     });
     
     // Add functionality to menu options
-    $('.bb-menu-option').on('click', function() {
+    $('.bb-menu-option').on('click', function(event) {
         showPage($(this).attr('page'));
+        event.preventDefault();
     });
 }
 
@@ -95,6 +105,7 @@ function showPage(pageName) {
     
     $('.content-wrapper').load(getContentURL(pageName), pageSetup[pageName]);
         
+    window.location.hash = pageName;
     currentPage = pageName;
 }
 

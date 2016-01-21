@@ -1,8 +1,16 @@
 // Participant socket connection
 var pSocket;
+
+// JSON data for lobby
 var lobbyData;
+
+// Current page in the app
 var currentPage;
+
+// Challonge short name for the tourney
 var tourneyName;
+
+// Challonge participant id of current user
 var participantId;
 
 // Functions to call after a page is loaded.
@@ -61,7 +69,7 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     pSocket = io.connect(window.location.origin + '/participant');
 
     pSocket.on('error', function() {
-        $('.content').load(getContentURL('lobby-error'));
+        $('.content-wrapper').load(getContentURL('lobby-error'));
     });
     
     pSocket.on('connect', function() {
@@ -80,12 +88,12 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
         else {
             showPage('lobby');
         }
-    });
     
-    // Add functionality to menu options
-    $('.bb-menu-option').on('click', function(event) {
-        showPage($(this).attr('page'));
-        event.preventDefault();
+        // Add functionality to menu options
+        $('.bb-menu-option').on('click', function(event) {
+            showPage($(this).attr('page'));
+            event.defaultPrevented = true;
+        });
     });
 }
 
@@ -100,6 +108,8 @@ function reportWin(playerId) {
     Show the bracket page.
 */
 function showPage(pageName) {
+    if (!pSocket.connected) return;
+    
     $('.bb-menu-option').removeClass('active');
     $('.bb-menu-option[page="' + pageName + '"]').addClass('active');
     

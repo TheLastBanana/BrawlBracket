@@ -2,6 +2,8 @@
 var pSocket;
 var lobbyData;
 var currentPage;
+var tourneyName;
+var participantId;
 
 // Functions to call after a page is loaded.
 var pageSetup = {
@@ -41,7 +43,7 @@ var pageSetup = {
         currentPage = "lobby";
         
         // DEBUG
-        $("#bb-picker-content").load("/app-content/lobby-realms");
+        //$("#bb-picker-content").load("/app-content/lobby-realms");
     }
 };
 
@@ -52,11 +54,14 @@ $(window).on('beforeunload', function() {
 /*
     Connect to the server. Called when the app is first loaded.
 */
-function participantConnect() {
+function brawlBracketInit(newTourneyName, newParticipantId) {
+    tourneyName = newTourneyName;
+    participantId = newParticipantId;
+    
     pSocket = io.connect(window.location.origin + '/participant');
 
     pSocket.on('error', function() {
-        $(".content").load("/app-content/lobby-error");
+        $('.content').load(getContentURL('lobby-error'));
     });
     
     pSocket.on('connect', function() {
@@ -88,7 +93,14 @@ function showPage(pageName) {
     $('.bb-menu-option').removeClass('active');
     $('.bb-menu-option[page="' + pageName + '"]').addClass('active');
     
-    $('.content-wrapper').load('/app-content/' + pageName, pageSetup[pageName]);
+    $('.content-wrapper').load(getContentURL(pageName), pageSetup[pageName]);
         
     currentPage = pageName;
+}
+
+/*
+    Get a content page's URL including tourney and participant data.
+*/
+function getContentURL(pageName) {
+    return '/app-content/' + pageName + '/' + tourneyName + '/' + participantId;
 }

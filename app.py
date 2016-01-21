@@ -120,31 +120,51 @@ def user_login(tourneyName):
 # User app page
 @app.route('/<tourneyName>/app/')
 def user_landing(tourneyName):
-    pData = brawlapi.getParticipantData(session['tourneyId'], session['participantId'])
+    tourneyId = session['tourneyId']
+    participantId = session['participantId']
+
+    pData = brawlapi.getParticipantData(tourneyId, participantId)
 
     return render_template('user-app.html',
                            userName=pData['display-name'],
-                           userAvatar=brawlapi.getParticipantAvatar(pData))
+                           userAvatar=brawlapi.getParticipantAvatar(pData),
+                           tourneyName=tourneyName,
+                           participantId=participantId)
     
 # Lobby content
-@app.route('/app-content/lobby')
-def lobby():
-    return render_template('app-content/lobby.html')
+@app.route('/app-content/lobby/<tourneyName>/<participantId>')
+def lobby(tourneyName, participantId):
+    return render_template('app-content/lobby.html',
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
     
 # Lobby connect error
-@app.route('/app-content/lobby-error')
-def lobby_error():
+@app.route('/app-content/lobby-error/<tourneyName>/<participantId>')
+def lobby_error(tourneyName, participantId):
     return render_template('app-content/lobby-error.html')
     
 # Lobby legend roster
-@app.route('/app-content/lobby-roster')
-def lobby_roster():
+@app.route('/app-content/lobby-roster/<tourneyName>/<participantId>')
+def lobby_roster(tourneyName, participantId):
     return render_template('app-content/lobby-roster.html', legendData=orderedLegends)
     
 # Lobby map picker
-@app.route('/app-content/lobby-realms')
-def lobby_realm():
-    return render_template('app-content/lobby-realms.html', realmData=orderedRealms)
+@app.route('/app-content/lobby-realms/<tourneyName>/<participantId>')
+def lobby_realms(tourneyName, participantId):
+    return render_template('app-content/lobby-realms.html',
+                           realmData=orderedRealms)
+    
+# Lobby map picker
+@app.route('/app-content/admin-chat/<tourneyName>/<participantId>')
+def admin_chat(tourneyName, participantId):
+    return render_template('app-content/admin-chat.html',
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
+    
+# Lobby map picker
+@app.route('/app-content/bracket/<tourneyName>/<participantId>')
+def bracket(tourneyName, participantId):
+    return render_template('app-content/bracket.html',
+                           tourneyName=tourneyName,
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
 
     
 #----- SocketIO events -----#

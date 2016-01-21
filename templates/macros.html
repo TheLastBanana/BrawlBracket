@@ -1,0 +1,13 @@
+{% macro header(pageName) -%}
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      Admin Chat
+    </h1>
+    
+    <ol class="breadcrumb">
+      <li><a href="#">{{ tourneyFullName }}</a></li>
+      <li class="active">{{ pageName }}</li>
+    </ol>
+  </section>
+{%- endmacro %}

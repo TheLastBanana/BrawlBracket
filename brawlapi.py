@@ -150,8 +150,6 @@ def refreshParticipantIndex(tourneyId):
     except HTTPError as e:
         print('Got {} - \"{}\" while refreshing participant index. tID:{}.'
             .format(e.code, e.reason, tourneyId))
-        
-    
 
 def refreshParticipantData(tourneyId, participantId):
     """
@@ -221,6 +219,7 @@ def getTournamentURL(tourneyId):
 def getMatchData(tourneyId, matchId):
     """
     Get data for a match.
+    
     If matchId or tourneyId are None, return None.
     If matchId or tourneyId don't exist, return None.
     """
@@ -243,6 +242,7 @@ def getMatchData(tourneyId, matchId):
 def getParticipantData(tourneyId, participantId):
     """
     Get data for a participant.
+    
     If participantId or tourneyId are None, return None.
     If participantId or tourneyId don't exist, return None.
     """
@@ -403,6 +403,28 @@ def getParticipantAvatar(pData):
     # Note the 'or' here. If the player has no email hash, we use their
     # participant ID as a unique Gravatar hash.
     return gravatarBase.format(pData['email-hash'] or pData['id'])
+
+# +--------------------+
+# | Set data functions |
+# +--------------------+
+
+def setMatchScore(tourneyId, matchId, score, _winner=None):
+    """
+    Sets score for a specific match in a tournament.
+    Score is tuple of participant score, with participant one at index 0.
+    Winner is only set if this is to update someone as winning.
+    
+    Match data will be refreshed.
+    
+    No return.
+    """
+    try:
+        challonge.matches.update(tourneyId, matchId,
+            score='{}.{}'.format(score[0], score[1]),
+            winner=_winner)
+    except HTTPError as e:
+        print('Got {} - {} while updating match score. tID: {}, mID{}'
+            .format(e.code, e.reason, tourneyId, matchId))
     
 def init_example_db():
     db = db_wrapper.DBWrapper('dbname', filepath='.')

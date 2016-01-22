@@ -1,4 +1,5 @@
 import os
+from urllib.error import HTTPError
 
 import challonge
 
@@ -100,6 +101,29 @@ def refreshMatchIndex(tourneyId):
         
     matchDatas[tourneyId] = tourneyData
 
+def refreshMatchData(tourneyId, matchId):
+    """
+    Refreshes data for a specific match in a tournament.
+    If the tournament isn't cached then the index will be refreshed.
+    
+    No return.
+    """
+    # If we don't have the tourney, try and get it
+    if tourneyId not in matchDatas:
+        refreshMatchIndex(tourneyId)
+        
+        # We tried our best to get the match, it's up to calling code 
+        # to discover if it's not there
+        return
+        
+    # Refresh match
+    try:
+        mData = challonge.matches.show(tourneyId, matchId)
+        matchDatas[tourneyId][matchId] = mData
+    except HTTPError as e:
+        print('Got {} - \"{}\" while showing match tID:{}, mID{}.'
+            .format(e.code, e.reason, tourneyId, matchId))
+    
 def refreshParticipantIndex(tourneyId):
     """
     Refreshes the participant data for tourneyId.
@@ -116,6 +140,30 @@ def refreshParticipantIndex(tourneyId):
         tourneyData[int(pData['id'])] = pData
         
     participantDatas[tourneyId] = tourneyData
+
+def refreshParticipantData(tourneyId, participantId):
+    """
+    Refreshes data for a specific participant in a tournament.
+    If the tournament isn't cached then the index will be refreshed.
+    
+    No return.
+    """
+    # If we don't have the tourney, try and get it
+    if tourneyId not in participantDatas:
+        refreshParticipantIndex(tourneyId)
+        
+        # We tried our best to get the participant, it's up to calling code 
+        # to discover if it's not there
+        return
+        
+    # Refresh participant
+    try:
+        pData = challonge.participants.show(tourneyId, participantId)
+        participantDatas[tourneyId][participantId] = pData
+    except HTTPError as e:
+        print('Got {} - \"{}\" while showing participant tID:{}, pID{}.'
+            .format(e.code, e.reason, tourneyId, participantId))
+    
    
 # +--------------------+
 # | Get data functions |

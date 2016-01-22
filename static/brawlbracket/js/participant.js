@@ -49,6 +49,9 @@ var lobbyUIFunctions = {
         $("#bb-par1-avatar").attr("src", participants[0].avatar);
         $("#bb-par2-avatar").attr("src", participants[1].avatar);
         
+        $("#bb-score").text(participants[0].wins + "-" + participants[1].wins);
+        $("#bb-best-of").text('BEST OF ' + lobbyData.bestOf);
+        
         // Show "report win" buttons when game is being played
         if (lobbyData.state.name == "inGame") {
             $("#bb-par1-description").html(getReportWinButtonHTML()).on('click', function(event) {

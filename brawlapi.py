@@ -319,6 +319,7 @@ def getLobbyData(tourneyId, matchId):
         'chatlog': [],
         'realmBans': [],
 
+        'bestOf': 3, # TODO: make this configurable
         'challongeId': matchIdToNumber(matchData['identifier']),
         'roomNumber': None,
         'currentRealm': None

@@ -18,10 +18,10 @@ var pageSetup = {
     'lobby': function() {
         updateLobbyUI();
         
-        currentPage = "lobby";
+        currentPage = 'lobby';
         
         // DEBUG
-        //$("#bb-picker-content").load("/app-content/lobby-realms");
+        //$('#bb-picker-content').load('/app-content/lobby-realms');
     }
 };
 
@@ -31,36 +31,36 @@ var lobbyUIFunctions = {
         participants = lobbyData.participants;
         
         // Add Report Win button functionality
-        $("#bb-par1-report-win").on('click', function(event) {
+        $('#bb-par1-report-win').on('click', function(event) {
             reportWin(lobbyData.participants[0].id);
             
             return false;
         });
         
-        $("#bb-par2-report-win").on('click', function(event) {
+        $('#bb-par2-report-win').on('click', function(event) {
             reportWin(lobbyData.participants[1].id);
             
             return false;
         });
         
         // Participant info
-        $("#bb-par1-name").html(participants[0].name + " <sup>(" + participants[0].seed + ")</sup>");
-        $("#bb-par2-name").html(participants[1].name + " <sup>(" + participants[1].seed + ")</sup>");
-        $("#bb-par1-avatar").attr("src", participants[0].avatar);
-        $("#bb-par2-avatar").attr("src", participants[1].avatar);
+        $('#bb-par1-name').html(participants[0].name + ' <sup>(' + participants[0].seed + ')</sup>');
+        $('#bb-par2-name').html(participants[1].name + ' <sup>(' + participants[1].seed + ')</sup>');
+        $('#bb-par1-avatar').attr('src', participants[0].avatar);
+        $('#bb-par2-avatar').attr('src', participants[1].avatar);
         
-        $("#bb-score").text(participants[0].wins + "-" + participants[1].wins);
-        $("#bb-best-of").text('BEST OF ' + lobbyData.bestOf);
+        $('#bb-score').text(participants[0].wins + '-' + participants[1].wins);
+        $('#bb-best-of').text('BEST OF ' + lobbyData.bestOf);
         
         // Show "report win" buttons when game is being played
-        if (lobbyData.state.name == "inGame") {
-            $("#bb-par1-description").html(getReportWinButtonHTML()).on('click', function(event) {
+        if (lobbyData.state.name == 'inGame') {
+            $('#bb-par1-description').html(getReportWinButtonHTML()).on('click', function(event) {
                 reportWin(lobbyData.participants[0].id);
             
                 return false;
             });
             
-            $("#bb-par2-description").html(getReportWinButtonHTML()).on('click', function(event) {
+            $('#bb-par2-description').html(getReportWinButtonHTML()).on('click', function(event) {
                 reportWin(lobbyData.participants[1].id);
             
                 return false;
@@ -68,8 +68,8 @@ var lobbyUIFunctions = {
         }
         // Update participant status
         else {
-            $("#bb-par1-description").html(getStatusHTML(participants[0].ready));
-            $("#bb-par2-description").html(getStatusHTML(participants[1].ready));
+            $('#bb-par1-description').html(getStatusHTML(participants[0].ready));
+            $('#bb-par2-description').html(getStatusHTML(participants[1].ready));
         }
     },
     
@@ -77,15 +77,15 @@ var lobbyUIFunctions = {
         players = lobbyData.players;
         
         // Player info
-        $("#bb-pla1-name").text(lobbyData.players[0].name);
-        $("#bb-pla2-name").text(lobbyData.players[1].name);
+        $('#bb-pla1-name').text(lobbyData.players[0].name);
+        $('#bb-pla2-name').text(lobbyData.players[1].name);
         
-        legendBase = "/static/brawlbracket/img/legends-small/"
-        $("#bb-pla1-legend").attr("src", legendBase + lobbyData.players[0].legend + ".png");
-        $("#bb-pla2-legend").attr("src", legendBase + lobbyData.players[1].legend + ".png");
+        legendBase = '/static/brawlbracket/img/legends-small/'
+        $('#bb-pla1-legend').attr('src', legendBase + lobbyData.players[0].legend + '.png');
+        $('#bb-pla2-legend').attr('src', legendBase + lobbyData.players[1].legend + '.png');
         
-        $("#bb-pla1-status").attr("data-original-title", lobbyData.players[0].status);
-        $("#bb-pla2-status").attr("data-original-title", lobbyData.players[1].status);
+        $('#bb-pla1-status').attr('data-original-title', lobbyData.players[0].status);
+        $('#bb-pla2-status').attr('data-original-title', lobbyData.players[1].status);
     },
     
     'state': function () {
@@ -104,16 +104,16 @@ var lobbyUIFunctions = {
     },
     
     'roomNumber': function () {
-        $("#bb-room-number").text(lobbyData.roomNumber);
+        $('#bb-room-number').text(lobbyData.roomNumber);
     },
     
     'currentRealm': function () {
-        $("#bb-current-realm").text(lobbyData.currentRealm);
+        $('#bb-current-realm').text(lobbyData.currentRealm);
     },
     
     'challongeId': function () {
-        matchName = "Match #" + lobbyData.challongeId;
-        $(".bb-page-name").text(matchName);
+        matchName = 'Match #' + lobbyData.challongeId;
+        $('.bb-page-name').text(matchName);
     }
 };
 

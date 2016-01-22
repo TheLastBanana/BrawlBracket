@@ -56,6 +56,13 @@ Player versus player widget
 .widget-user .description-block .btn-app {
   margin: 5px 0px 0px 0px;
 }
+.widget-user .description-status {
+  display: inline-block;
+  border-radius: 3px;
+  padding: 6px 14px;
+  text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
+  margin-top: 5px;
+}
 
 /*
 Player info

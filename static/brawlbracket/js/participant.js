@@ -4,6 +4,9 @@ var pSocket;
 // JSON data for lobby
 var lobbyData;
 
+// Lobby timer interval so it can be cleared/checked later
+var lobbyTimer;
+
 // Current page in the app
 var currentPage;
 
@@ -18,10 +21,10 @@ var pageSetup = {
     'lobby': function() {
         updateLobbyUI();
         
-        currentPage = "lobby";
+        currentPage = 'lobby';
         
         // DEBUG
-        //$("#bb-picker-content").load("/app-content/lobby-realms");
+        //$('#bb-picker-content').load('/app-content/lobby-realms');
     }
 };
 
@@ -31,42 +34,66 @@ var lobbyUIFunctions = {
         participants = lobbyData.participants;
         
         // Add Report Win button functionality
-        $("#bb-par1-report-win").on('click', function(event) {
+        $('#bb-par1-report-win').on('click', function(event) {
             reportWin(lobbyData.participants[0].id);
             
             return false;
         });
         
-        $("#bb-par2-report-win").on('click', function(event) {
+        $('#bb-par2-report-win').on('click', function(event) {
             reportWin(lobbyData.participants[1].id);
             
             return false;
         });
         
         // Participant info
-        $("#bb-par1-name").html(participants[0].name + " <sup>(" + participants[0].seed + ")</sup>");
-        $("#bb-par2-name").html(participants[1].name + " <sup>(" + participants[1].seed + ")</sup>");
-        $("#bb-par1-avatar").attr("src", participants[0].avatar);
-        $("#bb-par2-avatar").attr("src", participants[1].avatar);
+        $('#bb-par1-name').text(participants[0].name + ' ').append('<sup>(' + participants[0].seed + ')</sup>');
+        $('#bb-par2-name').text(participants[1].name + ' ').append('<sup>(' + participants[1].seed + ')</sup>');
+        $('#bb-par1-avatar').attr('src', participants[0].avatar);
+        $('#bb-par2-avatar').attr('src', participants[1].avatar);
+        $('#bb-score').text(participants[0].wins + '-' + participants[1].wins);
+        
+        // Show "report win" buttons when game is being played
+        if (lobbyData.state.name == 'inGame') {
+            $('#bb-par1-description').html(getReportWinButtonHTML()).on('click', function(event) {
+                reportWin(lobbyData.participants[0].id);
+            
+                return false;
+            });
+            
+            $('#bb-par2-description').html(getReportWinButtonHTML()).on('click', function(event) {
+                reportWin(lobbyData.participants[1].id);
+            
+                return false;
+            });
+        }
+        // Update participant status
+        else {
+            $('#bb-par1-description').html(getStatusHTML(participants[0].ready));
+            $('#bb-par2-description').html(getStatusHTML(participants[1].ready));
+        }
     },
     
     'players': function () {
         players = lobbyData.players;
         
         // Player info
-        $("#bb-pla1-name").text(lobbyData.players[0].name);
-        $("#bb-pla2-name").text(lobbyData.players[1].name);
+        $('#bb-pla1-name').text(lobbyData.players[0].name);
+        $('#bb-pla2-name').text(lobbyData.players[1].name);
         
-        legendBase = "/static/brawlbracket/img/legends-small/"
-        $("#bb-pla1-legend").attr("src", legendBase + lobbyData.players[0].legend + ".png");
-        $("#bb-pla2-legend").attr("src", legendBase + lobbyData.players[1].legend + ".png");
+        legendBase = '/static/brawlbracket/img/legends-small/'
+        $('#bb-pla1-legend').attr('src', legendBase + lobbyData.players[0].legend + '.png');
+        $('#bb-pla2-legend').attr('src', legendBase + lobbyData.players[1].legend + '.png');
         
-        $("#bb-pla1-status").attr("data-original-title", lobbyData.players[0].status);
-        $("#bb-pla2-status").attr("data-original-title", lobbyData.players[1].status);
+        $('#bb-pla1-status').attr('data-original-title', lobbyData.players[0].status);
+        $('#bb-pla2-status').attr('data-original-title', lobbyData.players[1].status);
     },
     
     'state': function () {
-        
+        // Need to update buttons/participant status when entering/exiting inGame state
+        if (lobbyData.state.name == 'inGame' || lobbyData.prevState.name == 'inGame') {
+            lobbyUIFunctions.participants();
+        }
     },
     
     'chatlog': function () {
@@ -77,17 +104,26 @@ var lobbyUIFunctions = {
         
     },
     
+    'bestOf': function() {
+        $('#bb-best-of').text('BEST OF ' + lobbyData.bestOf);
+    },
+    
+    'startTime': function() {
+        updateLobbyTimer();
+        if (!lobbyTimer) setInterval(updateLobbyTimer, 1000);
+    },
+    
     'roomNumber': function () {
-        $("#bb-room-number").text(lobbyData.roomNumber);
+        $('#bb-room-number').text(lobbyData.roomNumber);
     },
     
     'currentRealm': function () {
-        $("#bb-current-realm").text(lobbyData.currentRealm);
+        $('#bb-current-realm').text(lobbyData.currentRealm);
     },
     
     'challongeId': function () {
-        matchName = "Match #" + lobbyData.challongeId;
-        $(".bb-page-name").text(matchName);
+        matchName = 'Match #' + lobbyData.challongeId;
+        $('.bb-page-name').text(matchName);
     }
 };
 
@@ -120,6 +156,11 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     pSocket.on('join lobby', function(newLobbyData) {
         lobbyData = newLobbyData;
         
+        // Set empty previous state
+        lobbyData.prevState = {
+            'name': null
+        };
+        
         // Get menu option/page from URL hash
         hashPage = window.location.hash.substring(1);
         
@@ -139,6 +180,10 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     });
     
     pSocket.on('update lobby', function(data) {
+        if (data.property == 'state') {
+            lobbyData.prevState = lobbyData.state;
+        }
+        
         lobbyData[data.property] = data.value;
         
         if (data.property in lobbyUIFunctions) {
@@ -166,6 +211,30 @@ function getContentURL(pageName) {
     return '/app-content/' + pageName + '/' + tourneyName + '/' + participantId;
 }
 
+/*
+    Get the HTML for participant status.
+*/
+function getStatusHTML(ready) {
+    color = ready ? 'green' : 'yellow';
+    status = ready ? 'Ready' : 'Not Ready';
+    
+    return '<h2 class="description-status text-' + color + '">' + status + '</h2>';
+}
+
+/*
+    Get the HTML for a "Report Win" button.
+*/
+function getReportWinButtonHTML() {
+    return '<a class="btn btn-app"><i class="fa fa-trophy"></i> Report Win</a>';
+}
+
+/*
+    Left-pad a string with a given character.
+*/
+function padString(str, count, padChar) {
+    var pad = Array(count + 1).join(padChar);
+    return pad.substring(0, pad.length - str.length) + str;
+}
 
 //////////////////
 // UI FUNCTIONS //
@@ -178,6 +247,17 @@ function updateLobbyUI() {
     for (prop in lobbyUIFunctions) {
         lobbyUIFunctions[prop]();
     }
+}
+
+/*
+    Update the timer text.
+*/
+function updateLobbyTimer() {
+    var timeDiff = new Date(new Date() - new Date(lobbyData.startTime));
+    var minStr = "" + timeDiff.getMinutes();
+    var secStr = "" + timeDiff.getSeconds();
+
+    $('#bb-timer').text(padString(minStr, 2, '0') + ":" + padString(secStr, 2, '0'));
 }
 
 /*

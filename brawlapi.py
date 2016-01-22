@@ -362,6 +362,7 @@ def getParticipantMatch(tourneyId, participantId):
     If tourneyId or participantId don't exist, return None.
     
     Returns None if no valid match could be found.
+    Returns the matchID as an *INT*.
     """
     if None in (tourneyId, participantId):
         return None
@@ -392,7 +393,7 @@ def getParticipantMatch(tourneyId, participantId):
             matchId = match
             break
     
-    return matchId
+    return int(matchId)
     
 def getParticipantAvatar(pData):
     """

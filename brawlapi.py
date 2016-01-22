@@ -1,4 +1,5 @@
 import os
+import datetime
 from urllib.error import HTTPError
 
 import challonge
@@ -320,6 +321,7 @@ def getLobbyData(tourneyId, matchId):
         'realmBans': [],
 
         'bestOf': 3, # TODO: make this configurable
+        'startTime': datetime.datetime.now().isoformat(),
         'challongeId': matchIdToNumber(matchData['identifier']),
         'roomNumber': None,
         'currentRealm': None

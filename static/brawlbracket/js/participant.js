@@ -4,6 +4,9 @@ var pSocket;
 // JSON data for lobby
 var lobbyData;
 
+// Lobby timer interval so it can be cleared/checked later
+var lobbyTimer;
+
 // Current page in the app
 var currentPage;
 
@@ -48,9 +51,7 @@ var lobbyUIFunctions = {
         $('#bb-par2-name').text(participants[1].name + ' ').append('<sup>(' + participants[1].seed + ')</sup>');
         $('#bb-par1-avatar').attr('src', participants[0].avatar);
         $('#bb-par2-avatar').attr('src', participants[1].avatar);
-        
         $('#bb-score').text(participants[0].wins + '-' + participants[1].wins);
-        $('#bb-best-of').text('BEST OF ' + lobbyData.bestOf);
         
         // Show "report win" buttons when game is being played
         if (lobbyData.state.name == 'inGame') {
@@ -101,6 +102,15 @@ var lobbyUIFunctions = {
     
     'realmBans': function () {
         
+    },
+    
+    'bestOf': function() {
+        $('#bb-best-of').text('BEST OF ' + lobbyData.bestOf);
+    },
+    
+    'startTime': function() {
+        updateLobbyTimer();
+        if (!lobbyTimer) setInterval(updateLobbyTimer, 1000);
     },
     
     'roomNumber': function () {
@@ -218,6 +228,14 @@ function getReportWinButtonHTML() {
     return '<a class="btn btn-app"><i class="fa fa-trophy"></i> Report Win</a>';
 }
 
+/*
+    Left-pad a string with a given character.
+*/
+function padString(str, count, padChar) {
+    var pad = Array(count + 1).join(padChar);
+    return pad.substring(0, pad.length - str.length) + str;
+}
+
 //////////////////
 // UI FUNCTIONS //
 //////////////////
@@ -229,6 +247,17 @@ function updateLobbyUI() {
     for (prop in lobbyUIFunctions) {
         lobbyUIFunctions[prop]();
     }
+}
+
+/*
+    Update the timer text.
+*/
+function updateLobbyTimer() {
+    var timeDiff = new Date(new Date() - new Date(lobbyData.startTime));
+    var minStr = "" + timeDiff.getMinutes();
+    var secStr = "" + timeDiff.getSeconds();
+
+    $('#bb-timer').text(padString(minStr, 2, '0') + ":" + padString(secStr, 2, '0'));
 }
 
 /*

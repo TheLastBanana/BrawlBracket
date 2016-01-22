@@ -33,12 +33,14 @@ var lobbyUIFunctions = {
         // Add Report Win button functionality
         $("#bb-par1-report-win").on('click', function(event) {
             reportWin(lobbyData.participants[0].id);
-            event.defaultPrevented = true;
+            
+            return false;
         });
         
         $("#bb-par2-report-win").on('click', function(event) {
             reportWin(lobbyData.participants[1].id);
-            event.defaultPrevented = true;
+            
+            return false;
         });
         
         // Participant info
@@ -131,7 +133,8 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
         // Add functionality to menu options
         $('.bb-menu-option').on('click', function(event) {
             showPage($(this).attr('page'));
-            event.defaultPrevented = true;
+            
+            return false;
         });
     });
     
@@ -188,6 +191,11 @@ function showPage(pageName) {
     
     $('.content-wrapper').load(getContentURL(pageName), pageSetup[pageName]);
         
-    window.location.hash = pageName;
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, '#' + pageName);
+    }
+    else {
+        window.location.hash = pageName;
+    }
     currentPage = pageName;
 }

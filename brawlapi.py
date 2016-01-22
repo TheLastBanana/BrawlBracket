@@ -84,7 +84,7 @@ def refreshTournamentData(tourneyId):
     tourneyData = challonge.tournaments.show(tourneyId)
     tourneyDatas[tourneyId] = tourneyData
         
-def refreshMatchData(tourneyId):
+def refreshMatchIndex(tourneyId):
     """
     Refreshes the match data for tourneyId.
     
@@ -100,7 +100,7 @@ def refreshMatchData(tourneyId):
         
     matchDatas[tourneyId] = tourneyData
 
-def refreshParticipantData(tourneyId):
+def refreshParticipantIndex(tourneyId):
     """
     Refreshes the participant data for tourneyId.
     
@@ -168,10 +168,10 @@ def getMatchData(tourneyId, matchId):
     if None in (tourneyId, matchId):
         return None
     
-    # Try refreshing data if we can't find it
+    # Try refreshing index data if we can't find it
     if tourneyId not in matchDatas \
             or matchId not in matchDatas[tourneyId]:
-        refreshMatchData()
+        refreshMatchIndex()
     
     # If we still can't find it then it doesn't exist
     if tourneyId not in matchDatas \
@@ -196,7 +196,7 @@ def getParticipantData(tourneyId, participantId):
     # Try refreshing data if we can't find it
     if tourneyId not in participantDatas \
             or participantId not in participantDatas[tourneyId]:
-        refreshParticipantData(tourneyId)
+        refreshParticipantIndex(tourneyId)
         
     # If we still can't find one then it doesn't exist
     if tourneyId not in participantDatas \
@@ -282,7 +282,7 @@ def getParticipants(tourneyId):
         
     # Try refreshing data if we can't find it
     if tourneyId not in participantDatas:
-        refreshParticipantData(tourneyId)
+        refreshParticipantIndex(tourneyId)
     
     # If we still can't find one then it doesn't exist
     if tourneyId not in participantDatas:
@@ -308,7 +308,7 @@ def getParticipantMatch(tourneyId, participantId):
     
     # Try refreshing data if we can't find it
     if tourneyId not in matchDatas:
-        refreshMatchData(tourneyId)
+        refreshMatchIndex(tourneyId)
     
     # If we still can't find it then it doesn't exist
     if tourneyId not in matchDatas:

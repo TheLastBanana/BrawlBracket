@@ -44,8 +44,8 @@ var lobbyUIFunctions = {
         });
         
         // Participant info
-        $('#bb-par1-name').html(participants[0].name + ' <sup>(' + participants[0].seed + ')</sup>');
-        $('#bb-par2-name').html(participants[1].name + ' <sup>(' + participants[1].seed + ')</sup>');
+        $('#bb-par1-name').text(participants[0].name + ' ').append('<sup>(' + participants[0].seed + ')</sup>');
+        $('#bb-par2-name').text(participants[1].name + ' ').append('<sup>(' + participants[1].seed + ')</sup>');
         $('#bb-par1-avatar').attr('src', participants[0].avatar);
         $('#bb-par2-avatar').attr('src', participants[1].avatar);
         

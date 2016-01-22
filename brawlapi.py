@@ -273,8 +273,8 @@ def getLobbyData(tourneyId, matchId):
     """
     matchPair = (tourneyId, matchId)
     
-    #if matchPair in lobbyDatas:
-    #    return lobbyDatas[matchPair]
+    if matchPair in lobbyDatas:
+        return lobbyDatas[matchPair]
 
     # Not found, so make a new lobby
     matchData = getMatchData(tourneyId, matchId)
@@ -412,8 +412,10 @@ def getParticipantAvatar(pData):
 # | Set data functions |
 # +--------------------+
 
-def setMatchScore(tourneyId, matchId, score, _winner):
+def _setMatchScore(tourneyId, matchId, score, _winner):
     """
+    Internal function, only brawlapi functions should touch this.
+    
     Sets score for a specific match in a tournament.
     Score is tuple of participant score, with participant one at index 0.
     Winner is only set if this is to update someone as winning.
@@ -429,6 +431,27 @@ def setMatchScore(tourneyId, matchId, score, _winner):
     except HTTPError as e:
         print('Got {} - {} while updating match score. tID: {}, mID{}'
             .format(e.code, e.reason, tourneyId, matchId))
+            
+# +-----------------------+
+# | Update data functions |
+# +-----------------------+
+
+def incrementMatchScore(tourneyId, matchId, participantId):
+    """
+    Update the score in for a specific match in a tournament.
+    Adds 1 to participantId's match score.
+    """
+    lData = lobbyDatas[(tourneyId, matchId)]
+    
+    for pLobbyData in lData['participants']:
+        if pLobbyData['id'] == participantId:
+            pLobbyData['wins'] += 1
+            break
+    else:
+        print('Failed to increment score for tID: {}, mID: {}, pID: {}')
+    
+    # Handle _setMatchScore here
+    
     
 def init_example_db():
     db = db_wrapper.DBWrapper('dbname', filepath='.')

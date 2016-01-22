@@ -187,7 +187,7 @@ def participant_connect():
     
     brawlapi.addOnlineUser(pId)
     
-    # Find current match
+    # Find current match, this is and INT
     matchId = brawlapi.getParticipantMatch(tId, pId)
         
     # Handle no match found
@@ -199,7 +199,7 @@ def participant_connect():
     
     # Join new room
     session['matchId'] = matchId
-    join_room(str(matchId))
+    join_room(matchId)
     
     print('Participant #{} connected, joined room #{}'
         .format(pId, matchId))
@@ -224,7 +224,19 @@ def participant_disconnect():
 # A participant win was reported
 @socketio.on('report win', namespace='/participant')
 def participant_report_win(data):
-    print('{} won a match'.format(data['player-id']))
+    participantId = data['player-id']
+    tourneyId = session['tourneyId']
+    matchId = brawlapi.getParticipantMatch(tourneyId, participantId)
+    
+    print('Participant #{} won a game. mID: {}, tId: {}'
+        .format(participantId, matchId, tourneyId))
+    
+    brawlapi.incrementMatchScore(tourneyId, matchId, (1, 0))
+    
+    lData = brawlapi.getLobbyData(tourneyId, matchId)
+    emit('update lobby', lData,
+        broadcast=True, include_self=True, room=matchId)
+    
 
 if __name__ == '__main__':
     app.debug = True

@@ -48,6 +48,26 @@ var lobbyUIFunctions = {
         $("#bb-par2-name").html(participants[1].name + " <sup>(" + participants[1].seed + ")</sup>");
         $("#bb-par1-avatar").attr("src", participants[0].avatar);
         $("#bb-par2-avatar").attr("src", participants[1].avatar);
+        
+        // Show "report win" buttons when game is being played
+        if (lobbyData.state.name == "inGame") {
+            $("#bb-par1-description").html(getReportWinButtonHTML()).on('click', function(event) {
+                reportWin(lobbyData.participants[0].id);
+            
+                return false;
+            });
+            
+            $("#bb-par2-description").html(getReportWinButtonHTML()).on('click', function(event) {
+                reportWin(lobbyData.participants[1].id);
+            
+                return false;
+            });
+        }
+        // Update participant status
+        else {
+            $("#bb-par1-description").html(getStatusHTML(participants[0].ready));
+            $("#bb-par2-description").html(getStatusHTML(participants[1].ready));
+        }
     },
     
     'players': function () {
@@ -66,7 +86,10 @@ var lobbyUIFunctions = {
     },
     
     'state': function () {
-        
+        // Need to update buttons/participant status when entering/exiting inGame state
+        if (lobbyData.state.name == 'inGame' || lobbyData.prevState.name == 'inGame') {
+            lobbyUIFunctions.participants();
+        }
     },
     
     'chatlog': function () {
@@ -120,6 +143,11 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     pSocket.on('join lobby', function(newLobbyData) {
         lobbyData = newLobbyData;
         
+        // Set empty previous state
+        lobbyData.prevState = {
+            'name': null
+        };
+        
         // Get menu option/page from URL hash
         hashPage = window.location.hash.substring(1);
         
@@ -139,6 +167,10 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     });
     
     pSocket.on('update lobby', function(data) {
+        if (data.property == 'state') {
+            lobbyData.prevState = lobbyData.state;
+        }
+        
         lobbyData[data.property] = data.value;
         
         if (data.property in lobbyUIFunctions) {
@@ -166,6 +198,22 @@ function getContentURL(pageName) {
     return '/app-content/' + pageName + '/' + tourneyName + '/' + participantId;
 }
 
+/*
+    Get the HTML for participant status.
+*/
+function getStatusHTML(ready) {
+    color = ready ? 'green' : 'yellow';
+    status = ready ? 'Ready' : 'Not Ready';
+    
+    return '<h2 class="description-status text-' + color + '">' + status + '</h2>';
+}
+
+/*
+    Get the HTML for a "Report Win" button.
+*/
+function getReportWinButtonHTML() {
+    return '<a class="btn btn-app"><i class="fa fa-trophy"></i> Report Win</a>';
+}
 
 //////////////////
 // UI FUNCTIONS //

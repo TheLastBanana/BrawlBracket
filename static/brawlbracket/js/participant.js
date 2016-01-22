@@ -13,29 +13,43 @@ var tourneyName;
 // Challonge participant id of current user
 var participantId;
 
-// Functions to call after a page is loaded.
+// Functions to call after a page is loaded
 var pageSetup = {
     'lobby': function() {
-        console.log(lobbyData);
-    
-        // Activate Report Win buttons
-        $("#bb-par1-report-win").on('click', function() {
+        updateLobbyUI();
+        
+        currentPage = "lobby";
+        
+        // DEBUG
+        //$("#bb-picker-content").load("/app-content/lobby-realms");
+    }
+};
+
+// Functions to update UI from lobbyData
+var lobbyUIFunctions = {
+    'participants': function () {
+        participants = lobbyData.participants;
+        
+        // Add Report Win button functionality
+        $("#bb-par1-report-win").on('click', function(event) {
             reportWin(lobbyData.participants[0].id);
+            event.defaultPrevented = true;
         });
         
-        $("#bb-par2-report-win").on('click', function() {
+        $("#bb-par2-report-win").on('click', function(event) {
             reportWin(lobbyData.participants[1].id);
+            event.defaultPrevented = true;
         });
-        
-        // Lobby info
-        $("#bb-room-number").text(lobbyData.roomNumber);
-        $("#bb-current-realm").text(lobbyData.currentRealm);
         
         // Participant info
-        $("#bb-par1-name").text(lobbyData.participants[0].name);
-        $("#bb-par2-name").text(lobbyData.participants[1].name);
-        $("#bb-par1-avatar").attr("src", lobbyData.participants[0].avatar);
-        $("#bb-par2-avatar").attr("src", lobbyData.participants[1].avatar);
+        $("#bb-par1-name").html(participants[0].name + " <sup>(" + participants[0].seed + ")</sup>");
+        $("#bb-par2-name").html(participants[1].name + " <sup>(" + participants[1].seed + ")</sup>");
+        $("#bb-par1-avatar").attr("src", participants[0].avatar);
+        $("#bb-par2-avatar").attr("src", participants[1].avatar);
+    },
+    
+    'players': function () {
+        players = lobbyData.players;
         
         // Player info
         $("#bb-pla1-name").text(lobbyData.players[0].name);
@@ -47,20 +61,42 @@ var pageSetup = {
         
         $("#bb-pla1-status").attr("data-original-title", lobbyData.players[0].status);
         $("#bb-pla2-status").attr("data-original-title", lobbyData.players[1].status);
+    },
+    
+    'state': function () {
         
+    },
+    
+    'chatlog': function () {
+        
+    },
+    
+    'realmBans': function () {
+        
+    },
+    
+    'roomNumber': function () {
+        $("#bb-room-number").text(lobbyData.roomNumber);
+    },
+    
+    'currentRealm': function () {
+        $("#bb-current-realm").text(lobbyData.currentRealm);
+    },
+    
+    'challongeId': function () {
         matchName = "Match #" + lobbyData.challongeId;
         $(".bb-page-name").text(matchName);
-        
-        currentPage = "lobby";
-        
-        // DEBUG
-        //$("#bb-picker-content").load("/app-content/lobby-realms");
     }
 };
 
 $(window).on('beforeunload', function() {
     pSocket.close();
 });
+
+
+//////////////////
+// SOCKET STUFF //
+//////////////////
 
 /*
     Connect to the server. Called when the app is first loaded.
@@ -98,6 +134,14 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
             event.defaultPrevented = true;
         });
     });
+    
+    pSocket.on('update lobby', function(data) {
+        lobbyData[data.property] = data.value;
+        
+        if (data.property in lobbyUIFunctions) {
+            lobbyUIFunctions[data.property]();
+        }
+    });
 }
 
 /*
@@ -105,6 +149,32 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
 */
 function reportWin(playerId) {
     pSocket.emit('report win', { 'player-id': playerId });
+}
+
+
+//////////////////////
+// HELPER FUNCTIONS //
+//////////////////////
+
+/*
+    Get a content page's URL including tourney and participant data.
+*/
+function getContentURL(pageName) {
+    return '/app-content/' + pageName + '/' + tourneyName + '/' + participantId;
+}
+
+
+//////////////////
+// UI FUNCTIONS //
+//////////////////
+
+/*
+    Update the UI elements for every field in lobbyData.
+*/
+function updateLobbyUI() {
+    for (prop in lobbyUIFunctions) {
+        lobbyUIFunctions[prop]();
+    }
 }
 
 /*
@@ -120,11 +190,4 @@ function showPage(pageName) {
         
     window.location.hash = pageName;
     currentPage = pageName;
-}
-
-/*
-    Get a content page's URL including tourney and participant data.
-*/
-function getContentURL(pageName) {
-    return '/app-content/' + pageName + '/' + tourneyName + '/' + participantId;
 }

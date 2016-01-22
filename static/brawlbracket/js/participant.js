@@ -31,7 +31,7 @@ var pageSetup = {
 // Functions to update UI from lobbyData
 var lobbyUIFunctions = {
     'participants': function () {
-        participants = lobbyData.participants;
+        var participants = lobbyData.participants;
         
         // Add Report Win button functionality
         $('#bb-par1-report-win').on('click', function(event) {
@@ -75,13 +75,13 @@ var lobbyUIFunctions = {
     },
     
     'players': function () {
-        players = lobbyData.players;
+        var players = lobbyData.players;
         
         // Player info
         $('#bb-pla1-name').text(lobbyData.players[0].name);
         $('#bb-pla2-name').text(lobbyData.players[1].name);
         
-        legendBase = '/static/brawlbracket/img/legends-small/'
+        var legendBase = '/static/brawlbracket/img/legends-small/'
         $('#bb-pla1-legend').attr('src', legendBase + lobbyData.players[0].legend + '.png');
         $('#bb-pla2-legend').attr('src', legendBase + lobbyData.players[1].legend + '.png');
         
@@ -122,7 +122,7 @@ var lobbyUIFunctions = {
     },
     
     'challongeId': function () {
-        matchName = 'Match #' + lobbyData.challongeId;
+        var matchName = 'Match #' + lobbyData.challongeId;
         $('.bb-page-name').text(matchName);
     }
 };

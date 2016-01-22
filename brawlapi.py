@@ -409,7 +409,7 @@ def getParticipantAvatar(pData):
 # | Set data functions |
 # +--------------------+
 
-def setMatchScore(tourneyId, matchId, score, _winner=None):
+def setMatchScore(tourneyId, matchId, score, _winner):
     """
     Sets score for a specific match in a tournament.
     Score is tuple of participant score, with participant one at index 0.
@@ -421,8 +421,8 @@ def setMatchScore(tourneyId, matchId, score, _winner=None):
     """
     try:
         challonge.matches.update(tourneyId, matchId,
-            score='{}.{}'.format(score[0], score[1]),
-            winner=_winner)
+            scores_csv='{}-{}'.format(score[0], score[1]),
+            winner_id=_winner)
     except HTTPError as e:
         print('Got {} - {} while updating match score. tID: {}, mID{}'
             .format(e.code, e.reason, tourneyId, matchId))

@@ -93,14 +93,19 @@ def refreshMatchIndex(tourneyId):
     
     TODO: Make sure this is called reasonably often.
     """
-    tourneyData = {}
-    mIndex = challonge.matches.index(tourneyId)
-    
-    for mData in mIndex:
-        tourneyData[mData['id']] = mData
+    try:
+        tourneyData = {}
+        mIndex = challonge.matches.index(tourneyId)
         
-    matchDatas[tourneyId] = tourneyData
+        for mData in mIndex:
+            tourneyData[mData['id']] = mData
+            
+        matchDatas[tourneyId] = tourneyData
 
+    except HTTPError as e:
+        print('Got {} - \"{}\" while refreshing match index. tID:{}.'
+            .format(e.code, e.reason, tourneyId))
+            
 def refreshMatchData(tourneyId, matchId):
     """
     Refreshes data for a specific match in a tournament.
@@ -132,14 +137,21 @@ def refreshParticipantIndex(tourneyId):
     
     Todo: Make sure this is called reasonably often.
     """
-    tourneyData = {}
-    pIndex = challonge.participants.index(tourneyId)
-    
-    for pData in pIndex:
-        # Convert to int
-        tourneyData[int(pData['id'])] = pData
+    try:
+        tourneyData = {}
+        pIndex = challonge.participants.index(tourneyId)
         
-    participantDatas[tourneyId] = tourneyData
+        for pData in pIndex:
+            # Convert to int
+            tourneyData[int(pData['id'])] = pData
+            
+        participantDatas[tourneyId] = tourneyData
+    
+    except HTTPError as e:
+        print('Got {} - \"{}\" while refreshing participant index. tID:{}.'
+            .format(e.code, e.reason, tourneyId))
+        
+    
 
 def refreshParticipantData(tourneyId, participantId):
     """

@@ -125,14 +125,12 @@
           </div><!--/.direct-chat-messages-->
         </div><!-- /.box-body -->
         <div class="box-footer">
-          <form action="#" method="post">
-            <div class="input-group">
-              <input type="text" name="message" placeholder="Type Message ..." class="form-control">
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-primary btn-flat">Send</button>
-              </span>
-            </div>
-          </form>
+          <div class="input-group">
+            <input type="text" id="bb-lobby-chat-message" placeholder="Type Message ..." class="form-control" autocomplete="off">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-primary btn-flat" id="bb-lobby-chat-send">Send</button>
+            </span>
+          </div>
         </div><!-- /.box-footer-->
       </div><!--/.direct-chat -->
     </div>

@@ -21,6 +21,18 @@ var pageSetup = {
     'lobby': function() {
         updateLobbyUI();
         
+        // Set up chat
+        var lobbyMsgBox = $('#bb-lobby-chat-message');
+        $('#bb-lobby-chat-send').on('click', function(event) {
+            pSocket.emit('lobby chat', {
+                'message': lobbyMsgBox.val()
+            });
+            
+            lobbyMsgBox.val('');
+            
+            return false;
+        });
+        
         currentPage = 'lobby';
         
         // DEBUG

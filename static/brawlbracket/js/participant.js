@@ -55,22 +55,13 @@ var lobbyUIFunctions = {
         
         // Show "report win" buttons when game is being played
         if (lobbyData.state.name == 'inGame') {
-            $('#bb-par1-description').html(getReportWinButtonHTML()).on('click', function(event) {
-                reportWin(lobbyData.participants[0].id);
-            
-                return false;
-            });
-            
-            $('#bb-par2-description').html(getReportWinButtonHTML()).on('click', function(event) {
-                reportWin(lobbyData.participants[1].id);
-            
-                return false;
-            });
+            $('#bb-par1-description').append(createReportWinButton(lobbyData.participants[0].id));
+            $('#bb-par2-description').append(createReportWinButton(lobbyData.participants[1].id));
         }
         // Update participant status
         else {
-            $('#bb-par1-description').html(getStatusHTML(participants[0].ready));
-            $('#bb-par2-description').html(getStatusHTML(participants[1].ready));
+            $('#bb-par1-description').append(createStatus(participants[0].ready));
+            $('#bb-par2-description').append(createStatus(participants[1].ready));
         }
     },
     
@@ -221,20 +212,28 @@ function getContentURL(pageName) {
 }
 
 /*
-    Get the HTML for participant status.
+    Create a participant status DOM element.
 */
-function getStatusHTML(ready) {
+function createStatus(ready) {
     color = ready ? 'green' : 'yellow';
     status = ready ? 'Ready' : 'Not Ready';
     
-    return '<h2 class="description-status text-' + color + '">' + status + '</h2>';
+    return $('<h2 class="description-status text-' + color + '">' + status + '</h2>');
 }
 
 /*
-    Get the HTML for a "Report Win" button.
+    Create a "Report Win" button DOM element.
 */
-function getReportWinButtonHTML() {
-    return '<a class="btn btn-app"><i class="fa fa-trophy"></i> Report Win</a>';
+function createReportWinButton(participantId) {
+    var btn = $('<a class="btn btn-app"><i class="fa fa-trophy"></i> Report Win</a>');
+    
+    btn.on('click', function(event) {
+        reportWin(participantId);
+    
+        return false;
+    });
+    
+    return btn;
 }
 
 /*

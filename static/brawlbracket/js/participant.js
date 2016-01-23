@@ -88,15 +88,12 @@ var lobbyUIFunctions = {
     },
     
     'chatlog': function () {
-        var messageBox = $('#bb-lobby-chat-messages');
+        var msgBox = $('#bb-lobby-chat-messages');
         
         // Create messages
         for (id in lobbyData.chatlog) {
             var msgData = lobbyData.chatlog[id];
-            
-            var msg = createChatMessage(msgData.name, msgData.sentTime, msgData.avatar,
-                                        msgData.message, msgData.senderId == participantId);
-            msg.appendTo(messageBox);
+            onLobbyMessage(msgBox, msgData, true);
         }
     },
     
@@ -189,6 +186,10 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
         if (data.property in lobbyUIFunctions) {
             lobbyUIFunctions[data.property]();
         }
+    });
+    
+    pSocket.on('lobby chat', function(data) {
+        onLobbyMessage($('#bb-lobby-chat-messages'), data.message);
     });
 }
 
@@ -322,4 +323,13 @@ function showPage(pageName) {
         window.location.hash = pageName;
     }
     currentPage = pageName;
+}
+
+/*
+    Receive a lobby message.
+*/
+function onLobbyMessage(msgBox, msgData, instant=false) {
+    var msg = createChatMessage(msgData.name, msgData.sentTime, msgData.avatar,
+                                msgData.message, msgData.senderId == participantId);
+    msg.appendTo(msgBox);
 }

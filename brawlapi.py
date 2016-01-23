@@ -286,9 +286,21 @@ def getLobbyData(tourneyId, matchId):
     p1Data = getParticipantData(tourneyId, p1Id)
     p2Data = getParticipantData(tourneyId, p2Id)
     
-    # Only add if
+    # Only add if we have participant data
     pDatas = [p for p in [p1Data, p2Data] if p is not None]
     
+    prereqData = None
+    prereqIds = [matchData['player1-prereq-match-id'], matchData['player2-prereq-match-id']]
+    
+    # Check if there's an unfinished prerequisite match
+    # Don't check ids that are None
+    for checkId in [id for id in prereqIds if id]:
+        checkData = getMatchData(tourneyId, checkId)
+        
+        # No winner, so this is unfinished
+        if not checkData['winner-id']:
+            prereqData = checkData
+            break
         
     lobbyData = {
         'participants': [
@@ -312,8 +324,14 @@ def getLobbyData(tourneyId, matchId):
             } for playerData in pDatas
         ],
         
-        # This is a dictionary in case it needs to hold state-specific data later
         'state': {
+            'name': 'waitingForMatch',
+            'matchNumber': matchIdToNumber(prereqData['identifier']),
+            'participantNames': [
+                getParticipantData(tourneyId, prereqData['player1-id'])['display-name'],
+                getParticipantData(tourneyId, prereqData['player2-id'])['display-name']
+            ]
+        } if prereqData else {
             'name': 'waitingForPlayers'
         },
         

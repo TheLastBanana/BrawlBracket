@@ -430,13 +430,12 @@ def getParticipantAvatar(pData):
 # | Set data functions |
 # +--------------------+
 
-def _setMatchScore(tourneyId, matchId, score, _winner):
+def _setMatchScore(tourneyId, matchId, score, winner):
     """
     Internal function, only brawlapi functions should touch this.
     
-    Sets score for a specific match in a tournament.
+    Updates challonge score for a specific match in a tournament.
     Score is tuple of participant score, with participant one at index 0.
-    Winner is only set if this is to update someone as winning.
     
     Match data will be refreshed.
     
@@ -444,8 +443,9 @@ def _setMatchScore(tourneyId, matchId, score, _winner):
     """
     try:
         challonge.matches.update(tourneyId, matchId,
-            scores_csv='{}-{}'.format(score[0], score[1]),
-            winner_id=_winner)
+            scores_csv = '{}-{}'.format(score[0], score[1]),
+            winner_id = winner)
+        refreshMatchData(tourneyId, matchId)
     except HTTPError as e:
         print('Got {} - {} while updating match score. tID: {}, mID{}'
             .format(e.code, e.reason, tourneyId, matchId))

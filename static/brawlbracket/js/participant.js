@@ -97,7 +97,16 @@ var lobbyUIFunctions = {
     },
     
     'chatlog': function () {
+        var messageBox = $('#bb-lobby-chat-messages');
         
+        // Create messages
+        for (id in lobbyData.chatlog) {
+            var msgData = lobbyData.chatlog[id];
+            
+            var msg = createChatMessage(msgData.name, msgData.sentTime, msgData.avatar,
+                                        msgData.message, msgData.senderId == participantId);
+            msg.appendTo(messageBox);
+        }
     },
     
     'realmBans': function () {
@@ -226,6 +235,42 @@ function getStatusHTML(ready) {
 */
 function getReportWinButtonHTML() {
     return '<a class="btn btn-app"><i class="fa fa-trophy"></i> Report Win</a>';
+}
+
+/*
+    Create a chat message DOM element.
+*/
+function createChatMessage(name, time, avatar, text, right) {
+    var messageRoot = $('<div class="direct-chat-msg"></div>');
+    
+    if (right) messageRoot.addClass('right');
+    
+    var info = $('<div class="direct-chat-info clearfix"></div>');
+    
+    var timeDate = new Date(time);
+    var formattedTime = timeDate.toLocaleTimeString();
+    var msgTime = $('<span class="direct-chat-timestamp"></span>').text(formattedTime);
+    
+    var msgName = $('<span class="direct-chat-name"></span>').text(name);
+    
+    // Align name with avatar and put timestamp on the other side
+    if (right) {
+        msgName.addClass('pull-right');
+        msgTime.addClass('pull-left');
+    }
+    else {
+        msgName.addClass('pull-left');
+        msgTime.addClass('pull-right');
+    }
+    
+    info.append(msgName);
+    info.append(msgTime);
+    messageRoot.append(info);
+    
+    messageRoot.append($('<img class="direct-chat-img">').attr('src', avatar));
+    messageRoot.append($('<div class="direct-chat-text"></div>').text(text));
+    
+    return messageRoot;
 }
 
 /*

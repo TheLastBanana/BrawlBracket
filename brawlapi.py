@@ -458,8 +458,14 @@ def incrementMatchScore(tourneyId, matchId, participantId):
     """
     Update the score in for a specific match in a tournament.
     Adds 1 to participantId's match score.
+    
+    No return.
     """
-    lData = lobbyDatas[(tourneyId, matchId)]
+    lData = lobbyDatas.get((tourneyId, matchId), None)
+    if lData is None:
+        print('Couldn\'t find lobby data while updating score. mID: {}, tID: {}'
+            .format(matchId, tourneyId))
+        return
     
     for pLobbyData in lData['participants']:
         if pLobbyData['id'] == participantId:
@@ -474,7 +480,7 @@ def addChatMessage(tourneyId, matchId, messageData):
     """
     Add a message to the chat log for a specific match in a tournament.
     
-    No return
+    No return.
     """
     lData = lobbyDatas.get((tourneyId, matchId), None)
     if lData is None:

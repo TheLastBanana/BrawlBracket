@@ -472,7 +472,8 @@ def incrementMatchScore(tourneyId, matchId, participantId):
             pLobbyData['wins'] += 1
             break
     else:
-        print('Failed to increment score for tID: {}, mID: {}, pID: {}')
+        print('Failed to increment score for pID: {}, mID: {}, tID: {}'
+            .format(participantId, matchId, tourneyId))
     
     # Handle _setMatchScore here
 

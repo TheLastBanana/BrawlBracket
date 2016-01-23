@@ -469,7 +469,20 @@ def incrementMatchScore(tourneyId, matchId, participantId):
         print('Failed to increment score for tID: {}, mID: {}, pID: {}')
     
     # Handle _setMatchScore here
+
+def addChatMessage(tourneyId, matchId, messageData):
+    """
+    Add a message to the chat log for a specific match in a tournament.
     
+    No return
+    """
+    lData = lobbyDatas.get((tourneyId, matchId), None)
+    if lData is None:
+        print('Couldn\'t find lobby data while updating log. mID: {}, tID: {}'
+            .format(matchId, tourneyId))
+        return
+    
+    lData['chatlog'].append(messageData)
     
 def init_example_db():
     db = db_wrapper.DBWrapper('dbname', filepath='.')

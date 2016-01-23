@@ -12,6 +12,7 @@ from flask_socketio import emit
 from bidict import bidict
 
 import os
+import datetime
 import brawlapi
 
 # Mapping from legend id to (formatted name, internal name)
@@ -236,7 +237,40 @@ def participant_report_win(data):
     lData = brawlapi.getLobbyData(tourneyId, matchId)
     emit('update lobby', lData,
         broadcast=True, include_self=True, room=matchId)
+
+@socketio.on('lobby chat', namespace='/participant')
+def participant_chat(data):
+    tourneyId = session['tourneyId']
+    participantId = session['participantId']
+    message = data['message']
+    sentTime = datetime.datetime.now().isoformat()
     
+    pData = brawlapi.getParticipantData(tourneyId, participantId)
+    # This should really never happen, it should have been guaranteed by
+    # them connecting
+    if pData is None:
+        print('Couldn\'t find pData while sending chat. pID: {}, tID: {}'
+            .format(participantId, tourneyId))
+        return
+    
+    avatarURL = brawlapi.getParticipantAvatar(pData)
+    
+    matchId = brawlapi.getParticipantMatch(tourneyId, participantId)
+    if matchId is None:
+        print('Couldn\'t find match while sending chat. pID: {}, tID: {}'
+            .format(participantId, tourneyId))
+        return    
+    
+    messageData = {'senderId': participantId,
+                   'avatar': avatarURL,
+                   'name': pData['name'],
+                   'message': message,
+                   'sentTime': sentTime}
+    
+    brawlapi.addChatMessage(tourneyId, matchId, messageData)
+    
+    emit('lobby chat', messageData,
+        broadcast=True, include_self=True, room=matchId)
 
 if __name__ == '__main__':
     app.debug = True

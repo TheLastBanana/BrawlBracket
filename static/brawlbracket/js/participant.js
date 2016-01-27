@@ -201,7 +201,7 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     });
     
     pSocket.on('lobby chat', function(data) {
-        onLobbyMessage($('#bb-lobby-chat-messages'), data.message);
+        onLobbyMessage($('#bb-lobby-chat-messages'), data);
     });
 }
 

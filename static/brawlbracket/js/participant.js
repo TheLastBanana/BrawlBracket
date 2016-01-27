@@ -24,13 +24,15 @@ var pageSetup = {
         // Set up chat
         var lobbyMsgBox = $('#bb-lobby-chat-message');
         $('#bb-lobby-chat-send').on('click', function(event) {
-            pSocket.emit('lobby chat', {
-                'message': lobbyMsgBox.val()
-            });
-            
-            lobbyMsgBox.val('');
+            sendChat('lobby chat', lobbyMsgBox);
             
             return false;
+        });
+        $('#bb-lobby-chat-message').keypress(function(e) {
+            // Enter pressed in chat message box
+            if (e.which == 13) {
+                sendChat('lobby chat', lobbyMsgBox);
+            }
         });
         
         currentPage = 'lobby';
@@ -105,7 +107,7 @@ var lobbyUIFunctions = {
         // Create messages
         for (id in lobbyData.chatlog) {
             var msgData = lobbyData.chatlog[id];
-            onLobbyMessage(msgBox, msgData, true);
+            onLobbyChat(msgBox, msgData, true);
         }
     },
     
@@ -201,7 +203,7 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     });
     
     pSocket.on('lobby chat', function(data) {
-        onLobbyMessage($('#bb-lobby-chat-messages'), data);
+        onLobbyChat($('#bb-lobby-chat-messages'), data);
     });
 }
 
@@ -338,10 +340,34 @@ function showPage(pageName) {
 }
 
 /*
-    Receive a lobby message.
+    Receive a lobby chat message.
 */
-function onLobbyMessage(msgBox, msgData, instant=false) {
+function onLobbyChat(msgBox, msgData, instant=false) {
     var msg = createChatMessage(msgData.name, msgData.sentTime, msgData.avatar,
                                 msgData.message, msgData.senderId == participantId);
+                                
+    // Only scroll down if user is already at bottom
+    var atBottom = msgBox.scrollTop() + msgBox.innerHeight() >= msgBox[0].scrollHeight;
+    
     msg.appendTo(msgBox);
+    
+    // Do this after append so we can get the actual height
+    if (atBottom && !instant) {
+        msgBox.animate({ scrollTop: msgBox[0].scrollHeight }, "slow");
+    }
+}
+
+/*
+    Send a message from a chat box and empty the chat box.
+    Does nothing if the box is empty.
+*/
+function sendChat(messageName, messageBox) {
+    var message = messageBox.val();
+    if (message == '') return;
+    
+    pSocket.emit(messageName, {
+                 'message': message
+    });
+    
+    messageBox.val('');
 }

@@ -205,3 +205,16 @@ Realm picker
 .realm-picker > li a:hover p {
   color: #555;
 }
+
+/*
+AdminLTE tweaks
+*/
+.info-box {
+  position: relative;
+  border-radius: 3px;
+}
+
+.info-box-icon {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}

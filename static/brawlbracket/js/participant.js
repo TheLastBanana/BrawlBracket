@@ -47,6 +47,9 @@ var lobbyUIFunctions = {
     'participants': function () {
         var participants = lobbyData.participants;
         
+        if (lobbyData.state.name == 'waitingForMatch') return;
+        if (participants.length != 2) return;
+        
         // Add Report Win button functionality
         $('#bb-par1-report-win').on('click', function(event) {
             reportWin(lobbyData.participants[0].id);
@@ -82,6 +85,9 @@ var lobbyUIFunctions = {
     'players': function () {
         var players = lobbyData.players;
         
+        if (lobbyData.state.name == 'waitingForMatch') return;
+        if (players.length != 2) return;
+        
         // Player info
         $('#bb-pla1-name').text(lobbyData.players[0].name);
         $('#bb-pla2-name').text(lobbyData.players[1].name);
@@ -95,13 +101,48 @@ var lobbyUIFunctions = {
     },
     
     'state': function () {
-        // Need to update buttons/participant status when entering/exiting inGame state
-        if (lobbyData.state.name == 'inGame' || lobbyData.prevState.name == 'inGame') {
-            lobbyUIFunctions.participants();
+        switch (lobbyData.state.name) {
+            case 'waitingForMatch':
+                // Disable everything and put spinners on them.
+                $('.bb-wait-for-match').append(
+                    $('<div class="overlay"><i class="fa fa-circle-o-notch fa-spin"></i></div>')
+                );
+                
+                // Add a notice at the top about the prerequisite match.
+                var msg = 'You\'ll be notified as soon as match <strong>#' + lobbyData.state.matchNumber +
+                          '</strong> (<strong>' + lobbyData.state.participantNames[0] +
+                          '</strong> vs <strong>' + lobbyData.state.participantNames[1] + '</strong>) finishes.';
+                
+                addCallout('state', 'warning',
+                           'Your opponent hasn\'t finished their game yet!',
+                           msg);
+                           
+                break;
+                
+            case 'waitingForPlayer':
+                // Add a notice about the player missing.
+                addCallout('state', 'warning',
+                           'Your opponent hasn\'t finished their game yet!',
+                           'You\'ll be notified as soon as they\'re ready.');
+                break;
+                
+            case 'inGame':
+                // Replace status with "report win" buttons
+                lobbyUIFunctions.participants();
+                break;
+        }
+        
+        switch (lobbyData.prevState.name) {
+            case 'inGame':
+                // Replace "report win" buttons with status
+                lobbyUIFunctions.participants();
+                break;
         }
     },
     
     'chatlog': function () {
+        if (lobbyData.state.name == 'waitingForMatch') return;
+        
         var msgBox = $('#bb-lobby-chat-messages');
         
         // Create messages
@@ -112,23 +153,32 @@ var lobbyUIFunctions = {
     },
     
     'realmBans': function () {
+        if (lobbyData.state.name == 'waitingForMatch') return;
         
     },
     
     'bestOf': function() {
+        if (lobbyData.state.name == 'waitingForMatch') return;
+        
         $('#bb-best-of').text('BEST OF ' + lobbyData.bestOf);
     },
     
     'startTime': function() {
+        if (lobbyData.state.name == 'waitingForMatch') return;
+        
         updateLobbyTimer();
         if (!lobbyTimer) setInterval(updateLobbyTimer, 1000);
     },
     
     'roomNumber': function () {
+        if (lobbyData.state.name == 'waitingForMatch') return;
+        
         $('#bb-room-number').text(lobbyData.roomNumber);
     },
     
     'currentRealm': function () {
+        if (lobbyData.state.name == 'waitingForMatch') return;
+        
         $('#bb-current-realm').text(lobbyData.currentRealm);
     },
     
@@ -353,6 +403,32 @@ function showPage(pageName) {
         window.location.hash = pageName;
     }
     currentPage = pageName;
+}
+
+/**
+ * Add a callout at the top of the app. If a callout with this id exists, replace it.
+ * @param {string} id - Unique identifier for this callout (suffix to "bb-callout-").
+ * @param {string} type - One of {danger, info, warning, success}.
+ * @param {string} title - Callout title.
+ * @param {string} message - Callout message.
+ */
+function addCallout(id, type, title, message) {
+    removeCallout(id);
+    
+    
+    var callout = $('<div class="callout callout-' + type + '" id="' + id + '"></div>');
+    callout.append('<h4>' + title + '</h4>');
+    callout.append('<p>' + message + '</p>');
+    
+    callout.insertBefore($('.widget-user'));
+}
+
+/**
+ * Remove a callout from the top of the app.
+ * @param {string} id - Unique identifier for this callout (suffix to "bb-callout-").
+ */
+function removeCallout(id) {
+    $('#bb-callout-' + id).remove();
 }
 
 /**

@@ -130,6 +130,7 @@ def user_landing(tourneyName):
                            userName=pData['display-name'],
                            userAvatar=brawlapi.getParticipantAvatar(pData),
                            tourneyName=tourneyName,
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName),
                            participantId=participantId)
     
 # Lobby content

@@ -147,9 +147,11 @@ $(window).on('beforeunload', function() {
 // SOCKET STUFF //
 //////////////////
 
-/*
-    Connect to the server. Called when the app is first loaded.
-*/
+/**
+ * Connect to the server. Called when the app is first loaded.
+ * @param {string} newTourneyName - The short tourney name (Challonge URL suffix).
+ * @param {string} newParticipantId - The participant's Challonge id.
+ */
 function brawlBracketInit(newTourneyName, newParticipantId) {
     tourneyName = newTourneyName;
     participantId = newParticipantId;
@@ -207,11 +209,12 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     });
 }
 
-/*
-    Report a win to the server.
-*/
-function reportWin(playerId) {
-    pSocket.emit('report win', { 'player-id': playerId });
+/**
+ * Report a win to the server.
+ * @param {string} participantId - The Challonge id of the winner.
+ */
+function reportWin(participantId) {
+    pSocket.emit('report win', { 'player-id': participantId });
 }
 
 
@@ -219,16 +222,19 @@ function reportWin(playerId) {
 // HELPER FUNCTIONS //
 //////////////////////
 
-/*
-    Get a content page's URL including tourney and participant data.
-*/
+/**
+ * Get a content page's URL including tourney and participant data.
+ * @param {string} pageName - The name of the page to load. Should exist at
+ *   /app-content/<pageName>/<tourneyName>/<participantId>
+ */
 function getContentURL(pageName) {
     return '/app-content/' + pageName + '/' + tourneyName + '/' + participantId;
 }
 
-/*
-    Create a participant status DOM element.
-*/
+/**
+ * Create a participant status DOM element.
+ * @param {boolean} ready - If true, the status is "Ready," else "Not Ready."
+ */
 function createStatus(ready) {
     color = ready ? 'green' : 'yellow';
     status = ready ? 'Ready' : 'Not Ready';
@@ -236,9 +242,10 @@ function createStatus(ready) {
     return $('<h2 class="description-status text-' + color + '">' + status + '</h2>');
 }
 
-/*
-    Create a "Report Win" button DOM element.
-*/
+/**
+ * Create a "Report Win" button DOM element.
+ * @param {string} participantId - The id of the participant we're reporting the win for.
+ */
 function createReportWinButton(participantId) {
     var btn = $('<a class="btn btn-app"><i class="fa fa-trophy"></i> Report Win</a>');
     
@@ -251,9 +258,14 @@ function createReportWinButton(participantId) {
     return btn;
 }
 
-/*
-    Create a chat message DOM element.
-*/
+/**
+ * Create a chat message DOM element.
+ * @param {string} name - The name of the sender.
+ * @param {string} time - Date string representing the time the message was sent.
+ * @param {string} avatar - The sender's avatar.
+ * @param {string} text - The text of the message.
+ * @param {boolean} right - Should be true for the current user's messages and false for others.
+ */
 function createChatMessage(name, time, avatar, text, right) {
     var messageRoot = $('<div class="direct-chat-msg"></div>');
     
@@ -287,9 +299,12 @@ function createChatMessage(name, time, avatar, text, right) {
     return messageRoot;
 }
 
-/*
-    Left-pad a string with a given character.
-*/
+/**
+ * Left-pad a string with a given character.
+ * @param {string} str - The string.
+ * @param {number} count - The number of characters to pad to.
+ * @param {string} padChar - The character to use for padding.
+ */
 function padString(str, count, padChar) {
     var pad = Array(count + 1).join(padChar);
     return pad.substring(0, pad.length - str.length) + str;
@@ -299,18 +314,18 @@ function padString(str, count, padChar) {
 // UI FUNCTIONS //
 //////////////////
 
-/*
-    Update the UI elements for every field in lobbyData.
-*/
+/**
+ * Update the UI elements for every field in lobbyData.
+ */
 function updateLobbyUI() {
     for (prop in lobbyUIFunctions) {
         lobbyUIFunctions[prop]();
     }
 }
 
-/*
-    Update the timer text.
-*/
+/**
+ * Update the timer text.
+ */
 function updateLobbyTimer() {
     var timeDiff = new Date(new Date() - new Date(lobbyData.startTime));
     var minStr = "" + timeDiff.getMinutes();
@@ -319,9 +334,10 @@ function updateLobbyTimer() {
     $('#bb-timer').text(padString(minStr, 2, '0') + ":" + padString(secStr, 2, '0'));
 }
 
-/*
-    Show the bracket page.
-*/
+/**
+ * Show an app page, update the menu, and update the URL hash.
+ * @param {string} pageName - The name of the page (see getContentURL()).
+ */
 function showPage(pageName) {
     if (!pSocket.connected) return;
     
@@ -339,9 +355,17 @@ function showPage(pageName) {
     currentPage = pageName;
 }
 
-/*
-    Receive a lobby chat message.
-*/
+/**
+ * Receive a lobby chat message.
+ * @param {jQuery object} msgBox - The input element containing message text.
+ * @param {json} msgData - Message JSON data.
+ *     @param {string} msgData.name - The name of the sender.
+ *     @param {string} msgData.sentTime - Date string representing the time the message was sent.
+ *     @param {string} msgData.avatar - The sender's avatar.
+ *     @param {string} msgData.message - The text of the message.
+ *     @param {string} msgData.senderId - The Challonge participant id of the sender.
+ * @param {string} msgData - The string.
+ */
 function onLobbyChat(msgBox, msgData, instant=false) {
     var msg = createChatMessage(msgData.name, msgData.sentTime, msgData.avatar,
                                 msgData.message, msgData.senderId == participantId);
@@ -357,17 +381,19 @@ function onLobbyChat(msgBox, msgData, instant=false) {
     }
 }
 
-/*
-    Send a message from a chat box and empty the chat box.
-    Does nothing if the box is empty.
-*/
-function sendChat(messageName, messageBox) {
-    var message = messageBox.val();
+/**
+ * Send a message from a chat box and empty the chat box.
+ * Does nothing if the box is empty.
+ * @param {string} messageName - Name of the socketIO message to send with chat data.
+ * @param {jQuery object} textBox - The input element containing message text.
+ */
+function sendChat(messageName, textBox) {
+    var message = textBox.val();
     if (message == '') return;
     
     pSocket.emit(messageName, {
                  'message': message
     });
     
-    messageBox.val('');
+    textBox.val('');
 }

@@ -255,7 +255,7 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     });
     
     pSocket.on('lobby chat', function(data) {
-        onLobbyChat($('#bb-lobby-chat-messages'), data);
+        onLobbyChat($('#bb-lobby-chat-messages'), data, false);
     });
 }
 
@@ -442,7 +442,7 @@ function removeCallout(id) {
  *     @param {string} msgData.senderId - The Challonge participant id of the sender.
  * @param {string} msgData - The string.
  */
-function onLobbyChat(msgBox, msgData, instant=false) {
+function onLobbyChat(msgBox, msgData, instant) {
     var msg = createChatMessage(msgData.name, msgData.sentTime, msgData.avatar,
                                 msgData.message, msgData.senderId == participantId);
                                 

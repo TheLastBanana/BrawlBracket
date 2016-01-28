@@ -1,4 +1,4 @@
-<div class="box box-primary color-palette-box">
+<div class="box box-primary color-palette-box bb-legend-picker">
   <div class="box-header with-border">
     <h3 class="box-title"><i class="fa fa-user"></i> Pick your legend</h3>
   </div>
@@ -6,9 +6,11 @@
     <ul class="legend-roster">
       {% for legend in legendData %}
         <li>
-          <a href="#">
-            <img src="/static/brawlbracket/img/legends/{{ legend[1] }}.png">
-            <div class="legend-circle"></div>
+          <a href="#" class="bb-legend-option" legend="{{ legend[1] }}">
+            <div class="legend-image-wrapper">
+              <img src="/static/brawlbracket/img/legends/{{ legend[1] }}.png">
+              <div class="legend-circle"></div>
+            </div>
             <p>{{ legend[0] }}</p>
           </a>
         </li>

@@ -133,6 +133,19 @@ def user_landing(tourneyName):
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
                            participantId=participantId)
     
+# Admin chat page
+@app.route('/app-content/admin-chat/<tourneyName>/<participantId>')
+def admin_chat(tourneyName, participantId):
+    return render_template('app-content/admin-chat.html',
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
+    
+# Bracket viewer page
+@app.route('/app-content/bracket/<tourneyName>/<participantId>')
+def bracket(tourneyName, participantId):
+    return render_template('app-content/bracket.html',
+                           tourneyName=tourneyName,
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
+    
 # Lobby content
 @app.route('/app-content/lobby/<tourneyName>/<participantId>')
 def lobby(tourneyName, participantId):
@@ -145,28 +158,15 @@ def lobby_error(tourneyName, participantId):
     return render_template('app-content/lobby-error.html')
     
 # Lobby legend roster
-@app.route('/app-content/lobby-roster/<tourneyName>/<participantId>')
-def lobby_roster(tourneyName, participantId):
+@app.route('/app-content/roster')
+def roster():
     return render_template('app-content/lobby-roster.html', legendData=orderedLegends)
     
 # Lobby map picker
-@app.route('/app-content/lobby-realms/<tourneyName>/<participantId>')
-def lobby_realms(tourneyName, participantId):
+@app.route('/app-content/realms')
+def realms():
     return render_template('app-content/lobby-realms.html',
                            realmData=orderedRealms)
-    
-# Lobby map picker
-@app.route('/app-content/admin-chat/<tourneyName>/<participantId>')
-def admin_chat(tourneyName, participantId):
-    return render_template('app-content/admin-chat.html',
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
-    
-# Lobby map picker
-@app.route('/app-content/bracket/<tourneyName>/<participantId>')
-def bracket(tourneyName, participantId):
-    return render_template('app-content/bracket.html',
-                           tourneyName=tourneyName,
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
 
     
 #----- SocketIO events -----#

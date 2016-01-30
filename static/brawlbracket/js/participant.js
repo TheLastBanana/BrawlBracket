@@ -25,18 +25,25 @@ var pageSetup = {
         updateLobbyUI();
         
         // Set up chat
-        var lobbyMsgBox = $('#bb-lobby-chat-message');
+        var lobbyMsgInput = $('#bb-lobby-chat-message');
         $('#bb-lobby-chat-send').on('click', function(event) {
-            sendChat('lobby chat', lobbyMsgBox);
+            sendChat('lobby chat', lobbyMsgInput);
             
             return false;
         });
         $('#bb-lobby-chat-message').keypress(function(e) {
             // Enter pressed in chat message box
             if (e.which == 13) {
-                sendChat('lobby chat', lobbyMsgBox);
+                sendChat('lobby chat', lobbyMsgInput);
             }
         });
+        
+        // Create messages
+        var lobbyMsgBox = $('#bb-lobby-chat-messages');
+        for (id in lobbyData.chatlog) {
+            var msgData = lobbyData.chatlog[id];
+            onLobbyChat(lobbyMsgBox, msgData, true);
+        }
         
         currentPage = 'lobby';
         
@@ -197,14 +204,10 @@ var lobbyUIFunctions = {
     },
     
     'chatlog': function () {
-        if (lobbyData.state.name == 'waitingForMatch') return;
-        
-        var msgBox = $('#bb-lobby-chat-messages');
-        
-        // Create messages
+        var lobbyMsgBox = $('#bb-lobby-chat-messages');
         for (id in lobbyData.chatlog) {
             var msgData = lobbyData.chatlog[id];
-            onLobbyChat(msgBox, msgData, true);
+            onLobbyChat(lobbyMsgBox, msgData, true);
         }
     },
     

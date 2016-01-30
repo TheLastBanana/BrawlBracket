@@ -6,6 +6,60 @@ import challonge
 
 import db_wrapper
 
+# Mapping from legend id to (formatted name, internal name)
+legendData = {
+    0:      ('Random',      'random'),
+    1:      ('Bödvar',      'bodvar'),
+    2:      ('Cassidy',     'cassidy'),
+    3:      ('Orion',       'orion'),
+    4:      ('Lord Vraxx',  'vraxx'),
+    5:      ('Gnash',       'gnash'),
+    6:      ('Nai',         'nai'),
+    7:      ('Hattori',     'hattori'),
+    8:      ('Sir Roland',  'roland'),
+    9:      ('Scarlet',     'scarlet'),
+    10:     ('Thatch',      'thatch'),
+    11:     ('Ada',         'ada'),
+    12:     ('Sentinel',    'sentinel'),
+    13:     ('Lucien',      'lucien'),
+    14:     ('Teros',       'teros'),
+    15:     ('Brynn',       'brynn'),
+    16:     ('Asuri',       'asuri'),
+    17:     ('Barraza',     'barraza'),
+    18:     ('Ember',       'ember'),
+    19:     ('Azoth',       'azoth')
+}
+legendOrder = list(range(1, len(legendData))) + [0] # Always put random last
+orderedLegends = [legendData[id] for id in legendOrder]
+
+# Mapping from realm id to (formatted name, internal name)
+realmData = {
+    0:      ('Random',                  'random'),
+    1:      ('Brawlhaven',              'brawlhaven'),
+    2:      ('Grumpy Temple',           'grumpy'),
+    3:      ('Twilight Grove',          'twilight'),
+    4:      ('Kings Pass',              'kings'),
+    5:      ('Thundergard Stadium',     'thunder'),
+    6:      ('Titan\'s End',            'titan'),
+    7:      ('Blackguard Keep',         'keep'),
+    8:      ('The Enigma',              'enigma'),
+    9:      ('Mammoth Fortress',        'mammoth'),
+    10:     ('Great Hall',              'hall'),
+    11:     ('Shipwreck Falls',         'falls'),
+    12:     ('Big Great Hall',          'big-hall'),
+    13:     ('Big Kings Pass',          'big-kings'),
+    14:     ('Big Thundergard Stadium', 'big-thunder'),
+    15:     ('Big Titan\'s End',        'big-titan'),
+    16:     ('Big Twilight Grove',      'big-twilight'),
+    17:     ('Bombsketball',            'bombsketball'),
+    18:     ('Brawlball',               'brawlball'),
+    19:     ('Wally',                   'wally'),
+    20:     ('Short Side',              'short'),
+    21:     ('Pillars',                 'pillars'),
+}
+eslRealms = [3, 4, 5, 7, 9, 10, 11] # Realms used by ESL 1v1 tourneys
+orderedRealms = [realmData[id] for id in eslRealms]
+
 # Set up challonge
 challonge.set_credentials(os.environ.get('BB_CHALLONGE_USER'), os.environ.get('BB_CHALLONGE_API_KEY'))
 

@@ -247,10 +247,6 @@ var lobbyUIFunctions = {
     }
 };
 
-$(window).on('beforeunload', function() {
-    pSocket.close();
-});
-
 
 //////////////////
 // SOCKET STUFF //

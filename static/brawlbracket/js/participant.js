@@ -38,13 +38,6 @@ var pageSetup = {
             }
         });
         
-        // Create messages
-        var lobbyMsgBox = $('#bb-lobby-chat-messages');
-        for (id in lobbyData.chatlog) {
-            var msgData = lobbyData.chatlog[id];
-            onLobbyChat(lobbyMsgBox, msgData, true);
-        }
-        
         currentPage = 'lobby';
         
         // DEBUG
@@ -205,6 +198,9 @@ var lobbyUIFunctions = {
     
     'chatlog': function () {
         var lobbyMsgBox = $('#bb-lobby-chat-messages');
+        
+        lobbyMsgBox.empty();
+        
         for (id in lobbyData.chatlog) {
             var msgData = lobbyData.chatlog[id];
             onLobbyChat(lobbyMsgBox, msgData, true);

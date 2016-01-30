@@ -93,6 +93,16 @@ def bracket(tourneyName, participantId):
                            tourneyName=tourneyName,
                            tourneyFullName=brawlapi.getTournamentName(tourneyName))
     
+# Settings page
+@app.route('/app-content/player-settings/<tourneyName>/<participantId>')
+def player_settings(tourneyName, participantId):
+    return render_template('app-content/player-settings.html',
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName),
+                           tourneyName=tourneyName,
+                           participantId=participantId,
+                           legendData=brawlapi.orderedLegends,
+                           serverRegions=list(brawlapi.serverRegions.items()))
+    
 # Lobby content
 @app.route('/app-content/lobby/<tourneyName>/<participantId>')
 def lobby(tourneyName, participantId):
@@ -155,8 +165,12 @@ def participant_connect():
         .format(pId, matchId))
         
     lobbyData = brawlapi.getLobbyData(tId, matchId)
+    playerSettings = brawlapi.getPlayerSettings(tId, pId)
         
-    emit('join lobby', lobbyData,
+    emit('join lobby', {
+            'lobbyData': lobbyData,
+            'playerSettings': playerSettings
+        },
         broadcast=False, include_self=True)
     
 @socketio.on('disconnect', namespace='/participant')
@@ -187,6 +201,7 @@ def participant_report_win(data):
     emit('update lobby', lData,
         broadcast=True, include_self=True, room=matchId)
 
+# A chat message was received
 @socketio.on('lobby chat', namespace='/participant')
 def participant_chat(data):
     tourneyId = session['tourneyId']
@@ -221,6 +236,18 @@ def participant_chat(data):
     emit('lobby chat', messageData,
         broadcast=True, include_self=True, room=matchId)
 
+# A player updated their settings
+@socketio.on('update settings', namespace='/participant')
+def participant_update_settings(settings):
+    participantId = session['participantId']
+    tourneyId = session['tourneyId']
+    
+    if brawlapi.setPlayerSettings(tourneyId, participantId, settings):
+        emit('update settings', settings,
+             broadcast=False, include_self=True)
+    else:
+        emit('invalid settings')
+        
 if __name__ == '__main__':
     app.debug = True
     socketio.run(app)

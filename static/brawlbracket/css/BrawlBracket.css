@@ -164,6 +164,17 @@ Legend picker
   color: #555;
 }
 
+.bb-legend-option.disabled .legend-image-wrapper {
+  position: relative;
+  opacity: 0.4;
+  filter: grayscale(1);
+  -webkit-filter: grayscale(1);
+}
+
+.bb-legend-option.disabled > p {
+  text-decoration: line-through;
+}
+
 /*
 Realm picker
 */

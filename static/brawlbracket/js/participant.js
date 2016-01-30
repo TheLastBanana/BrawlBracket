@@ -4,6 +4,9 @@ var pSocket;
 // JSON data for lobby
 var lobbyData;
 
+// JSON data for player settings
+var playerSettings;
+
 // Lobby timer interval so it can be cleared/checked later
 var lobbyTimer;
 
@@ -39,6 +42,59 @@ var pageSetup = {
         
         // DEBUG
         //$('#bb-picker-content').load('/app-content/lobby-realms');
+    },
+    
+    'player-settings': function() {
+        // Set legend picker title
+        $('.bb-legend-picker .box-title').html('<i class="fa fa-users"></i> Click any legends you don\'t own');
+        
+        // Everyone "owns" random, so don't show it
+        $('.bb-legend-option[legend="random"]').parent().remove();
+        
+        
+        // Activate legend button controls
+        $('.bb-legend-option').click(function() {
+            $(this).toggleDisabled();
+            
+            return false;
+        });
+        
+        $('#bb-roster-invert-sel').click(function() {
+            $('.bb-legend-option').toggleDisabled();
+            
+            return false;
+        });
+        
+        $('#bb-roster-select-all').click(function() {
+           $('.bb-legend-option').removeClass('disabled');
+            
+            return false;
+        });
+        
+        $('#bb-roster-deselect-all').click(function() {
+           $('.bb-legend-option').addClass('disabled');
+            
+            return false;
+        });
+        
+        
+        // Save button sends new settings to server
+        $('#bb-save-settings').click(function() {
+            savePlayerSettings();
+            
+            return false;
+        });
+        
+        // Cancel button just resets
+        $('#bb-reset-settings').click(function() {
+            resetPlayerSettingsForm();
+            
+            return false;
+        });
+        
+        
+        // Select current settings
+        resetPlayerSettingsForm();
     }
 };
 
@@ -216,8 +272,9 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
         console.log('connected');
     });
     
-    pSocket.on('join lobby', function(newLobbyData) {
-        lobbyData = newLobbyData;
+    pSocket.on('join lobby', function(data) {
+        lobbyData = data.lobbyData;
+        playerSettings = data.playerSettings;
         
         // Set empty previous state
         lobbyData.prevState = {
@@ -256,6 +313,20 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     
     pSocket.on('lobby chat', function(data) {
         onLobbyChat($('#bb-lobby-chat-messages'), data, false);
+    });
+    
+    pSocket.on('update settings', function(newSettings) {
+        playerSettings = newSettings;
+        
+        if (currentPage == 'player-settings') {
+            addCallout('settings', 'success', '', 'Settings updated!', 'inOut');
+        }
+    });
+    
+    pSocket.on('invalid settings', function() {
+        if (currentPage == 'player-settings') {
+            addCallout('settings', 'danger', '', 'Failed to update settings. Please try again!', 'inOut');
+        }
     });
 }
 
@@ -492,3 +563,54 @@ function sendChat(messageName, textBox) {
     
     textBox.val('');
 }
+
+/**
+ * Set the settings form to current values.
+ */
+function resetPlayerSettingsForm() {
+    // Check the appropriate radio button
+    $('input[name="preferred-server"]').each(function() {
+        $(this).prop('checked', $(this).attr('value') == playerSettings.preferredServer);  
+    });
+    
+    // Select owned legends
+    $('.bb-legend-option').each(function() {
+        if ($.inArray($(this).attr('legend'), playerSettings.ownedLegends) == -1) {
+            $(this).addClass('disabled');
+        }
+        else {
+            $(this).removeClass('disabled');
+        }
+    });
+}
+
+/**
+ * Save the player settings and send them to the server.
+ */
+function savePlayerSettings() {
+    // Find the checked preferred-server input
+    playerSettings.preferredServer = $('input[name="preferred-server"]:checked').val();
+    
+    playerSettings.ownedLegends = []
+    $('.bb-legend-option').each(function() {
+        // If not disabled, then this legend is selected
+        if (!$(this).hasClass('disabled')) {
+            playerSettings.ownedLegends.push($(this).attr('legend'));
+        }
+    });
+    
+    pSocket.emit('update settings', playerSettings);
+}
+
+$.fn.extend({
+    toggleDisabled: function() {
+        return $(this).each(function() {
+            if ($(this).hasClass('disabled')) {
+                $(this).removeClass('disabled');
+            }
+            else {
+                $(this).addClass('disabled');
+            }
+        });
+    }
+});

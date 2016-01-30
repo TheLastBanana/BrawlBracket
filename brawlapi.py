@@ -54,7 +54,7 @@ legendOrder = [
     'random'
 ]
 orderedLegends = [(id, legendData[id]) for id in legendOrder]
-ownableLegends = orderedLegends[:-1]
+ownableLegendIds = legendOrder[:-1]
 
 # Mapping from realm id to (formatted name, internal name)
 realmData = {
@@ -363,7 +363,44 @@ def getParticipantData(tourneyId, participantId):
         return None
 
     return participantDatas[tourneyId][participantId]
+
+def getPlayerSettings(tourneyId, playerId):
+    """
+    Get a player's settings.
+    TODO: playerIds and participantIds are separate if participants = teams.
+    """
+    playerPair = (tourneyId, playerId)
+
+    if playerPair in allPlayerSettings:
+        return allPlayerSettings[playerPair]
+
+    playerSettings = {
+        'preferredServer': 'na',
+        # Just send legend internal ids
+        'ownedLegends': ownableLegendIds
+    }
+
+    allPlayerSettings[playerPair] = playerSettings
+
+    return playerSettings
     
+def setPlayerSettings(tourneyId, playerId, settings):
+    """
+    Validate and overwrite player settings. Return true if the settings were
+    valid and were updated, else false.
+    """
+    playerPair = (tourneyId, playerId)
+    
+    if settings['preferredServer'] not in serverRegions:
+        return False
+        
+    for legend in settings['ownedLegends']:
+        if legend not in ownableLegendIds:
+            return False
+    
+    allPlayerSettings[playerPair] = settings
+    return True
+
 def getLobbyData(tourneyId, matchId):
     """
     Get lobby data for a given match, or if it doesn't exist, create it and

@@ -24,9 +24,6 @@ var pageSetup = {
     'lobby': function() {
         updateLobbyUI();
         
-        // Set up chat
-        $('.direct-chat').setUpChatBox(lobbyData.chatId);
-        
         currentPage = 'lobby';
         
         // DEBUG
@@ -185,8 +182,8 @@ var lobbyUIFunctions = {
         }
     },
     
-    'chatlog': function () {
-        
+    'chatId': function () {
+        $('.direct-chat').setUpChatBox(lobbyData.chatId);
     },
     
     'realmBans': function () {

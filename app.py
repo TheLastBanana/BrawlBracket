@@ -166,6 +166,14 @@ def participant_connect():
         
     lobbyData = brawlapi.getLobbyData(tId, matchId)
     playerSettings = brawlapi.getPlayerSettings(tId, pId)
+    
+    # Join chat room
+    if lobbyData['chatId'] == None:
+        chatId = brawlapi.createChat(tId)
+        lobbyData['chatId'] = chatId
+        
+    chat = brawlapi.getChat(tId, lobbyData['chatId'])
+    join_room(chat.getRoom())
         
     emit('join lobby', {
             'lobbyData': lobbyData,
@@ -201,13 +209,19 @@ def participant_report_win(data):
     emit('update lobby', lData,
         broadcast=True, include_self=True, room=matchId)
 
-# A chat message was received
-@socketio.on('lobby chat', namespace='/participant')
+# A chat message was sent by a client
+@socketio.on('send chat', namespace='/participant')
 def participant_chat(data):
     tourneyId = session['tourneyId']
     participantId = session['participantId']
-    message = data['message']
     sentTime = datetime.datetime.now().isoformat()
+    
+    chatId = data['chatId']
+    message = data['message']
+    
+    chat = brawlapi.getChat(tourneyId, chatId)
+    if not chat:
+        return
     
     pData = brawlapi.getParticipantData(tourneyId, participantId)
     # This should really never happen, it should have been guaranteed by
@@ -219,22 +233,18 @@ def participant_chat(data):
     
     avatarURL = brawlapi.getParticipantAvatar(pData)
     
-    matchId = brawlapi.getParticipantMatch(tourneyId, participantId)
-    if matchId is None:
-        print('Couldn\'t find match while sending chat. pID: {}, tID: {}'
-            .format(participantId, tourneyId))
-        return    
-    
     messageData = {'senderId': participantId,
                    'avatar': avatarURL,
                    'name': pData['name'],
                    'message': message,
                    'sentTime': sentTime}
     
-    brawlapi.addChatMessage(tourneyId, matchId, messageData)
+    chat.addMessage(messageData)
     
-    emit('lobby chat', messageData,
-        broadcast=True, include_self=True, room=matchId)
+    emit('receive chat', {
+        'messageData': messageData,
+        'chatId': chatId
+    }, broadcast=True, include_self=True, room=chat.getRoom())
 
 # A player updated their settings
 @socketio.on('update settings', namespace='/participant')

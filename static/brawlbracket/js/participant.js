@@ -25,17 +25,23 @@ var pageSetup = {
         updateLobbyUI();
         
         // Set up chat
-        var lobbyMsgInput = $('#bb-lobby-chat-message');
-        $('#bb-lobby-chat-send').on('click', function(event) {
-            sendChat('lobby chat', lobbyMsgInput);
+        $('.direct-chat').each(function() {
+            var chatBox = $(this);
             
-            return false;
-        });
-        $('#bb-lobby-chat-message').keypress(function(e) {
-            // Enter pressed in chat message box
-            if (e.which == 13) {
-                sendChat('lobby chat', lobbyMsgInput);
-            }
+            chatBox.attr('chatId', lobbyData.chatId);
+            
+            chatBox.find('.direct-chat-send').on('click', function(event) {
+                sendChat(chatBox);
+                
+                return false;
+            });
+            
+            chatBox.find('.direct-chat-input').keypress(function(e) {
+                // Enter pressed in chat message box
+                if (e.which == 13) {
+                    sendChat(chatBox);
+                }
+            });
         });
         
         currentPage = 'lobby';
@@ -306,12 +312,6 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
         }
     });
     
-    pSocket.on('lobby chat', function(data) {
-        lobbyData.chatlog.push(data);
-        
-        onLobbyChat($('#bb-lobby-chat-messages'), data, false);
-    });
-    
     pSocket.on('update settings', function(newSettings) {
         playerSettings = newSettings;
         
@@ -324,6 +324,10 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
         if (currentPage == 'player-settings') {
             addCallout('settings', 'danger', '', 'Failed to update settings. Please try again!', 'inOut');
         }
+    });
+    
+    pSocket.on('receive chat', function(data) {
+        onReceiveChat($('.direct-chat[chatId=' + data.chatId + ']'), data.messageData, false);
     });
 }
 
@@ -519,8 +523,8 @@ function removeCallout(id) {
 }
 
 /**
- * Receive a lobby chat message.
- * @param {jQuery object} msgBox - The input element containing message text.
+ * Receive a chat message.
+ * @param {jQuery object} chatBox - The outermost element of the chat box.
  * @param {json} msgData - Message JSON data.
  *     @param {string} msgData.name - The name of the sender.
  *     @param {string} msgData.sentTime - Date string representing the time the message was sent.
@@ -529,10 +533,11 @@ function removeCallout(id) {
  *     @param {string} msgData.senderId - The Challonge participant id of the sender.
  * @param {string} msgData - The string.
  */
-function onLobbyChat(msgBox, msgData, instant) {
+function onReceiveChat(chatBox, msgData, instant) {
     var msg = createChatMessage(msgData.name, msgData.sentTime, msgData.avatar,
                                 msgData.message, msgData.senderId == participantId);
-                                
+    var msgBox = chatBox.find('.direct-chat-messages');
+    
     // Only scroll down if user is already at bottom
     var atBottom = msgBox.scrollTop() + msgBox.innerHeight() >= msgBox[0].scrollHeight;
     
@@ -547,18 +552,20 @@ function onLobbyChat(msgBox, msgData, instant) {
 /**
  * Send a message from a chat box and empty the chat box.
  * Does nothing if the box is empty.
- * @param {string} messageName - Name of the socketIO message to send with chat data.
- * @param {jQuery object} textBox - The input element containing message text.
+ * @param {jQuery object} chatBox - The outermost element of the chat box.
  */
-function sendChat(messageName, textBox) {
-    var message = textBox.val();
+function sendChat(chatBox) {
+    var input = chatBox.find('.direct-chat-input');
+    
+    var message = input.val();
     if (message == '') return;
     
-    pSocket.emit(messageName, {
-                 'message': message
+    pSocket.emit('send chat', {
+        'chatId': chatBox.attr('chatId'),
+        'message': message
     });
     
-    textBox.val('');
+    input.val('');
 }
 
 /**

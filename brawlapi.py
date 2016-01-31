@@ -1,5 +1,6 @@
 import os
 import datetime
+import uuid
 from urllib.error import HTTPError
 
 import challonge
@@ -116,6 +117,9 @@ lobbyDatas = {}
 # Set of online participant IDs
 onlineUsers = set()
 
+# All chat logs
+chats = {}
+
 # +------------------+
 # | Helper Functions |
 # +------------------+
@@ -167,6 +171,64 @@ def isUserOnline(participantId):
         
     return int(participantId) in onlineUsers
     
+# +---------------+
+# | Chat Managing |
+# +---------------+
+class Chat:
+    """
+    Holds data about a chat.
+    """
+    
+    def __init__(self, id):
+        """
+        Create the chat with a unique id.
+        """
+        # Unique id
+        self.id = id
+        
+        # JSON message data
+        self.log = []
+        
+    def getRoom(self):
+        """
+        Get the socketIO name of the chat room.
+        """
+        
+        return 'chat-{}'.format(self.id)
+        
+    def addMessage(self, data):
+        """
+        Add message data to the chat log.
+        """
+        self.log.append(data)
+
+def createChat(tourneyId):
+    """
+    Add a chat to the tourney. Returns the chat's id.
+    """
+    chatPair = None
+    chatId = None
+    
+    while chatPair is None or ((tourneyId, id) in chats):
+        chatId = str(uuid.uuid4())
+        chatPair = (tourneyId, chatId)
+        
+    chats[chatPair] = Chat(chatId)
+        
+    return chatId
+    
+
+def getChat(tourneyId, chatId):
+    """
+    Get a chat in a tourney.
+    """
+    chatPair = (tourneyId, chatId)
+    
+    if chatPair not in chats:
+        return
+    
+    return chats[chatPair]
+
 # +------------------------+
 # | Refresh data functions |
 # +------------------------+
@@ -470,7 +532,7 @@ def getLobbyData(tourneyId, matchId):
             'name': 'waitingForPlayers'
         },
         
-        'chatlog': [],
+        'chatId': None,
         'realmBans': [],
 
         'bestOf': 3, # TODO: make this configurable
@@ -611,20 +673,6 @@ def incrementMatchScore(tourneyId, matchId, participantId):
             .format(participantId, matchId, tourneyId))
     
     # Handle _setMatchScore here
-
-def addChatMessage(tourneyId, matchId, messageData):
-    """
-    Add a message to the chat log for a specific match in a tournament.
-    
-    No return.
-    """
-    lData = lobbyDatas.get((tourneyId, matchId), None)
-    if lData is None:
-        print('Couldn\'t find lobby data while updating log. mID: {}, tID: {}'
-            .format(matchId, tourneyId))
-        return
-    
-    lData['chatlog'].append(messageData)
     
 def init_example_db():
     db = db_wrapper.DBWrapper('dbname', filepath='.')

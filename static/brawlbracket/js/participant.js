@@ -25,24 +25,7 @@ var pageSetup = {
         updateLobbyUI();
         
         // Set up chat
-        $('.direct-chat').each(function() {
-            var chatBox = $(this);
-            
-            chatBox.attr('chatId', lobbyData.chatId);
-            
-            chatBox.find('.direct-chat-send').on('click', function(event) {
-                sendChat(chatBox);
-                
-                return false;
-            });
-            
-            chatBox.find('.direct-chat-input').keypress(function(e) {
-                // Enter pressed in chat message box
-                if (e.which == 13) {
-                    sendChat(chatBox);
-                }
-            });
-        });
+        $('.direct-chat').setUpChatBox(lobbyData.chatId);
         
         currentPage = 'lobby';
         
@@ -203,14 +186,7 @@ var lobbyUIFunctions = {
     },
     
     'chatlog': function () {
-        var lobbyMsgBox = $('#bb-lobby-chat-messages');
         
-        lobbyMsgBox.empty();
-        
-        for (id in lobbyData.chatlog) {
-            var msgData = lobbyData.chatlog[id];
-            onLobbyChat(lobbyMsgBox, msgData, true);
-        }
     },
     
     'realmBans': function () {
@@ -328,6 +304,20 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     
     pSocket.on('receive chat', function(data) {
         onReceiveChat($('.direct-chat[chatId=' + data.chatId + ']'), data.messageData, false);
+    });
+    
+    pSocket.on('chat log', function(data) {
+        var chatBox = $('.direct-chat[chatId=' + data.chatId + ']');
+        var msgBox = chatBox.find('.direct-chat-messages');
+        
+        console.log(msgBox);
+        
+        msgBox.empty();
+        
+        for (id in data.log) {
+            var msgData = data.log[id];
+            onReceiveChat(chatBox, msgData, true);
+        }
     });
 }
 
@@ -615,6 +605,34 @@ $.fn.extend({
             else {
                 $(this).addClass('disabled');
             }
+        });
+    },
+    
+    setUpChatBox: function(chatId) {
+        return $(this).each(function() {
+            var chatBox = $(this);
+            
+            // Set chat id so we know which chat this links to
+            chatBox.attr('chatId', chatId);
+            
+            // Make send button send
+            chatBox.find('.direct-chat-send').on('click', function(event) {
+                sendChat(chatBox);
+                
+                return false;
+            });
+            
+            // Make enter button send
+            chatBox.find('.direct-chat-input').keypress(function(e) {
+                if (e.which == 13) {
+                    sendChat(chatBox);
+                }
+            });
+            
+            // Request chat history to populate box
+            pSocket.emit('request chat log', {
+                'chatId': chatId
+            });
         });
     }
 });

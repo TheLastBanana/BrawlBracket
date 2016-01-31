@@ -7,7 +7,7 @@ from flask import url_for
 from flask import session
 from flask import g
 from flask_socketio import SocketIO
-from flask_socketio import join_room, leave_room
+from flask_socketio import join_room, leave_room, rooms
 from flask_socketio import emit
 from bidict import bidict
 
@@ -222,6 +222,12 @@ def participant_chat(data):
     chat = brawlapi.getChat(tourneyId, chatId)
     if not chat:
         return
+        
+    room = chat.getRoom()
+    
+    # User not in this chat
+    if room not in rooms():
+        return
     
     pData = brawlapi.getParticipantData(tourneyId, participantId)
     # This should really never happen, it should have been guaranteed by
@@ -244,7 +250,31 @@ def participant_chat(data):
     emit('receive chat', {
         'messageData': messageData,
         'chatId': chatId
-    }, broadcast=True, include_self=True, room=chat.getRoom())
+    }, broadcast=True, include_self=True, room=room)
+    
+# A user is requesting a full chat log
+@socketio.on('request chat log', namespace='/participant')
+def participant_request_chat_log(data):
+    tourneyId = session['tourneyId']
+    participantId = session['participantId']
+    sentTime = datetime.datetime.now().isoformat()
+    
+    chatId = data['chatId']
+    
+    chat = brawlapi.getChat(tourneyId, chatId)
+    if not chat:
+        return
+        
+    room = chat.getRoom()
+    
+    # User not in this chat
+    if room not in rooms():
+        return
+    
+    emit('chat log', {
+        'log': chat.log,
+        'chatId': chatId
+    }, broadcast=False, include_self=True, room=room)
 
 # A player updated their settings
 @socketio.on('update settings', namespace='/participant')

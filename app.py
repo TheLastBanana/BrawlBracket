@@ -89,9 +89,12 @@ def admin_chat(tourneyName, participantId):
 # Bracket viewer page
 @app.route('/app-content/bracket/<tourneyName>/<participantId>')
 def bracket(tourneyName, participantId):
+    tourneyId = tourneys[tourneyName]
+
     return render_template('app-content/bracket.html',
                            tourneyName=tourneyName,
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName),
+                           liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId))
     
 # Settings page
 @app.route('/app-content/player-settings/<tourneyName>/<participantId>')

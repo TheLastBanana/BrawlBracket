@@ -377,6 +377,23 @@ def getTournamentURL(tourneyId):
     
     return tourneyDatas[tourneyId]['full-challonge-url']
 
+def getTournamentLiveImageURL(tourneyId):
+    """
+    Get a tournament's live image URL.
+    """
+    if tourneyId is None:
+        return None
+       
+    # Try refreshing data if we can't find it
+    if tourneyId not in tourneyDatas:
+        refreshTournamentData(tourneyId)
+    
+    # If we still can't find it then it doesn't exist
+    if tourneyId not in tourneyDatas:
+        return None
+    
+    return tourneyDatas[tourneyId]['live-image-url']
+    
 def getMatchData(tourneyId, matchId):
     """
     Get data for a match.

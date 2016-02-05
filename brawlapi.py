@@ -515,6 +515,15 @@ def getLobbyData(tourneyId, matchId):
         if not checkData['winner-id']:
             prereqData = checkData
             break
+            
+    if prereqData:
+        prereqMatchNum = matchIdToNumber(prereqData['identifier'])
+        
+        prereqP1Data = getParticipantData(tourneyId, prereqData['player1-id'])
+        prereqP1Name = prereqP1Data['display-name'] if prereqP1Data else '?'
+        
+        prereqP2Data = getParticipantData(tourneyId, prereqData['player2-id'])
+        prereqP2Name = prereqP2Data['display-name'] if prereqP2Data else '?'
         
     lobbyData = {
         'participants': [
@@ -540,10 +549,10 @@ def getLobbyData(tourneyId, matchId):
         
         'state': {
             'name': 'waitingForMatch',
-            'matchNumber': matchIdToNumber(prereqData['identifier']),
+            'matchNumber': prereqMatchNum,
             'participantNames': [
-                getParticipantData(tourneyId, prereqData['player1-id'])['display-name'],
-                getParticipantData(tourneyId, prereqData['player2-id'])['display-name']
+                prereqP1Name,
+                prereqP2Name
             ]
         } if prereqData else {
             'name': 'waitingForPlayers'

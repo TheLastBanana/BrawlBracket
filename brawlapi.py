@@ -120,6 +120,11 @@ onlineUsers = set()
 # All chat logs
 chats = {}
 
+# Admin secret keys for each tourney
+adminKeys = {
+    '2119181': ['GREATPASSWORDM8']
+}
+
 # +------------------+
 # | Helper Functions |
 # +------------------+

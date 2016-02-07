@@ -70,15 +70,19 @@
                   <!-- Menu Toggle Button -->
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                    <img src="{{ userAvatar }}" class="user-image" alt="User Image">
-                    <span class="hidden-xs">{{ userName }}</span>
+                    {%- if userAvatar %}
+                      <img src="{{ userAvatar }}" class="user-image" alt="User Image">
+                    {%- endif %}
+                    <span class="hidden-xs">{{ userName or tourneyFullName }}</span>
                   </a>
                   <ul class="dropdown-menu">
                     <!-- The user image in the menu -->
                     <li class="user-header" style="height: auto;">
-                      <img src="{{ userAvatar }}" class="img-circle" alt="User Image">
+                      {%- if userAvatar %}
+                        <img src="{{ userAvatar }}" class="img-circle" alt="User Image">
+                      {%- endif %}
                       <p>
-                        {{ userName }}
+                        {{ userName or tourneyFullName }}
                       </p>
                     </li>
                     <!-- Menu Footer-->

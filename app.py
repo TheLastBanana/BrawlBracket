@@ -114,6 +114,35 @@ def lobby(tourneyName):
     return render_template('app-content/lobby.html',
                            tourneyFullName=brawlapi.getTournamentName(tourneyName))
 
+#----- Admin pages -----#
+                           
+# Admin app page
+@app.route('/<tourneyName>/admin/<adminKey>')
+def admin_landing(tourneyName, adminKey):
+    tourneyId = tourneys[tourneyName]
+    tourneyKeys = brawlapi.adminKeys[tourneyId]
+    
+    session['adminMode'] = True
+    
+    # If the key is wrong, don't let the user log in
+    if adminKey not in tourneyKeys:
+        abort(404)
+
+    return render_template('admin-app.html',
+                           tourneyName=tourneyName,
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
+                           
+# Admin dashboard
+@app.route('/app-content/admin-dashboard/<tourneyName>')
+def admin_dashboard(tourneyName):
+    tourneyId = tourneys[tourneyName]
+    
+    # If not an admin, access is denied
+    if not session['adminMode']:
+        abort(403)
+
+    return render_template('admin-dashboard.html')
+    
 #----- Page elements -----#
     
 # Connect error

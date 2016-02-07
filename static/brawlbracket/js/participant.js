@@ -1,6 +1,9 @@
 // Participant socket connection
 var pSocket;
 
+// Chat socket connection
+var chatSocket;
+
 // JSON data for lobby
 var lobbyData;
 
@@ -237,6 +240,7 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
     participantId = newParticipantId;
     
     pSocket = io.connect(window.location.origin + '/participant');
+    chatSocket = io.connect(window.location.origin + '/chat');
 
     pSocket.on('error', function() {
         $('.content-wrapper').load(getContentURL('lobby-error'));
@@ -299,11 +303,11 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
         }
     });
     
-    pSocket.on('receive chat', function(data) {
+    chatSocket.on('receive', function(data) {
         onReceiveChat($('.direct-chat[chatId=' + data.chatId + ']'), data.messageData, false);
     });
     
-    pSocket.on('chat log', function(data) {
+    chatSocket.on('receive log', function(data) {
         var chatBox = $('.direct-chat[chatId=' + data.chatId + ']');
         var msgBox = chatBox.find('.direct-chat-messages');
         
@@ -547,7 +551,7 @@ function sendChat(chatBox) {
     var message = input.val();
     if (message == '') return;
     
-    pSocket.emit('send chat', {
+    chatSocket.emit('send', {
         'chatId': chatBox.attr('chatId'),
         'message': message
     });
@@ -627,7 +631,7 @@ $.fn.extend({
             });
             
             // Request chat history to populate box
-            pSocket.emit('request chat log', {
+            chatSocket.emit('request log', {
                 'chatId': chatId
             });
         });

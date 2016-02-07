@@ -197,6 +197,8 @@ def participant_connect():
     session['matchId'] = matchId
     join_room(matchId)
     
+    print(request.sid)
+    
     print('Participant #{} connected, joined room #{}'
         .format(pId, matchId))
         
@@ -207,9 +209,12 @@ def participant_connect():
     if lobbyData['chatId'] == None:
         chatId = brawlapi.createChat(tId)
         lobbyData['chatId'] = chatId
-        
+    
+    # This needs to be done in the /chat namespace, so switch it temporarily
     chat = brawlapi.getChat(tId, lobbyData['chatId'])
+    request.namespace = '/chat'
     join_room(chat.getRoom())
+    request.namespace = '/participant'
         
     emit('join lobby', {
             'lobbyData': lobbyData,
@@ -244,10 +249,22 @@ def participant_report_win(data):
     lData = brawlapi.getLobbyData(tourneyId, matchId)
     emit('update lobby', lData,
         broadcast=True, include_self=True, room=matchId)
+    
+# A player updated their settings
+@socketio.on('update settings', namespace='/participant')
+def participant_update_settings(settings):
+    participantId = session['participantId']
+    tourneyId = session['tourneyId']
+    
+    if brawlapi.setPlayerSettings(tourneyId, participantId, settings):
+        emit('update settings', settings,
+             broadcast=False, include_self=True)
+    else:
+        emit('invalid settings')
 
 # A chat message was sent by a client
-@socketio.on('send chat', namespace='/participant')
-def participant_chat(data):
+@socketio.on('send', namespace='/chat')
+def chat_send(data):
     tourneyId = session['tourneyId']
     participantId = session['participantId']
     sentTime = datetime.datetime.now().isoformat()
@@ -264,6 +281,8 @@ def participant_chat(data):
     # User not in this chat
     if room not in rooms():
         return
+        
+    print('Made it past rooms')
     
     pData = brawlapi.getParticipantData(tourneyId, participantId)
     # This should really never happen, it should have been guaranteed by
@@ -283,14 +302,14 @@ def participant_chat(data):
     
     chat.addMessage(messageData)
     
-    emit('receive chat', {
+    emit('receive', {
         'messageData': messageData,
         'chatId': chatId
     }, broadcast=True, include_self=True, room=room)
     
 # A user is requesting a full chat log
-@socketio.on('request chat log', namespace='/participant')
-def participant_request_chat_log(data):
+@socketio.on('request log', namespace='/chat')
+def chat_request_log(data):
     tourneyId = session['tourneyId']
     participantId = session['participantId']
     sentTime = datetime.datetime.now().isoformat()
@@ -307,22 +326,10 @@ def participant_request_chat_log(data):
     if room not in rooms():
         return
     
-    emit('chat log', {
+    emit('receive log', {
         'log': chat.log,
         'chatId': chatId
     }, broadcast=False, include_self=True, room=room)
-
-# A player updated their settings
-@socketio.on('update settings', namespace='/participant')
-def participant_update_settings(settings):
-    participantId = session['participantId']
-    tourneyId = session['tourneyId']
-    
-    if brawlapi.setPlayerSettings(tourneyId, participantId, settings):
-        emit('update settings', settings,
-             broadcast=False, include_self=True)
-    else:
-        emit('invalid settings')
         
 if __name__ == '__main__':
     app.debug = True

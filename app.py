@@ -65,12 +65,14 @@ def user_login(tourneyName):
     
     return redirect(url_for('user_landing', tourneyName=tourneyName))
 
+#----- User pages -----#
+
 # User app page
 @app.route('/<tourneyName>/app/')
 def user_landing(tourneyName):
     tourneyId = session['tourneyId']
     participantId = session['participantId']
-
+    
     pData = brawlapi.getParticipantData(tourneyId, participantId)
 
     return render_template('user-app.html',
@@ -79,16 +81,16 @@ def user_landing(tourneyName):
                            tourneyName=tourneyName,
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
                            participantId=participantId)
-    
-# Admin chat page
-@app.route('/app-content/admin-chat/<tourneyName>/<participantId>')
-def admin_chat(tourneyName, participantId):
-    return render_template('app-content/admin-chat.html',
+
+# Contact admin page
+@app.route('/app-content/contact-admin/<tourneyName>')
+def contact_admin(tourneyName):
+    return render_template('app-content/contact-admin.html',
                            tourneyFullName=brawlapi.getTournamentName(tourneyName))
     
 # Bracket viewer page
-@app.route('/app-content/bracket/<tourneyName>/<participantId>')
-def bracket(tourneyName, participantId):
+@app.route('/app-content/bracket/<tourneyName>')
+def bracket(tourneyName):
     tourneyId = tourneys[tourneyName]
 
     return render_template('app-content/bracket.html',
@@ -97,33 +99,35 @@ def bracket(tourneyName, participantId):
                            liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId))
     
 # Settings page
-@app.route('/app-content/player-settings/<tourneyName>/<participantId>')
-def player_settings(tourneyName, participantId):
+@app.route('/app-content/player-settings/<tourneyName>')
+def player_settings(tourneyName):
     return render_template('app-content/player-settings.html',
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
                            tourneyName=tourneyName,
-                           participantId=participantId,
+                           participantId=session['participantId'],
                            legendData=brawlapi.orderedLegends,
                            serverRegions=list(brawlapi.serverRegions.items()))
     
 # Lobby content
-@app.route('/app-content/lobby/<tourneyName>/<participantId>')
-def lobby(tourneyName, participantId):
+@app.route('/app-content/lobby/<tourneyName>')
+def lobby(tourneyName):
     return render_template('app-content/lobby.html',
                            tourneyFullName=brawlapi.getTournamentName(tourneyName))
+
+#----- Page elements -----#
     
-# Lobby connect error
-@app.route('/app-content/lobby-error/<tourneyName>/<participantId>')
-def lobby_error(tourneyName, participantId):
+# Connect error
+@app.route('/app-content/lobby-error/<tourneyName>')
+def lobby_error(tourneyName):
     return render_template('app-content/lobby-error.html')
     
-# Lobby legend roster
+# Legend roster
 @app.route('/app-content/roster')
 def roster():
     return render_template('app-content/lobby-roster.html',
     legendData=brawlapi.orderedLegends)
     
-# Lobby map picker
+# Map picker
 @app.route('/app-content/realms')
 def realms():
     return render_template('app-content/lobby-realms.html',

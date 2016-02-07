@@ -337,7 +337,7 @@ function reportWin(participantId) {
  *   /app-content/<pageName>/<tourneyName>/<participantId>
  */
 function getContentURL(pageName) {
-    return '/app-content/' + pageName + '/' + tourneyName + '/' + participantId;
+    return '/app-content/' + pageName + '/' + tourneyName;
 }
 
 /**

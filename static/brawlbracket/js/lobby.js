@@ -157,6 +157,22 @@ function reportWin(participantId) {
 }
 
 /**
+ * Create a "Report Win" button DOM element.
+ * @param {string} participantId - The id of the participant we're reporting the win for.
+ */
+function createReportWinButton(participantId) {
+    var btn = $('<a class="btn btn-app"><i class="fa fa-trophy"></i> Report Win</a>');
+    
+    btn.on('click', function(event) {
+        reportWin(participantId);
+    
+        return false;
+    });
+    
+    return btn;
+}
+
+/**
  * Update the UI elements for every field in lobbyData.
  */
 function updateLobbyUI() {

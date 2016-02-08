@@ -110,7 +110,7 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
 /**
  * Get a content page's URL including tourney and participant data.
  * @param {string} pageName - The name of the page to load. Should exist at
- *   /app-content/<pageName>/<tourneyName>/<participantId>
+ *   /app-content/<pageName>/<tourneyName>
  */
 function getContentURL(pageName) {
     return '/app-content/' + pageName + '/' + tourneyName;
@@ -125,22 +125,6 @@ function createStatus(ready) {
     status = ready ? 'Ready' : 'Not Ready';
     
     return $('<h2 class="description-status text-' + color + '">' + status + '</h2>');
-}
-
-/**
- * Create a "Report Win" button DOM element.
- * @param {string} participantId - The id of the participant we're reporting the win for.
- */
-function createReportWinButton(participantId) {
-    var btn = $('<a class="btn btn-app"><i class="fa fa-trophy"></i> Report Win</a>');
-    
-    btn.on('click', function(event) {
-        reportWin(participantId);
-    
-        return false;
-    });
-    
-    return btn;
 }
 
 /**

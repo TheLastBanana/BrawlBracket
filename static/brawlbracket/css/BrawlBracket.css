@@ -229,3 +229,7 @@ AdminLTE tweaks
   border-top-left-radius: 3px;
   border-bottom-left-radius: 3px;
 }
+
+.content-wrapper.not-ready > * {
+  visibility: hidden;
+}

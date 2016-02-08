@@ -22,209 +22,6 @@ var tourneyName;
 // Challonge participant id of current user
 var participantId;
 
-// Functions to call after a page is loaded
-var pageSetup = {
-    'lobby': function() {
-        updateLobbyUI();
-        
-        currentPage = 'lobby';
-        
-        // DEBUG
-        //$('#bb-picker-content').load('/app-content/lobby-realms');
-    },
-    
-    'player-settings': function() {
-        // Set legend picker title
-        $('.bb-legend-picker .box-title').html('<i class="fa fa-users"></i> Click any legends you don\'t own');
-        
-        // Everyone "owns" random, so don't show it
-        $('.bb-legend-option[legend="random"]').parent().remove();
-        
-        
-        // Activate legend button controls
-        $('.bb-legend-option').click(function() {
-            $(this).toggleDisabled();
-            
-            return false;
-        });
-        
-        $('#bb-roster-invert-sel').click(function() {
-            $('.bb-legend-option').toggleDisabled();
-            
-            return false;
-        });
-        
-        $('#bb-roster-select-all').click(function() {
-           $('.bb-legend-option').removeClass('disabled');
-            
-            return false;
-        });
-        
-        $('#bb-roster-deselect-all').click(function() {
-           $('.bb-legend-option').addClass('disabled');
-            
-            return false;
-        });
-        
-        
-        // Save button sends new settings to server
-        $('#bb-save-settings').click(function() {
-            savePlayerSettings();
-            
-            return false;
-        });
-        
-        // Cancel button just resets
-        $('#bb-reset-settings').click(function() {
-            resetPlayerSettingsForm();
-            
-            return false;
-        });
-        
-        
-        // Select current settings
-        resetPlayerSettingsForm();
-    }
-};
-
-// Functions to update UI from lobbyData
-var lobbyUIFunctions = {
-    'participants': function () {
-        var participants = lobbyData.participants;
-        
-        if (lobbyData.state.name == 'waitingForMatch') return;
-        if (participants.length != 2) return;
-        
-        // Add Report Win button functionality
-        $('#bb-par1-report-win').on('click', function(event) {
-            reportWin(lobbyData.participants[0].id);
-            
-            return false;
-        });
-        
-        $('#bb-par2-report-win').on('click', function(event) {
-            reportWin(lobbyData.participants[1].id);
-            
-            return false;
-        });
-        
-        // Participant info
-        $('#bb-par1-name').text(participants[0].name + ' ').append('<sup>(' + participants[0].seed + ')</sup>');
-        $('#bb-par2-name').text(participants[1].name + ' ').append('<sup>(' + participants[1].seed + ')</sup>');
-        $('#bb-par1-avatar').attr('src', participants[0].avatar);
-        $('#bb-par2-avatar').attr('src', participants[1].avatar);
-        $('#bb-score').text(participants[0].wins + '-' + participants[1].wins);
-        
-        // Show "report win" buttons when game is being played
-        if (lobbyData.state.name == 'inGame') {
-            $('#bb-par1-description').append(createReportWinButton(lobbyData.participants[0].id));
-            $('#bb-par2-description').append(createReportWinButton(lobbyData.participants[1].id));
-        }
-        // Update participant status
-        else {
-            $('#bb-par1-description').append(createStatus(participants[0].ready));
-            $('#bb-par2-description').append(createStatus(participants[1].ready));
-        }
-    },
-    
-    'players': function () {
-        var players = lobbyData.players;
-        
-        if (lobbyData.state.name == 'waitingForMatch') return;
-        if (players.length != 2) return;
-        
-        // Player info
-        $('#bb-pla1-name').text(lobbyData.players[0].name);
-        $('#bb-pla2-name').text(lobbyData.players[1].name);
-        
-        var legendBase = '/static/brawlbracket/img/legends-small/'
-        $('#bb-pla1-legend').attr('src', legendBase + lobbyData.players[0].legend + '.png');
-        $('#bb-pla2-legend').attr('src', legendBase + lobbyData.players[1].legend + '.png');
-        
-        $('#bb-pla1-status').attr('data-original-title', lobbyData.players[0].status);
-        $('#bb-pla2-status').attr('data-original-title', lobbyData.players[1].status);
-    },
-    
-    'state': function () {
-        switch (lobbyData.state.name) {
-            case 'waitingForMatch':
-                // Disable everything and put spinners on them.
-                $('.bb-wait-for-match').append(
-                    $('<div class="overlay"><i class="fa fa-circle-o-notch fa-spin"></i></div>')
-                );
-                
-                // Add a notice at the top about the prerequisite match.
-                var msg = 'You\'ll be notified as soon as match <strong>#' + lobbyData.state.matchNumber +
-                          '</strong> (<strong>' + lobbyData.state.participantNames[0] +
-                          '</strong> vs <strong>' + lobbyData.state.participantNames[1] + '</strong>) finishes.';
-                
-                addCallout('state', 'warning',
-                           'Your opponent hasn\'t finished their game yet!',
-                           msg);
-                           
-                break;
-                
-            case 'waitingForPlayers':
-                // Add a notice about the player missing.
-                addCallout('state', 'warning',
-                           'Your opponent hasn\'t finished their game yet!',
-                           'You\'ll be notified as soon as they\'re ready.');
-                break;
-                
-            case 'inGame':
-                // Replace status with "report win" buttons
-                lobbyUIFunctions.participants();
-                break;
-        }
-        
-        switch (lobbyData.prevState.name) {
-            case 'inGame':
-                // Replace "report win" buttons with status
-                lobbyUIFunctions.participants();
-                break;
-        }
-    },
-    
-    'chatId': function () {
-        $('.direct-chat').setUpChatBox(lobbyData.chatId);
-    },
-    
-    'realmBans': function () {
-        if (lobbyData.state.name == 'waitingForMatch') return;
-        
-    },
-    
-    'bestOf': function() {
-        if (lobbyData.state.name == 'waitingForMatch') return;
-        
-        $('#bb-best-of').text('BEST OF ' + lobbyData.bestOf);
-    },
-    
-    'startTime': function() {
-        if (lobbyData.state.name == 'waitingForMatch') return;
-        
-        updateLobbyTimer();
-        if (!lobbyTimer) setInterval(updateLobbyTimer, 1000);
-    },
-    
-    'roomNumber': function () {
-        if (lobbyData.state.name == 'waitingForMatch') return;
-        
-        $('#bb-room-number').text(lobbyData.roomNumber);
-    },
-    
-    'currentRealm': function () {
-        if (lobbyData.state.name == 'waitingForMatch') return;
-        
-        $('#bb-current-realm').text(lobbyData.currentRealm);
-    },
-    
-    'challongeId': function () {
-        var matchName = 'Match #' + lobbyData.challongeId;
-        $('.bb-page-name').text(matchName);
-    }
-};
-
 
 //////////////////
 // SOCKET STUFF //
@@ -283,24 +80,6 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
         }
         
         lobbyData[data.property] = data.value;
-        
-        if (data.property in lobbyUIFunctions) {
-            lobbyUIFunctions[data.property]();
-        }
-    });
-    
-    pSocket.on('update settings', function(newSettings) {
-        playerSettings = newSettings;
-        
-        if (currentPage == 'player-settings') {
-            addCallout('settings', 'success', '', 'Settings updated!', 'inOut');
-        }
-    });
-    
-    pSocket.on('invalid settings', function() {
-        if (currentPage == 'player-settings') {
-            addCallout('settings', 'danger', '', 'Failed to update settings. Please try again!', 'inOut');
-        }
     });
     
     chatSocket.on('receive', function(data) {
@@ -311,23 +90,16 @@ function brawlBracketInit(newTourneyName, newParticipantId) {
         var chatBox = $('.direct-chat[chatId=' + data.chatId + ']');
         var msgBox = chatBox.find('.direct-chat-messages');
         
-        console.log(msgBox);
-        
         msgBox.empty();
         
         for (id in data.log) {
             var msgData = data.log[id];
             onReceiveChat(chatBox, msgData, true);
         }
+        
+        // Skip to bottom
+        msgBox.scrollTop(msgBox[0].scrollHeight);
     });
-}
-
-/**
- * Report a win to the server.
- * @param {string} participantId - The Challonge id of the winner.
- */
-function reportWin(participantId) {
-    pSocket.emit('report win', { 'player-id': participantId });
 }
 
 
@@ -428,26 +200,6 @@ function padString(str, count, padChar) {
 //////////////////
 
 /**
- * Update the UI elements for every field in lobbyData.
- */
-function updateLobbyUI() {
-    for (prop in lobbyUIFunctions) {
-        lobbyUIFunctions[prop]();
-    }
-}
-
-/**
- * Update the timer text.
- */
-function updateLobbyTimer() {
-    var timeDiff = new Date(new Date() - new Date(lobbyData.startTime));
-    var minStr = "" + timeDiff.getMinutes();
-    var secStr = "" + timeDiff.getSeconds();
-
-    $('#bb-timer').text(padString(minStr, 2, '0') + ":" + padString(secStr, 2, '0'));
-}
-
-/**
  * Show an app page, update the menu, and update the URL hash.
  * @param {string} pageName - The name of the page (see getContentURL()).
  */
@@ -457,7 +209,12 @@ function showPage(pageName) {
     $('.bb-menu-option').removeClass('active');
     $('.bb-menu-option[page="' + pageName + '"]').addClass('active');
     
-    $('.content-wrapper').load(getContentURL(pageName), pageSetup[pageName]);
+    var wrapper = $('.content-wrapper');
+    wrapper.find('.content').trigger('destroy');
+    wrapper.addClass('not-ready');
+    wrapper.load(getContentURL(pageName), function() {
+        wrapper.removeClass('not-ready');
+    });
         
     if (window.history.replaceState) {
         window.history.replaceState(null, null, '#' + pageName);
@@ -557,44 +314,6 @@ function sendChat(chatBox) {
     });
     
     input.val('');
-}
-
-/**
- * Set the settings form to current values.
- */
-function resetPlayerSettingsForm() {
-    // Check the appropriate radio button
-    $('input[name="preferred-server"]').each(function() {
-        $(this).prop('checked', $(this).attr('value') == playerSettings.preferredServer);  
-    });
-    
-    // Select owned legends
-    $('.bb-legend-option').each(function() {
-        if ($.inArray($(this).attr('legend'), playerSettings.ownedLegends) == -1) {
-            $(this).addClass('disabled');
-        }
-        else {
-            $(this).removeClass('disabled');
-        }
-    });
-}
-
-/**
- * Save the player settings and send them to the server.
- */
-function savePlayerSettings() {
-    // Find the checked preferred-server input
-    playerSettings.preferredServer = $('input[name="preferred-server"]:checked').val();
-    
-    playerSettings.ownedLegends = []
-    $('.bb-legend-option').each(function() {
-        // If not disabled, then this legend is selected
-        if (!$(this).hasClass('disabled')) {
-            playerSettings.ownedLegends.push($(this).attr('legend'));
-        }
-    });
-    
-    pSocket.emit('update settings', playerSettings);
 }
 
 $.fn.extend({

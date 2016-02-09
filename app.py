@@ -70,6 +70,9 @@ def user_login(tourneyName):
 # User app page
 @app.route('/<tourneyName>/app/')
 def user_landing(tourneyName):
+    if 'tourneyId' not in session:
+        return redirect(url_for("user_login", tourneyName=tourneyName))
+        
     tourneyId = session['tourneyId']
     participantId = session['participantId']
     

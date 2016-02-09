@@ -125,6 +125,9 @@ class User:
     on a team in a tournament. It's up to calling code to know which tournament
     this user belongs to.
     
+    NOTE: If the data in this User changes please update refreshParticipantX
+    as appropriate.
+    
     Attributes:
         userId: Unique, BrawlBracket-internal id.
         participantId: the partiicpant id for this user.

@@ -1,3 +1,6 @@
+// Lobby timer interval so it can be cleared/checked later
+var lobbyTimer;
+
 // Functions to update UI from lobbyData
 var lobbyUIFunctions = {
     'participants': function () {

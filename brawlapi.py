@@ -212,7 +212,7 @@ def refreshParticipantIndex(tourneyId):
     """
     try:
         pDatas = {}
-        uDatas = []
+        uDatas = {}
         pIndex = challonge.participants.index(tourneyId)
         
         for pData in pIndex:
@@ -382,7 +382,7 @@ def getPlayerSettings(tourneyId, playerId):
     playerSettings = {
         'preferredServer': 'na',
         # Just send legend internal ids
-        'ownedLegends': ownableLegendIds
+        'ownedLegends': util.ownableLegendIds
     }
 
     allPlayerSettings[playerPair] = playerSettings
@@ -400,7 +400,7 @@ def setPlayerSettings(tourneyId, playerId, settings):
         return False
         
     for legend in settings['ownedLegends']:
-        if legend not in ownableLegendIds:
+        if legend not in util.ownableLegendIds:
             return False
     
     allPlayerSettings[playerPair] = settings

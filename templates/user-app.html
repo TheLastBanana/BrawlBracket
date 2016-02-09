@@ -1,6 +1,6 @@
-{% from 'macros.html' import pageLayout with context %}
+{% from 'macros.html' import pageLayout %}
 
-{% call pageLayout() %}
+{% call pageLayout(tourneyName, tourneyFullName, participantId, 'lobby', 'brawlBracketParticipantInit') %}
   <li class="bb-menu-option active" page="lobby"><a href="#">
     <i class="fa fa-gamepad"></i> <span>Current Match</span>
   </a></li>

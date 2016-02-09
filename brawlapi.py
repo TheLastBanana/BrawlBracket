@@ -17,7 +17,8 @@ challonge.set_credentials(os.environ.get('BB_CHALLONGE_USER'), os.environ.get('B
 # Cached Challonge data
 tourneyDatas = {}
 matchDatas = {}
-participantDatas = {}
+participantDatas = {} # Has raw challonge participant data
+userDatas = {} # Has BrawlBracket created user data
 lobbyDatas = {}
 
 # Set of online participant IDs

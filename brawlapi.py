@@ -211,14 +211,19 @@ def refreshParticipantIndex(tourneyId):
     Todo: Make sure this is called reasonably often.
     """
     try:
-        tourneyData = {}
+        pDatas = {}
+        uDatas = []
         pIndex = challonge.participants.index(tourneyId)
         
         for pData in pIndex:
             # Convert to int
-            tourneyData[int(pData['id'])] = pData
+            pId = int(pData['id'])
             
-        participantDatas[tourneyId] = tourneyData
+            pDatas[pId] = pData
+            uDatas[pId] = util.User(participantId=pId)
+            
+        participantDatas[tourneyId] = pDatas
+        userDatas[tourneyId] = uDatas
     
     except HTTPError as e:
         print('Got {} - \"{}\" while refreshing participant index. tID:{}.'
@@ -243,6 +248,15 @@ def refreshParticipantData(tourneyId, participantId):
     try:
         pData = challonge.participants.show(tourneyId, participantId)
         participantDatas[tourneyId][participantId] = pData
+        
+        # Note: We assume here that if we've seen user before that they've
+        #       been correctly set up. We also assume that the data we're saving
+        #       about the user doesn't change (pId). If this assumption is no
+        #       longer true, we must change this.
+        if paritipantId not in userDatas[tourneyId]:
+            uData = User(participantId=participantId)
+            userDatas[tourneyId][participantId] = uData
+            
     except HTTPError as e:
         print('Got {} - \"{}\" while showing participant tID:{}, pID{}.'
             .format(e.code, e.reason, tourneyId, participantId))

@@ -1,3 +1,5 @@
+import uuid
+
 # +-----------+
 # | Util Data |
 # +-----------+
@@ -115,3 +117,35 @@ class KeySingleton(type):
         elif key not in cls.instances[cls.__name__]:
             cls.instances[cls.__name__][key] = super(KeySingleton, cls).__call__(key, *args, **kw)
         return cls.instances[cls.__name__][key]
+
+        
+class User:
+    """
+    Represents a user. This could be a participant in a tournament or a player
+    on a team in a tournament. It's up to calling code to know which tournament
+    this user belongs to.
+    
+    Attributes:
+        userId: Unique, BrawlBracket-internal id.
+        participantId: the partiicpant id for this user.
+        isAdmin:  is this user a tournament admin.
+    """
+    
+    def __init__(self, participantId=None, isAdmin=False):
+        """
+        Initialize the User.
+        
+        pariticpantId: this user's id in the tournament.
+        isAdmin: is this user a tournament admin.
+        
+        NOTE: participantId or isAdmin MUST be set. Both can be set, but at
+        least one must be.
+        """
+        if participantId is None and not isAdmin:
+            raise ValueError("Bad user init, not pId and not admin.")
+        
+        # Generate our own uuid
+        self.userId = uuid.uuid4()
+        
+        self.pariticipantId = participantId
+        self.isAdmin = isAdmin

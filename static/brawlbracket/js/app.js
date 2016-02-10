@@ -10,8 +10,8 @@ var currentPage;
 // Challonge short name for the tourney
 var tourneyName;
 
-// Challonge participant id of current user
-var participantId;
+// Id of current user
+var userId;
 
 // Participant stuff
 // Participant socket connection
@@ -31,11 +31,11 @@ var aSocket;
 /**
  * Connect to the server. Called when the app is first loaded.
  * @param {string} newTourneyName - The short tourney name (Challonge URL suffix).
- * @param {string} newParticipantId - The participant's Challonge id (or -1 for admin).
+ * @param {string} newUserId - The user's id.
  */
-function brawlBracketInit(newTourneyName, newParticipantId) {
+function brawlBracketInit(newTourneyName, newUserId) {
     tourneyName = newTourneyName;
-    participantId = newParticipantId;
+    userId = newUserId;
     
     chatSocket = io.connect(window.location.origin + '/chat');
     
@@ -288,7 +288,7 @@ function removeCallout(id) {
  */
 function onReceiveChat(chatBox, msgData, instant) {
     var msg = createChatMessage(msgData.name, msgData.sentTime, msgData.avatar,
-                                msgData.message, msgData.senderId == participantId);
+                                msgData.message, msgData.senderId == userId);
     var msgBox = chatBox.find('.direct-chat-messages');
     
     // Only scroll down if user is already at bottom

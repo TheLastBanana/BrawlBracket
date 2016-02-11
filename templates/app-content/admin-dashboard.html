@@ -1,1 +1,49 @@
-test
+{% from 'macros.html' import header with context %}
+{{ header('Admin Dashboard') }}
+
+<!-- Main content -->
+<div class="content">
+  <div class="row">
+    <div class="col-lg-7">
+      <!-- Bracket -->
+      <div class="box box-default">
+        <div class="box-body" style="overflow: auto; max-height: 700px;">
+          <object data="{{ liveImageURL }}"></object>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-5">
+      <!-- Lobby list -->
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title">Matches</h3>
+        </div>
+        <div class="box-body">
+          <table id="bb-match-table" class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Participant 1</th>
+                <th>Participant 2</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for lobby in lobbies %}
+              <tr>
+                <td>{{ lobby.id }}</td>
+                <td>{{ lobby.p1Name }}</td>
+                <td>{{ lobby.p2Name }}</td>
+                <td>{{ lobby.status }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/brawlbracket/js/admin-dashboard.js"></script>

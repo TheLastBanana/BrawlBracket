@@ -10,6 +10,7 @@ from flask_socketio import SocketIO
 from flask_socketio import join_room, leave_room, rooms
 from flask_socketio import emit
 from bidict import bidict
+from collections import namedtuple
 
 import os
 import datetime
@@ -145,8 +146,29 @@ def admin_dashboard(tourneyName):
     # If not an admin, access is denied
     if not session['adminMode']:
         abort(403)
+        
+    # Get a condensed list of lobby data for display to the admin
+    lobbies = []
+    
+    DashLobbyData = namedtuple('DashLobbyData', ['id', 'p1Name', 'p2Name', 'status'])
+    
+    matches = brawlapi.getTournamentMatches(tourneyId)
+    for matchId in matches:
+        lobbyData = brawlapi.getLobbyData(tourneyId, matchId)
+        participants = lobbyData['participants']
+        
+        dashLobbyData = DashLobbyData(
+            id = lobbyData['challongeId'],
+            p1Name = participants[0]['name'] if len(participants) > 0 else '',
+            p2Name = participants[1]['name'] if len(participants) > 1 else '',
+            status = brawlapi.getLobbyPrettyState(tourneyId, matchId))
+        
+        lobbies.append(dashLobbyData)
 
-    return render_template('app-content/admin-dashboard.html')
+    return render_template('app-content/admin-dashboard.html',
+                           liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId),
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName),
+                           lobbies=lobbies)
     
 #----- Page elements -----#
     

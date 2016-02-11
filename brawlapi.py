@@ -129,7 +129,6 @@ def createChat(tourneyId):
         
     return chatId
     
-
 def getChat(tourneyId, chatId):
     """
     Get a chat in a tourney.
@@ -320,6 +319,16 @@ def getTournamentLiveImageURL(tourneyId):
     
     return tourneyDatas[tourneyId]['live-image-url']
     
+def getTournamentMatches(tourneyId):
+    """
+    Return a dictionary from match id to match data for a tournament.
+    """
+    
+    if tourneyId not in matchDatas:
+        refreshMatchIndex(tourneyId)
+        
+    return matchDatas[tourneyId]
+    
 def getMatchData(tourneyId, matchId):
     """
     Get data for a match.
@@ -334,7 +343,7 @@ def getMatchData(tourneyId, matchId):
     # Try refreshing index data if we can't find it
     if tourneyId not in matchDatas \
             or matchId not in matchDatas[tourneyId]:
-        refreshMatchIndex()
+        refreshMatchIndex(tourneyId)
     
     # If we still can't find it then it doesn't exist
     if tourneyId not in matchDatas \
@@ -411,9 +420,10 @@ def getLobbyData(tourneyId, matchId):
     Get lobby data for a given match, or if it doesn't exist, create it and
     store it in lobbyDatas.
     """
+    
     matchPair = (tourneyId, matchId)
     
-    if matchPair in lobbyDatas:
+    if lobbyExists(tourneyId, matchId):
         return lobbyDatas[matchPair]
 
     # Not found, so make a new lobby
@@ -498,6 +508,45 @@ def getLobbyData(tourneyId, matchId):
     
     return lobbyData
 
+def getLobbyPrettyState(tourneyId, matchId):
+    """
+    Get a nicely formatted summary of a lobby's state.
+    """
+    if not lobbyExists(tourneyId, matchId):
+        return 'Does not exist'
+        
+    lobbyData = getLobbyData(tourneyId, matchId)
+    stateName = lobbyData['state']['name']
+    
+    
+    if stateName == 'waitingForMatch':
+        return 'Waiting for match #{}'.format(lobbyData['state']['matchNumber'])
+        
+    elif stateName == 'waitingForPlayers':
+        # Show participant names -- all player names in e.g. 2v2s would make a really long string
+        participants = lobbyData['participants']
+        
+        notReady = []
+        for participant in participants:
+            if not participant['ready']:
+                notReady.append(participant['name'])
+        
+        # We assume there are only 2 participants in a lobby
+        if len(notReady) == 2:
+            return 'Waiting for both participants'
+            
+        return 'Waiting for {}'.format(notReady[0])
+        
+    return 'Unknown'
+    
+def lobbyExists(tourneyId, matchId):
+    """
+    Return true if a lobby exists.
+    """
+    matchPair = (tourneyId, matchId)
+    
+    return matchPair in lobbyDatas
+    
 def getParticipants(tourneyId):
     """
     Get tuple of (name, id) for participants in a tourney.

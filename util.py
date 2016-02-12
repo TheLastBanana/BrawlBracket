@@ -147,6 +147,11 @@ class User:
         if participantId is None and not isAdmin:
             raise ValueError("Bad user init, not pId and not admin.")
         
+        # Want to make sure we're always using ints
+        if not isinstance(participantId, int):
+            raise ValueError("Bad user init, pId wasn't int ({})."
+                .format(type(participantId)))
+        
         # Generate our own uuid
         self.userId = uuid.uuid4()
         
@@ -163,6 +168,13 @@ class User:
         if not isinstance(other, User):
             return False
         
+        # Want to make sure we're always using ints
+        # This is kind of out of place but it'll help catch bugs early
+        if not isinstance(other.participantId, int) or \
+                isinstance(self.participantId, int):
+            raise ValueError("Bad eq, pId wasn't int ({}, {})."
+                .format(type(self.participantId), type(other.participantId))
+            
         uIdEq = (self.userId == other.userId)
         adminEq = (self.isAdmin == other.isAdmin)
         

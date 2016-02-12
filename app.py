@@ -250,13 +250,23 @@ def participant_connect():
     pId = session.get('participantId', None)
     tId = session.get('tourneyId', None)
     
+    # Weren't passed a pId or it was bad.
     if pId is None:
         print('Participant id missing; connection rejected')
         emit('error', {'code': 'bad-participant'},
             broadcast=False, include_self=True)
         return False
     
-    if brawlapi.isUserOnline(pId):
+    user = brawlapi.getUser(tId, pId)
+    
+    # User doesn't exist
+    if user is None:
+        print('User doesn\'t exist; connection rejected')
+        emit('error', {'code': 'bad-participant'},
+            broadcast=False, include_self=True)
+        return False
+    
+    if brawlapi.isUserOnline(tId, user):
         print('Participant #{} rejected (already connected)'.format(pId))
         emit('error', {'code': 'already-connected'},
             broadcast=False, include_self=True)

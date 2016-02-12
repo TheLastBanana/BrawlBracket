@@ -294,7 +294,6 @@ def participant_connect():
         .format(pId, matchId))
         
     lobbyData = brawlapi.getLobbyData(tId, matchId)
-    playerSettings = brawlapi.getPlayerSettings(tId, pId)
     
     # Join chat room
     if lobbyData['chatId'] == None:
@@ -309,7 +308,7 @@ def participant_connect():
         
     emit('join lobby', {
             'lobbyData': lobbyData,
-            'playerSettings': playerSettings
+            'playerSettings': user.getSettings()
         },
         broadcast=False, include_self=True)
     
@@ -347,7 +346,9 @@ def participant_update_settings(settings):
     participantId = session['participantId']
     tourneyId = session['tourneyId']
     
-    if brawlapi.setPlayerSettings(tourneyId, participantId, settings):
+    user = brawlapi.getUser(tourneyId, participantId)
+    
+    if user.setSettings(settings):
         emit('update settings', settings,
              broadcast=False, include_self=True)
     else:

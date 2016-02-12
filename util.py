@@ -159,6 +159,12 @@ class User:
         
         self.pariticipantId = participantId
         self.isAdmin = isAdmin
+        
+        self._settings = {
+            'preferredServer': 'na',
+            # Just send legend internal ids
+            'ownedLegends': ownableLegendIds
+        }
     
     def __eq__(self, other):
         """
@@ -188,3 +194,29 @@ class User:
             pIdEq = True
         
         return uIdEq and pIdEq and adminIdEq
+    
+    def getSettings(self):
+        """
+        Getter for settings.
+        """
+        return self._settings
+    
+    def setSettings(self, settings):
+        """
+        Setter for settings. Validates and overwrites player settings.
+        
+        Return true if the settings were valid and were updated, else false.
+        """
+        # Bad region
+        if settings['preferredServer'] not in serverRegions:
+            return False
+        
+        # Bad legend
+        for legend in settings['ownedLegends']:
+            if legend not in ownableLegendIds:
+                return False
+        
+        self._settings = settings
+        return True
+        
+        

@@ -8,9 +8,6 @@ import challonge
 import db_wrapper
 import util
 
-# Player settings JSON objects
-allPlayerSettings = {}
-
 # Set up challonge
 challonge.set_credentials(os.environ.get('BB_CHALLONGE_USER'), os.environ.get('BB_CHALLONGE_API_KEY'))
 
@@ -401,26 +398,6 @@ def getParticipantData(tourneyId, participantId):
 
     return participantDatas[tourneyId][participantId]
 
-def getPlayerSettings(tourneyId, playerId):
-    """
-    Get a player's settings.
-    TODO: playerIds and participantIds are separate if participants = teams.
-    """
-    playerPair = (tourneyId, playerId)
-
-    if playerPair in allPlayerSettings:
-        return allPlayerSettings[playerPair]
-
-    playerSettings = {
-        'preferredServer': 'na',
-        # Just send legend internal ids
-        'ownedLegends': util.ownableLegendIds
-    }
-
-    allPlayerSettings[playerPair] = playerSettings
-
-    return playerSettings
-
 def getLobbyData(tourneyId, matchId):
     """
     Get lobby data for a given match, or if it doesn't exist, create it and
@@ -749,23 +726,6 @@ def incrementMatchScore(tourneyId, matchId, participantId):
             .format(participantId, matchId, tourneyId))
     
     # Handle _setMatchScore here
-    
-def setPlayerSettings(tourneyId, playerId, settings):
-    """
-    Validate and overwrite player settings. Return true if the settings were
-    valid and were updated, else false.
-    """
-    playerPair = (tourneyId, playerId)
-    
-    if settings['preferredServer'] not in util.serverRegions:
-        return False
-        
-    for legend in settings['ownedLegends']:
-        if legend not in util.ownableLegendIds:
-            return False
-    
-    allPlayerSettings[playerPair] = settings
-    return True
     
 def init_example_db():
     db = db_wrapper.DBWrapper('dbname', filepath='.')

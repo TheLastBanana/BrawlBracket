@@ -22,7 +22,7 @@ userDatas = {} # Has BrawlBracket created user data
 lobbyDatas = {}
 
 # Set of online participant IDs
-onlineUsers = set()
+onlineUsers = {}
 
 # All chat logs
 chats = {}
@@ -70,18 +70,28 @@ def removeOnlineUser(participantId):
     """
     onlineUsers.remove(int(participantId))
 
-def isUserOnline(participantId):
+def isUserOnline(tourneyId, user):
     """
     Determine if a user is online.
     
-    Return False if user is None.
-    Return True if user is online.
-    Return False if user is not online.
+    Return False if:
+        - tourneyId is None.
+        - tourney doesn't exist.
+        - user is None.
+        - user is not online.
+    Return True if:
+        - user is online.
     """
-    if participantId is None:
+    # None if either args are None, or if we've had no online users for a
+    # tourney
+    if None in (tourneyId, user) or tourneyId not in onlineUsers:
         return False
-        
-    return int(participantId) in onlineUsers
+    
+    for oUser in onlineUsers[tourneyId]:
+        if user == oUser:
+            return True
+    
+    return False
     
 # +---------------+
 # | Chat Managing |

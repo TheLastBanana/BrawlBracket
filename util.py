@@ -152,3 +152,25 @@ class User:
         
         self.pariticipantId = participantId
         self.isAdmin = isAdmin
+    
+    def __eq__(self, other):
+        """
+        Are two Users equal.
+        
+        This is a very wary way of doing this but I'm scared of the possibility
+        of users matching only part way.
+        """
+        if not isinstance(other, User):
+            return False
+        
+        uIdEq = (self.userId == other.userId)
+        adminEq = (self.isAdmin == other.isAdmin)
+        
+        pIdEq = False
+        # Using is for None..
+        if self.participantId is None and other.participantId is None:
+            pIdEq = True
+        elif self.participantId == other.participantId:
+            pIdEq = True
+        
+        return uIdEq and pIdEq and adminIdEq

@@ -193,10 +193,10 @@ def realms():
 #----- SocketIO events -----#
 @socketio.on('connect', namespace='/participant')
 def participant_connect():
-    pId = session.get('participantId')
-    tId = session.get('tourneyId')
+    pId = session.get('participantId', None)
+    tId = session.get('tourneyId', None)
     
-    if not pId:
+    if pid is None:
         print('Participant id missing; connection rejected')
         emit('error', {'code': 'bad-participant'},
             broadcast=False, include_self=True)

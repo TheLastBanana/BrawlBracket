@@ -196,7 +196,7 @@ def participant_connect():
     pId = session.get('participantId', None)
     tId = session.get('tourneyId', None)
     
-    if pid is None:
+    if pId is None:
         print('Participant id missing; connection rejected')
         emit('error', {'code': 'bad-participant'},
             broadcast=False, include_self=True)

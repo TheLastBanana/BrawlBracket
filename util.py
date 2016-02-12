@@ -181,7 +181,7 @@ class User:
         if not isinstance(other.participantId, int) or \
                 isinstance(self.participantId, int):
             raise ValueError("Bad eq, pId wasn't int ({}, {})."
-                .format(type(self.participantId), type(other.participantId))
+                .format(type(self.participantId), type(other.participantId)))
             
         uIdEq = (self.userId == other.userId)
         adminEq = (self.isAdmin == other.isAdmin)

@@ -272,7 +272,7 @@ def participant_connect():
             broadcast=False, include_self=True)
         return False
     
-    brawlapi.addOnlineUser(pId)
+    brawlapi.addOnlineUser(tId, user)
     
     # Find current match, this is and INT
     matchId = brawlapi.getParticipantMatch(tId, pId)

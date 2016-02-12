@@ -58,11 +58,14 @@ def matchIdToNumber(matchId):
 # +---------------+
 # Much int paranoia
 
-def addOnlineUser(participantId):
+def addOnlineUser(tourneyId, user):
     """
     Track user as online.
     """
-    onlineUsers.add(int(participantId))
+    if tourneyId not in onlineUsers:
+        onlineUsers[tourneyId] = []
+    
+    onlineUsers[tourneyId].append(participantId)
 
 def removeOnlineUser(participantId):
     """

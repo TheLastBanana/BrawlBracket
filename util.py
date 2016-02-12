@@ -143,6 +143,8 @@ class User:
         
         NOTE: participantId or isAdmin MUST be set. Both can be set, but at
         least one must be.
+        
+        NOTE: participantId MUST be an int.
         """
         if participantId is None and not isAdmin:
             raise ValueError("Bad user init, not pId and not admin.")

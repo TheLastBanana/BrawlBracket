@@ -253,7 +253,7 @@ def refreshParticipantData(tourneyId, participantId):
         #       about the user doesn't change (pId). If this assumption is no
         #       longer true, we must change this.
         if paritipantId not in userDatas[tourneyId]:
-            uData = User(participantId=participantId)
+            uData = User(participantId=int(participantId))
             userDatas[tourneyId][participantId] = uData
             
     except HTTPError as e:

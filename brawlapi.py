@@ -586,12 +586,12 @@ def getParticipants(tourneyId):
     
     return data
     
-def getParticipantMatch(tourneyId, participantId):
+def getParticipantMatch(tourneyId, user):
     """
     Get a participants current match.
     
-    If tourneyId or participantId are None, return None.
-    If tourneyId or participantId don't exist, return None.
+    If tourneyId or user are None, return None.
+    If tourneyId or user don't exist, return None.
     
     Returns None if no valid match could be found.
     Returns the matchID as an *INT*.
@@ -607,9 +607,6 @@ def getParticipantMatch(tourneyId, participantId):
     if tourneyId not in matchDatas:
         return None
     
-    # Convert just in case
-    participantId = int(participantId)
-    
     matchId = None
     mDatas = matchDatas[tourneyId]
     for match in mDatas:
@@ -621,11 +618,11 @@ def getParticipantMatch(tourneyId, participantId):
         
         pDatas = [p for p in [p1Id, p2Id] if p is not None]
 
-        if participantId in pDatas and matchData['winner-id'] is None:
-            matchId = match
+        if user.participantId in pDatas and matchData['winner-id'] is None:
+            matchId = int(match)
             break
     
-    return int(matchId)
+    return matchId
     
 def getParticipantAvatar(pData):
     """

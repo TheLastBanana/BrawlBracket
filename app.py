@@ -274,8 +274,8 @@ def participant_connect():
     
     brawlapi.addOnlineUser(tId, user)
     
-    # Find current match, this is and INT
-    matchId = brawlapi.getParticipantMatch(tId, pId)
+    # Find current match
+    matchId = brawlapi.getParticipantMatch(tId, user)
         
     # Handle no match found
     if matchId is None:

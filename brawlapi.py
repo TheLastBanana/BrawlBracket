@@ -607,6 +607,34 @@ def getParticipantAvatar(pData):
     # participant ID as a unique Gravatar hash.
     return gravatarBase.format(pData['email-hash'] or pData['id'])
 
+def getUser(tourneyId, participantId):
+    """
+    Gets a User associated with a tournament.
+    
+    If participantId or tourneyId are None, return None.
+    If participantId or tourneyId don't exist, return None.
+    """
+    # None if either are None
+    if None in (tourneyId, participantId):
+        return None
+    
+    # Don't have the tournament participant.
+    # Can just refresh data, it will get the whole cache if it hasn't been
+    # downloaded yet.
+    if tourneyId not in userDatas or\
+            participantId not in userDatas[tourneyId]:
+        refreshParticipantData(tourneyId)
+    
+    # Either the tournament or the participant couldn't be found.
+    if tourneyId not in userDatas or\
+            participantId not in userDatas[tourneyId]:
+        return None
+    
+    for user in userDatas[tourneyId]:
+        if user.participantId == participantId:
+            return user
+
+
 # +--------------------+
 # | Set data functions |
 # +--------------------+

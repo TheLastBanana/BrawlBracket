@@ -397,23 +397,6 @@ def getPlayerSettings(tourneyId, playerId):
     allPlayerSettings[playerPair] = playerSettings
 
     return playerSettings
-    
-def setPlayerSettings(tourneyId, playerId, settings):
-    """
-    Validate and overwrite player settings. Return true if the settings were
-    valid and were updated, else false.
-    """
-    playerPair = (tourneyId, playerId)
-    
-    if settings['preferredServer'] not in util.serverRegions:
-        return False
-        
-    for legend in settings['ownedLegends']:
-        if legend not in util.ownableLegendIds:
-            return False
-    
-    allPlayerSettings[playerPair] = settings
-    return True
 
 def getLobbyData(tourneyId, matchId):
     """
@@ -674,6 +657,23 @@ def incrementMatchScore(tourneyId, matchId, participantId):
             .format(participantId, matchId, tourneyId))
     
     # Handle _setMatchScore here
+    
+def setPlayerSettings(tourneyId, playerId, settings):
+    """
+    Validate and overwrite player settings. Return true if the settings were
+    valid and were updated, else false.
+    """
+    playerPair = (tourneyId, playerId)
+    
+    if settings['preferredServer'] not in util.serverRegions:
+        return False
+        
+    for legend in settings['ownedLegends']:
+        if legend not in util.ownableLegendIds:
+            return False
+    
+    allPlayerSettings[playerPair] = settings
+    return True
     
 def init_example_db():
     db = db_wrapper.DBWrapper('dbname', filepath='.')

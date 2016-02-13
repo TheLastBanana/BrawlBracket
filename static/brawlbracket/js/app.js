@@ -82,6 +82,7 @@ function brawlBracketParticipantInit() {
     
     pSocket.on('join lobby', function(data) {
         lobbyData = data.lobbyData;
+        playerSettings = data.playerSettings;
         
         // Set empty previous state
         lobbyData.prevState = {

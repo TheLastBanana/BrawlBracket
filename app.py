@@ -15,6 +15,7 @@ from collections import namedtuple
 import os
 import datetime
 import brawlapi
+import util
 
 # Bi-directional map from tournament's Challonge URL suffix to its ID.
 # We'll actually build this from the Challonge API later.
@@ -109,8 +110,8 @@ def player_settings(tourneyName):
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
                            tourneyName=tourneyName,
                            participantId=session['participantId'],
-                           legendData=brawlapi.orderedLegends,
-                           serverRegions=list(brawlapi.serverRegions.items()))
+                           legendData=util.orderedLegends,
+                           serverRegions=list(util.serverRegions.items()))
     
 # Lobby content
 @app.route('/app-content/lobby/<tourneyName>')

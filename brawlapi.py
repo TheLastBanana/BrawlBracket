@@ -218,7 +218,7 @@ def refreshMatchData(tourneyId, matchId):
     
 def refreshParticipantIndex(tourneyId):
     """
-    Refreshes the participant data for tourneyId.
+    Refreshes the user and participant data for tourneyId.
     
     No return.
     
@@ -243,9 +243,9 @@ def refreshParticipantIndex(tourneyId):
         print('Got {} - \"{}\" while refreshing participant index. tID:{}.'
             .format(e.code, e.reason, tourneyId))
 
-def refreshParticipantData(tourneyId, participantId):
+def refreshParticipantData(tourneyId, user):
     """
-    Refreshes data for a specific participant in a tournament.
+    Refreshes user and participant data for a specific user tournament.
     If the tournament isn't cached then the index will be refreshed.
     
     No return.
@@ -260,8 +260,8 @@ def refreshParticipantData(tourneyId, participantId):
         
     # Refresh participant
     try:
-        pData = challonge.participants.show(tourneyId, participantId)
-        participantDatas[tourneyId][participantId] = pData
+        pData = challonge.participants.show(tourneyId, user.participantId)
+        participantDatas[tourneyId][user.participantId] = pData
         
         # Debug: this should never ever happend. *Should*.
         for user in userDatas[tourneyId]:

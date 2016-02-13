@@ -2,7 +2,6 @@ import os
 import datetime
 import uuid
 from urllib.error import HTTPError
-from functools import reduce
 
 import challonge
 
@@ -538,9 +537,9 @@ def lobbyExists(tourneyId, matchId):
     
     return matchPair in lobbyDatas
     
-def getParticipants(tourneyId):
+def getTournamentUsersOverview(tourneyId):
     """
-    Get tuple of (name, id) for participants in a tourney.
+    Get tuple of (name, id, online) for participants in a tourney.
     
     If tourneyId is None, return None.
     If tourneyId doesn't exist, return None.
@@ -551,16 +550,19 @@ def getParticipants(tourneyId):
         return None
         
     # Try refreshing data if we can't find it
-    if tourneyId not in participantDatas:
+    if tourneyId not in userDatas:
         refreshParticipantIndex(tourneyId)
     
     # If we still can't find one then it doesn't exist
-    if tourneyId not in participantDatas:
+    if tourneyId not in userDatas:
         return None
 
     pDatas = participantDatas[tourneyId]
-    data = [(pDatas[p]['name'], int(pDatas[p]['id'])) \
-        for p in pDatas]
+    uDatas = userDatas[tourneyId]
+    data = []
+    for user in uDatas:
+        name = pDatas[user.participantId]['name']
+        data.append(name, user.userId, isUserOnline(tourneyId, user))
     
     return data
     

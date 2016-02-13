@@ -242,13 +242,13 @@ def lobby_error(tourneyName):
 @app.route('/app-content/roster')
 def roster():
     return render_template('app-content/lobby-roster.html',
-    legendData=brawlapi.orderedLegends)
+    legendData=util.orderedLegends)
     
 # Map picker
 @app.route('/app-content/realms')
 def realms():
     return render_template('app-content/lobby-realms.html',
-                           realmData=brawlapi.orderedRealms)
+                           realmData=util.orderedRealms)
 
     
 #----- SocketIO events -----#

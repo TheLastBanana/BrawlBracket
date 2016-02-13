@@ -150,25 +150,59 @@ def admin_dashboard(tourneyName):
     # Get a condensed list of lobby data for display to the admin
     lobbies = []
     
-    DashLobbyData = namedtuple('DashLobbyData', ['id', 'p1Name', 'p2Name', 'status'])
+    DashLobbyData = namedtuple('DashLobbyData', ['id', 'p1Name', 'p2Name', 'score', 'room', 'status', 'prettyStatus'])
     
     matches = brawlapi.getTournamentMatches(tourneyId)
     for matchId in matches:
         lobbyData = brawlapi.getLobbyData(tourneyId, matchId)
         participants = lobbyData['participants']
         
+        # Assemble score string 
+        if len(participants) == 2:
+            # If there are less than 2 players, this will be either empty or just show one number
+            scoreString = '-'.join([str(pData['wins']) for pData in participants])
+        else:
+            scoreString = '0-0'
+            
+        # Add on bestOf value (e.g. best of 3)
+        scoreString += ' (Bo{})'.format(lobbyData['bestOf'])
+        
         dashLobbyData = DashLobbyData(
             id = lobbyData['challongeId'],
             p1Name = participants[0]['name'] if len(participants) > 0 else '',
             p2Name = participants[1]['name'] if len(participants) > 1 else '',
-            status = brawlapi.getLobbyPrettyState(tourneyId, matchId))
+            score = scoreString,
+            room = lobbyData['roomNumber'] or '',
+            status = lobbyData['state']['name'],
+            prettyStatus = brawlapi.getLobbyPrettyState(tourneyId, matchId))
         
         lobbies.append(dashLobbyData)
+        
+    # Get a condensed list of user data for display to the admin
+    users = []
+    
+    DashUserData = namedtuple('DashUserData', ['seed', 'name', 'prettyStatus', 'status', 'online'])
+    
+    participants = brawlapi.getTournamentParticipants(tourneyId)
+    for pId in participants:
+        participant = participants[pId]
+    
+        status, prettyStatus = brawlapi.getParticipantState(tourneyId, pId)
+    
+        dashUserData = DashUserData(
+            seed = participant['seed'],
+            name = participant['display-name'],
+            status = status,
+            prettyStatus = prettyStatus,
+            online = 'Online' if brawlapi.isUserOnline(pId) else 'Offline')
+        
+        users.append(dashUserData)
 
     return render_template('app-content/admin-dashboard.html',
                            liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId),
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           lobbies=lobbies)
+                           lobbies=lobbies,
+                           users=users)
     
 #----- Page elements -----#
     

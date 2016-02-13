@@ -14,34 +14,76 @@
     </div>
     
     <div class="col-lg-5">
-      <!-- Lobby list -->
-      <div class="box box-primary">
-        <div class="box-header with-border">
-          <h3 class="box-title">Matches</h3>
-        </div>
-        <div class="box-body">
-          <table id="bb-match-table" class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Participant 1</th>
-                <th>Participant 2</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for lobby in lobbies %}
-              <tr>
-                <td>{{ lobby.id }}</td>
-                <td>{{ lobby.p1Name }}</td>
-                <td>{{ lobby.p2Name }}</td>
-                <td>{{ lobby.status }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+      <!-- Tournament data -->
+      <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs pull-right">
+          <li class="active">
+            <a data-toggle="tab" href="#tourney-data-lobbies">Lobbies</a>
+          </li>
+          <li>
+            <a data-toggle="tab" href="#tourney-data-users">Users</a>
+          </li>
+          <li class="pull-left header">
+            <i class="fa fa-th"></i>
+            Tournament Data
+          </li>
+        </ul>
+        <div class="tab-content">
+          <!-- Lobby data -->
+          <div id="tourney-data-lobbies" class="tab-pane active">
+            <table id="bb-lobby-table" class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Participant 1</th>
+                  <th>Participant 2</th>
+                  <th>Score</th>
+                  <th>Room</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for lobby in lobbies %}
+                <tr>
+                  <td>{{ lobby.id }}</td>
+                  <td>{{ lobby.p1Name }}</td>
+                  <td>{{ lobby.p2Name }}</td>
+                  <td>{{ lobby.score }}</td>
+                  <td>{{ lobby.room }}</td>
+                  <td status="{{ lobby.status }}">{{ lobby.prettyStatus }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div> <!-- /Lobby data -->
+          
+          <!-- User data -->
+          <div id="tourney-data-users" class="tab-pane">
+            <table id="bb-user-table" class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Seed</th>
+                  <th>Name</th>
+                  <th>Online?</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <td>{{ user.seed }}</td>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.online }}</td>
+                  <td status="{{ user.status }}">{{ user.prettyStatus }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div> <!-- /User data -->
+          
         </div>
       </div>
+    
     </div>
   </div>
 </div>

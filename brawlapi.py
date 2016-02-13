@@ -329,6 +329,16 @@ def getTournamentMatches(tourneyId):
         
     return matchDatas[tourneyId]
     
+def getTournamentParticipants(tourneyId):
+    """
+    Return a dictionary from participant id to participant data for a tournament.
+    """
+    
+    if tourneyId not in participantDatas:
+        refreshParticipantIndex(tourneyId)
+        
+    return participantDatas[tourneyId]
+    
 def getMatchData(tourneyId, matchId):
     """
     Get data for a match.
@@ -606,6 +616,43 @@ def getParticipantAvatar(pData):
     # Note the 'or' here. If the player has no email hash, we use their
     # participant ID as a unique Gravatar hash.
     return gravatarBase.format(pData['email-hash'] or pData['id'])
+    
+def getParticipantState(tourneyId, participantId):
+    """
+    Get a tuple of (short state name, nicely formatted state) for a participant.
+    """
+    
+    pData = getParticipantData(tourneyId, participantId)
+    matchId = getParticipantMatch(tourneyId, participantId)
+    
+    if not matchId:
+        if pData['on-waiting-list']:
+            return ('waitingList', 'On waiting list')
+    
+        # Assume eliminated if there's no match and they're not on the waiting list
+        # TODO: are there other possible states here?
+        return ('eliminated', 'Eliminated')
+    
+    lobbyData = getLobbyData(tourneyId, matchId)
+    stateName = lobbyData['state']['name']
+    
+    # All of these states have the match appended to them
+    state = ''
+    subPrettyState = ''
+    
+    if stateName == 'waitingForMatch' or stateName == 'waitingForPlayers':
+        state = 'waiting'
+        subPrettyState = 'Waiting'
+        
+    elif stateName == 'inGame':
+        state = 'playing'
+        subPrettyState = 'Playing'
+        
+    else:
+        state = 'setup'
+        subPrettyState = 'Setting up'
+    
+    return (state, subPrettyState + ' (match #{})'.format(lobbyData['challongeId']))
 
 def getUser(tourneyId, participantId):
     """

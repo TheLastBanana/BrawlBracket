@@ -70,20 +70,21 @@ def user_login(tourneyName):
 # User app page
 @app.route('/<tourneyName>/app/')
 def user_landing(tourneyName):
-    if 'tourneyId' not in session:
+    tourneyId = session.get('tourneyId', None)
+    userId = session.get('userId', None)
+    
+    if None in (tourneyId, userId):
+        print('No tourneyId or userId; returned to login.')
         return redirect(url_for("user_login", tourneyName=tourneyName))
         
-    tourneyId = session['tourneyId']
-    userId = session['userId']
-    
     user = brawlapi.getUser(tourneyId, userId)
     
     if user is None:
-        print('User doesn\'t exist; connection rejected')
-        emit('error', {'code': 'bad-participant'},
-            broadcast=False, include_self=True)
-        return False
+        print('User doesn\'t exist; returned to login.')
+        return redirect(url_for("user_login", tourneyName=tourneyName))
     
+    # Shouldn't need to check for None, this should come guaranteed with
+    # finding a user
     pData = brawlapi.getParticipantData(tourneyId, user.participantId)
 
     return render_template('user-app.html',

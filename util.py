@@ -179,7 +179,7 @@ class User:
         # Want to make sure we're always using ints
         # This is kind of out of place but it'll help catch bugs early
         if not isinstance(other.participantId, int) or \
-                isinstance(self.participantId, int):
+                not isinstance(self.participantId, int):
             raise ValueError("Bad eq, pId wasn't int ({}, {})."
                 .format(type(self.participantId), type(other.participantId)))
             

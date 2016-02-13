@@ -335,7 +335,7 @@ def participant_disconnect():
     
     brawlapi.removeOnlineUser(tourneyId, user)
 
-    print('Participant {} disconnected'.format(user.userId))
+    print('User {} disconnected'.format(user.userId))
 
 # A participant win was reported
 @socketio.on('report win', namespace='/participant')

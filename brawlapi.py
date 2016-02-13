@@ -221,7 +221,7 @@ def refreshParticipantIndex(tourneyId):
     """
     try:
         pDatas = {}
-        uDatas = {}
+        uDatas = []
         pIndex = challonge.participants.index(tourneyId)
         
         for pData in pIndex:
@@ -229,7 +229,7 @@ def refreshParticipantIndex(tourneyId):
             pId = int(pData['id'])
             
             pDatas[pId] = pData
-            uDatas[pId] = util.User(participantId=pId)
+            uDatas.append(util.User(participantId=pId))
             
         participantDatas[tourneyId] = pDatas
         userDatas[tourneyId] = uDatas
@@ -258,13 +258,14 @@ def refreshParticipantData(tourneyId, participantId):
         pData = challonge.participants.show(tourneyId, participantId)
         participantDatas[tourneyId][participantId] = pData
         
-        # Note: We assume here that if we've seen user before that they've
-        #       been correctly set up. We also assume that the data we're saving
-        #       about the user doesn't change (pId). If this assumption is no
-        #       longer true, we must change this.
-        if paritipantId not in userDatas[tourneyId]:
-            uData = User(participantId=int(participantId))
-            userDatas[tourneyId][participantId] = uData
+        # Debug: this should never ever happend. *Should*.
+        for user in userDatas[tourneyId]:
+            if user.participantId == participantId:
+                print('TWO USERS WITH SAME PARTICIPANT ID?!')
+                break
+        
+        # Add user
+        userDatas[tourneyId].append(User(participantId=int(participantId)))
             
     except HTTPError as e:
         print('Got {} - \"{}\" while showing participant tID:{}, pID{}.'
@@ -540,6 +541,7 @@ def lobbyExists(tourneyId, matchId):
 def getTournamentUsersOverview(tourneyId):
     """
     Get tuple of (name, id, online) for participants in a tourney.
+    ID is the string representation of the user's UUID.
     
     If tourneyId is None, return None.
     If tourneyId doesn't exist, return None.
@@ -562,7 +564,7 @@ def getTournamentUsersOverview(tourneyId):
     data = []
     for user in uDatas:
         name = pDatas[user.participantId]['name']
-        data.append(name, user.userId, isUserOnline(tourneyId, user))
+        data.append(name, str(user.userId), isUserOnline(tourneyId, user))
     
     return data
     

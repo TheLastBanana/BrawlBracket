@@ -157,7 +157,7 @@ class User:
         # Generate our own uuid
         self.userId = uuid.uuid4()
         
-        self.pariticipantId = participantId
+        self.participantId = participantId
         self.isAdmin = isAdmin
         
         self._settings = {

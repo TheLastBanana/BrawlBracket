@@ -150,7 +150,16 @@ def admin_dashboard(tourneyName):
     # Get a condensed list of lobby data for display to the admin
     lobbies = []
     
-    DashLobbyData = namedtuple('DashLobbyData', ['id', 'p1Name', 'p2Name', 'score', 'room', 'status', 'prettyStatus'])
+    DashLobbyData = namedtuple('DashLobbyData', [
+        'id',
+        'p1Name',
+        'p2Name',
+        'score',
+        'room',
+        'status',
+        'prettyStatus',
+        'statusOrder'
+    ])
     
     matches = brawlapi.getTournamentMatches(tourneyId)
     for matchId in matches:
@@ -167,6 +176,8 @@ def admin_dashboard(tourneyName):
         # Add on bestOf value (e.g. best of 3)
         scoreString += ' (Bo{})'.format(lobbyData['bestOf'])
         
+        status, prettyStatus, statusOrder = brawlapi.getLobbyStatus(tourneyId, matchId)
+        
         dashLobbyData = DashLobbyData(
             id = lobbyData['challongeId'],
             p1Name = participants[0]['name'] if len(participants) > 0 else '',
@@ -174,20 +185,28 @@ def admin_dashboard(tourneyName):
             score = scoreString,
             room = lobbyData['roomNumber'] or '',
             status = lobbyData['state']['name'],
-            prettyStatus = brawlapi.getLobbyPrettyState(tourneyId, matchId))
+            prettyStatus = prettyStatus,
+            statusOrder = statusOrder)
         
         lobbies.append(dashLobbyData)
+        
         
     # Get a condensed list of user data for display to the admin
     users = []
     
-    DashUserData = namedtuple('DashUserData', ['seed', 'name', 'prettyStatus', 'status', 'online'])
+    DashUserData = namedtuple('DashUserData', [
+        'seed',
+        'name',
+        'prettyStatus',
+        'status',
+        'online'
+    ])
     
     participants = brawlapi.getTournamentParticipants(tourneyId)
     for pId in participants:
         participant = participants[pId]
     
-        status, prettyStatus = brawlapi.getParticipantState(tourneyId, pId)
+        status, prettyStatus = brawlapi.getParticipantStatus(tourneyId, pId)
     
         dashUserData = DashUserData(
             seed = participant['seed'],

@@ -50,7 +50,7 @@
                   <td>{{ lobby.p2Name }}</td>
                   <td>{{ lobby.score }}</td>
                   <td>{{ lobby.room }}</td>
-                  <td status="{{ lobby.status }}">{{ lobby.prettyStatus }}</td>
+                  <td status="{{ lobby.status }}" data-sort="{{ lobby.statusOrder }}">{{ lobby.prettyStatus }}</td>
                 </tr>
                 {% endfor %}
               </tbody>

@@ -501,24 +501,25 @@ def getLobbyData(tourneyId, matchId):
     
     return lobbyData
 
-def getLobbyPrettyState(tourneyId, matchId):
+def getLobbyStatus(tourneyId, matchId):
     """
-    Get a nicely formatted summary of a lobby's state.
+    Get a tuple of (short state name, nicely formatted status, order) for a lobby.
     """
     if not lobbyExists(tourneyId, matchId):
-        return 'Does not exist'
+        return ('doesNotExist', 'Does not exist', 99)
         
     lobbyData = getLobbyData(tourneyId, matchId)
     stateName = lobbyData['state']['name']
-    
+    participants = lobbyData['participants']
     
     if stateName == 'waitingForMatch':
-        return 'Waiting for match #{}'.format(lobbyData['state']['matchNumber'])
+        return (stateName,
+                'Waiting for match #{}'.format(lobbyData['state']['matchNumber']),
+                # Higher priority if one player is done, but still lower than if both are (i.e. waitingForPlayers)
+                5 if len(participants) > 0 else 6)
         
     elif stateName == 'waitingForPlayers':
         # Show participant names -- all player names in e.g. 2v2s would make a really long string
-        participants = lobbyData['participants']
-        
         notReady = []
         for participant in participants:
             if not participant['ready']:
@@ -526,11 +527,17 @@ def getLobbyPrettyState(tourneyId, matchId):
         
         # We assume there are only 2 participants in a lobby
         if len(notReady) == 2:
-            return 'Waiting for both participants'
-            
-        return 'Waiting for {}'.format(notReady[0])
+            return (stateName,
+                    'Waiting for both participants',
+                    # Both players inactive, so lower priority than if one is online
+                    4)
         
-    return 'Unknown'
+        return (stateName,
+                'Waiting for {}'.format(notReady[0]),
+                # One player inactive, so lower priority than if both are online
+                3)
+            
+    return ('unknown', 'Unknown', 98)
     
 def lobbyExists(tourneyId, matchId):
     """
@@ -617,7 +624,7 @@ def getParticipantAvatar(pData):
     # participant ID as a unique Gravatar hash.
     return gravatarBase.format(pData['email-hash'] or pData['id'])
     
-def getParticipantState(tourneyId, participantId):
+def getParticipantStatus(tourneyId, participantId):
     """
     Get a tuple of (short state name, nicely formatted state) for a participant.
     """

@@ -55,6 +55,10 @@ $(function() {
     lobbyTable.DataTable({
         'columnDefs': [
             { 'type': 'anti-empty', 'targets': [1, 2, 4] }
+        ],
+        'order': [
+            [5, 'asc'],
+            [0, 'asc']
         ]
     });
     

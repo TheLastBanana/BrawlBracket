@@ -2,6 +2,7 @@ import os
 import datetime
 import uuid
 from urllib.error import HTTPError
+from functools import reduce
 
 import challonge
 
@@ -648,7 +649,7 @@ def getParticipantStatus(tourneyId, participantId):
     
     return (state, subPrettyState + ' (match #{})'.format(lobbyData['challongeId']))
 
-def getUser(tourneyId, participantId):
+def getUser(tourneyId, userId):
     """
     Gets a User associated with a tournament.
     
@@ -656,25 +657,33 @@ def getUser(tourneyId, participantId):
     If participantId or tourneyId don't exist, return None.
     """
     # None if either are None
-    if None in (tourneyId, participantId):
+    if None in (tourneyId, userId):
         return None
     
     # Don't have the tournament participant.
     # Can just refresh data, it will get the whole cache if it hasn't been
     # downloaded yet.
-    if tourneyId not in userDatas or\
-            participantId not in userDatas[tourneyId]:
-        refreshParticipantData(tourneyId)
+    if tourneyId not in userDatas:
+        refreshParticipantIndex(tourneyId)
+    # Check if user exists
+    else:
+        for user in userDatas[tourneyId]:
+            # If the user exists, return early.
+            if user.userId == userId:
+                return user
+        
+        # If the user isn't found then try refreshing
+        # We would prefer this to be refreshParticipantData, but we don't
+        # have access to a pId
+        refreshParticipantIndex(tourneyId)
     
-    # Either the tournament or the participant couldn't be found.
-    if tourneyId not in userDatas or\
-            participantId not in userDatas[tourneyId]:
-        return None
-    
+    # Final check, if the user doesn't exist by now then return None
     for user in userDatas[tourneyId]:
-        if user.participantId == participantId:
+        # If the user exists, return early.
+        if user.userId == userId:
             return user
-
+    
+    return None
 
 # +--------------------+
 # | Set data functions |

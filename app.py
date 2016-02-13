@@ -205,7 +205,7 @@ def admin_dashboard(tourneyName):
         
         
     # Get a condensed list of user data for display to the admin
-    users = []
+    dashUserDatas = []
     
     DashUserData = namedtuple('DashUserData', [
         'seed',
@@ -215,26 +215,29 @@ def admin_dashboard(tourneyName):
         'online'
     ])
     
-    participants = brawlapi.getTournamentParticipants(tourneyId)
-    for pId in participants:
-        participant = participants[pId]
-    
-        status, prettyStatus = brawlapi.getParticipantStatus(tourneyId, pId)
+    users = brawlapi.getTournamentUsers(tourneyId)
+    for user in users:
+        status, prettyStatus = brawlapi.getParticipantStatus(tourneyId, user)
+        pData = brawlapi.getParticipantData(tourneyId, user.participantId)
+        
+        online = 'Offline'
+        if brawlapi.isUserOnline(tourneyId, user):
+            online = 'Online'
     
         dashUserData = DashUserData(
-            seed = participant['seed'],
-            name = participant['display-name'],
+            seed = pData['seed'],
+            name = pData['display-name'],
             status = status,
             prettyStatus = prettyStatus,
-            online = 'Online' if brawlapi.isUserOnline(pId) else 'Offline')
+            online = online)
         
-        users.append(dashUserData)
+        dashUserDatas.append(dashUserData)
 
     return render_template('app-content/admin-dashboard.html',
                            liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId),
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
                            lobbies=lobbies,
-                           users=users)
+                           users=dashUserDatas)
     
 #----- Page elements -----#
     

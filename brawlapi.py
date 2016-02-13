@@ -345,15 +345,20 @@ def getTournamentMatches(tourneyId):
         
     return matchDatas[tourneyId]
     
-def getTournamentParticipants(tourneyId):
+def getTournamentUsers(tourneyId):
     """
-    Return a dictionary from participant id to participant data for a tournament.
+    Return None if the tourney doesn't exist.
+    Return a list of users for a tournament.
     """
-    
-    if tourneyId not in participantDatas:
+    # Refresh if we don't have the tourney
+    if tourneyId not in userDatas:
         refreshParticipantIndex(tourneyId)
-        
-    return participantDatas[tourneyId]
+    
+    # Tourney doesn't exist
+    if tourneyId not in userDatas:
+        return None
+    
+    return userDatas[tourneyId]
     
 def getMatchData(tourneyId, matchId):
     """
@@ -621,13 +626,13 @@ def getParticipantAvatar(pData):
     # participant ID as a unique Gravatar hash.
     return gravatarBase.format(pData['email-hash'] or pData['id'])
     
-def getParticipantStatus(tourneyId, participantId):
+def getParticipantStatus(tourneyId, user):
     """
     Get a tuple of (short state name, nicely formatted state) for a participant.
     """
     
-    pData = getParticipantData(tourneyId, participantId)
-    matchId = getParticipantMatch(tourneyId, participantId)
+    pData = getParticipantData(tourneyId, user.participantId)
+    matchId = getParticipantMatch(tourneyId, user)
     
     if not matchId:
         if pData['on-waiting-list']:

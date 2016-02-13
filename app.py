@@ -320,15 +320,22 @@ def participant_connect():
     
 @socketio.on('disconnect', namespace='/participant')
 def participant_disconnect():
-    pId = session.get('participantId')
+    tourneyId = session.get('tourneyId', None)
+    userId = session.get('userId', None)
     
-    # No pId, so we're not online anyway
-    if pId == None:
+    # Bad info, but they've disconnected anyways...
+    if None in (tourneyId, userId):
         return
     
-    brawlapi.removeOnlineUser(pId)
+    user = brawlapi.getUser(tourneyId, userId)
+    
+    # User doesn't exist
+    if user is None:
+        return
+    
+    brawlapi.removeOnlineUser(tourneyId, user)
 
-    print('Participant #{} disconnected'.format(pId))
+    print('Participant {} disconnected'.format(user.userId))
 
 # A participant win was reported
 @socketio.on('report win', namespace='/participant')

@@ -64,11 +64,16 @@ def addOnlineUser(tourneyId, user):
     
     onlineUsers[tourneyId].append(user)
 
-def removeOnlineUser(participantId):
+def removeOnlineUser(tourneyId, user):
     """
     Stop tracking user as online.
     """
-    onlineUsers.remove(int(participantId))
+    try:
+        onlineUsers[tourneyId].remove(user)
+    # User not online
+    except ValueError as e:
+        print('Tried to remove online user that wasn\'t online. {}'
+            .format(user))
 
 def isUserOnline(tourneyId, user):
     """

@@ -113,10 +113,15 @@ def bracket(tourneyName):
 # Settings page
 @app.route('/app-content/player-settings/<tourneyName>')
 def player_settings(tourneyName):
+    userId = session.get('userId', None)
+    if userId is None:
+        print('No userId; returned to login.')
+        return redirect(url_for("user_login", tourneyName=tourneyName))
+        
     return render_template('app-content/player-settings.html',
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
                            tourneyName=tourneyName,
-                           participantId=session['participantId'],
+                           participantId=session['userId'],
                            legendData=util.orderedLegends,
                            serverRegions=list(util.serverRegions.items()))
     
@@ -358,10 +363,17 @@ def participant_report_win(data):
 # A player updated their settings
 @socketio.on('update settings', namespace='/participant')
 def participant_update_settings(settings):
-    participantId = session['participantId']
+    userId = session['userId']
     tourneyId = session['tourneyId']
     
-    user = brawlapi.getUser(tourneyId, participantId)
+    # Weren't passed a userId
+    if userId is None:
+        print('User id missing; connection rejected')
+        emit('error', {'code': 'bad-participant'},
+            broadcast=False, include_self=True)
+        return False
+    
+    user = brawlapi.getUser(tourneyId, userId)
     
     if user.setSettings(settings):
         emit('update settings', settings,

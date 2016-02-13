@@ -417,7 +417,6 @@ def chat_send(data):
 @socketio.on('request log', namespace='/chat')
 def chat_request_log(data):
     tourneyId = session['tourneyId']
-    participantId = session['participantId']
     sentTime = datetime.datetime.now().isoformat()
     
     chatId = data['chatId']

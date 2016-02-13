@@ -338,9 +338,10 @@ def getMatchData(tourneyId, matchId):
         return None
     
     # Try refreshing index data if we can't find it
-    if tourneyId not in matchDatas \
-            or matchId not in matchDatas[tourneyId]:
+    if tourneyId not in matchDatas:
         refreshMatchIndex(tourneyId)
+    elif matchId not in matchDatas[tourneyId]:
+        refreshMatchData(tourneyId, matchId)
     
     # If we still can't find it then it doesn't exist
     if tourneyId not in matchDatas \

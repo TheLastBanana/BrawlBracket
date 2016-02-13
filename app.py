@@ -273,7 +273,8 @@ def participant_connect():
         return False
     
     if brawlapi.isUserOnline(tourneyId, user):
-        print('Participant #{} rejected (already connected)'.format(pId))
+        print('User {} rejected (already connected)'
+            .format(user.userId))
         emit('error', {'code': 'already-connected'},
             broadcast=False, include_self=True)
         return False
@@ -285,7 +286,7 @@ def participant_connect():
         
     # Handle no match found
     if matchId is None:
-        print('Participant #{} connected but found no match.'.format(pId))
+        print('User {} connected but found no match.'.format(user.userId))
         emit('error', {'code': 'no-match'},
             broadcast=False, include_self=True)
         return False
@@ -296,8 +297,8 @@ def participant_connect():
     
     print(request.sid)
     
-    print('Participant #{} connected, joined room #{}'
-        .format(pId, matchId))
+    print('Participant {} connected, joined room #{}'
+        .format(user.userId, matchId))
         
     lobbyData = brawlapi.getLobbyData(tourneyId, matchId)
     

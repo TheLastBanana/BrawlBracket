@@ -92,7 +92,7 @@ def user_landing(tourneyName):
                            userAvatar=brawlapi.getParticipantAvatar(pData),
                            tourneyName=tourneyName,
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           participantId=user.participantId)
+                           participantId=user.userId)
 
 # Contact admin page
 @app.route('/app-content/contact-admin/<tourneyName>')
@@ -372,8 +372,24 @@ def participant_update_settings(settings):
 # A chat message was sent by a client
 @socketio.on('send', namespace='/chat')
 def chat_send(data):
-    tourneyId = session['tourneyId']
-    participantId = session['participantId']
+    tourneyId = session.get('tourneyId', None)
+    userId = session.get('userId', None)
+    
+    # No tourneyId, userId. Could probably be handled more gracefully
+    if None in (tourneyId, userId):
+        print('Tried to send chat message with bad info. tId: {}, uId: {}'
+            .format(tourneyId, userId))
+        return
+    
+    user = brawlapi.getUser(tourneyId, userId)
+    
+    # User doesn't exist
+    if user is None:
+        print('User doesn\'t exist; connection rejected')
+        emit('error', {'code': 'bad-participant'},
+            broadcast=False, include_self=True)
+        return False
+        
     sentTime = datetime.datetime.now().isoformat()
     
     chatId = data['chatId']
@@ -388,20 +404,18 @@ def chat_send(data):
     # User not in this chat
     if room not in rooms():
         return
-        
-    print('Made it past rooms')
     
-    pData = brawlapi.getParticipantData(tourneyId, participantId)
+    pData = brawlapi.getParticipantData(tourneyId, user.participantId)
     # This should really never happen, it should have been guaranteed by
     # them connecting
     if pData is None:
-        print('Couldn\'t find pData while sending chat. pID: {}, tID: {}'
-            .format(participantId, tourneyId))
+        print('Couldn\'t find pData while sending chat. tID: {}, pID: {}'
+            .format(tourneyId, user.participantId))
         return
     
     avatarURL = brawlapi.getParticipantAvatar(pData)
     
-    messageData = {'senderId': participantId,
+    messageData = {'senderId': str(user.userId),
                    'avatar': avatarURL,
                    'name': pData['name'],
                    'message': message,

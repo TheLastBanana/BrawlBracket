@@ -242,41 +242,7 @@ def refreshParticipantIndex(tourneyId):
     except HTTPError as e:
         print('Got {} - \"{}\" while refreshing participant index. tID:{}.'
             .format(e.code, e.reason, tourneyId))
-
-def refreshParticipantData(tourneyId, user):
-    """
-    Refreshes user and participant data for a specific user tournament.
-    If the tournament isn't cached then the index will be refreshed.
-    
-    No return.
-    """
-    # If we don't have the tourney, try and get it
-    if tourneyId not in participantDatas:
-        refreshParticipantIndex(tourneyId)
-        
-        # We tried our best to get the participant, it's up to calling code 
-        # to discover if it's not there
-        return
-        
-    # Refresh participant
-    try:
-        pData = challonge.participants.show(tourneyId, user.participantId)
-        participantDatas[tourneyId][user.participantId] = pData
-        
-        # Debug: this should never ever happend. *Should*.
-        for user in userDatas[tourneyId]:
-            if user.participantId == participantId:
-                print('TWO USERS WITH SAME PARTICIPANT ID?!')
-                break
-        
-        # Add user
-        userDatas[tourneyId].append(User(participantId=int(participantId)))
-            
-    except HTTPError as e:
-        print('Got {} - \"{}\" while showing participant tID:{}, pID{}.'
-            .format(e.code, e.reason, tourneyId, participantId))
-    
-   
+       
 # +--------------------+
 # | Get data functions |
 # +--------------------+
@@ -687,8 +653,6 @@ def getUser(tourneyId, userId):
                 return user
         
         # If the user isn't found then try refreshing
-        # We would prefer this to be refreshParticipantData, but we don't
-        # have access to a pId
         refreshParticipantIndex(tourneyId)
     
     # Final check, if the user doesn't exist by now then return None

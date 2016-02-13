@@ -320,9 +320,9 @@ def getTournamentUsers(tourneyId):
     if tourneyId not in userDatas:
         refreshParticipantIndex(tourneyId)
     
-    # Tourney doesn't exist
-    if tourneyId not in userDatas:
-        return None
+        # Tourney doesn't exist
+        if tourneyId not in userDatas:
+            return None
     
     return userDatas[tourneyId]
     
@@ -561,10 +561,10 @@ def getParticipantMatch(tourneyId, user):
     # Try refreshing data if we can't find it
     if tourneyId not in matchDatas:
         refreshMatchIndex(tourneyId)
-    
-    # If we still can't find it then it doesn't exist
-    if tourneyId not in matchDatas:
-        return None
+        
+        # If we still can't find it then it doesn't exist
+        if tourneyId not in matchDatas:
+            return None
     
     matchId = None
     mDatas = matchDatas[tourneyId]

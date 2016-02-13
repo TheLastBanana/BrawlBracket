@@ -216,7 +216,7 @@ def refreshMatchData(tourneyId, matchId):
         print('Got {} - \"{}\" while showing match tID:{}, mID{}.'
             .format(e.code, e.reason, tourneyId, matchId))
     
-def refreshParticipantIndex(tourneyId):
+def refreshUserIndex(tourneyId):
     """
     Refreshes the user and participant data for tourneyId.
     
@@ -318,7 +318,7 @@ def getTournamentUsers(tourneyId):
     """
     # Refresh if we don't have the tourney
     if tourneyId not in userDatas:
-        refreshParticipantIndex(tourneyId)
+        refreshUserIndex(tourneyId)
     
         # Tourney doesn't exist
         if tourneyId not in userDatas:
@@ -367,7 +367,7 @@ def getParticipantData(tourneyId, participantId):
     # Try refreshing data if we can't find it
     if tourneyId not in participantDatas \
             or participantId not in participantDatas[tourneyId]:
-        refreshParticipantIndex(tourneyId)
+        refreshUserIndex(tourneyId)
         
     # If we still can't find one then it doesn't exist
     if tourneyId not in participantDatas \
@@ -530,7 +530,7 @@ def getTournamentUsersOverview(tourneyId):
         
     # Try refreshing data if we can't find it
     if tourneyId not in userDatas:
-        refreshParticipantIndex(tourneyId)
+        refreshUserIndex(tourneyId)
     
     # If we still can't find one then it doesn't exist
     if tourneyId not in userDatas:
@@ -645,7 +645,7 @@ def getUser(tourneyId, userId):
     # Can just refresh data, it will get the whole cache if it hasn't been
     # downloaded yet.
     if tourneyId not in userDatas:
-        refreshParticipantIndex(tourneyId)
+        refreshUserIndex(tourneyId)
     # Check if user exists
     else:
         for user in userDatas[tourneyId]:
@@ -654,7 +654,7 @@ def getUser(tourneyId, userId):
                 return user
         
         # If the user isn't found then try refreshing
-        refreshParticipantIndex(tourneyId)
+        refreshUserIndex(tourneyId)
     
     # Final check, if the user doesn't exist by now then return None
     for user in userDatas[tourneyId]:

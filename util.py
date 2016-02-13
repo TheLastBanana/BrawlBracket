@@ -184,7 +184,7 @@ class User:
                 .format(type(self.participantId), type(other.participantId)))
             
         uIdEq = (self.userId == other.userId)
-        adminEq = (self.isAdmin == other.isAdmin)
+        adminIdEq = (self.isAdmin == other.isAdmin)
         
         pIdEq = False
         # Using is for None..

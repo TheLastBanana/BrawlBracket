@@ -91,7 +91,7 @@ def user_landing(tourneyName):
                            userAvatar=brawlapi.getParticipantAvatar(pData),
                            tourneyName=tourneyName,
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           participantId=participantId)
+                           participantId=user.participantId)
 
 # Contact admin page
 @app.route('/app-content/contact-admin/<tourneyName>')

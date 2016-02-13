@@ -253,17 +253,17 @@ def realms():
 #----- SocketIO events -----#
 @socketio.on('connect', namespace='/participant')
 def participant_connect():
-    pId = session.get('participantId', None)
-    tId = session.get('tourneyId', None)
+    userId = session.get('userId', None)
+    tourneyId = session.get('tourneyId', None)
     
-    # Weren't passed a pId or it was bad.
-    if pId is None:
-        print('Participant id missing; connection rejected')
+    # Weren't passed a userId
+    if userId is None:
+        print('User id missing; connection rejected')
         emit('error', {'code': 'bad-participant'},
             broadcast=False, include_self=True)
         return False
     
-    user = brawlapi.getUser(tId, pId)
+    user = brawlapi.getUser(tourneyId, userId)
     
     # User doesn't exist
     if user is None:
@@ -272,16 +272,16 @@ def participant_connect():
             broadcast=False, include_self=True)
         return False
     
-    if brawlapi.isUserOnline(tId, user):
+    if brawlapi.isUserOnline(tourneyId, user):
         print('Participant #{} rejected (already connected)'.format(pId))
         emit('error', {'code': 'already-connected'},
             broadcast=False, include_self=True)
         return False
     
-    brawlapi.addOnlineUser(tId, user)
+    brawlapi.addOnlineUser(tourneyId, user)
     
     # Find current match
-    matchId = brawlapi.getParticipantMatch(tId, user)
+    matchId = brawlapi.getParticipantMatch(tourneyId, user)
         
     # Handle no match found
     if matchId is None:
@@ -299,15 +299,15 @@ def participant_connect():
     print('Participant #{} connected, joined room #{}'
         .format(pId, matchId))
         
-    lobbyData = brawlapi.getLobbyData(tId, matchId)
+    lobbyData = brawlapi.getLobbyData(tourneyId, matchId)
     
     # Join chat room
     if lobbyData['chatId'] == None:
-        chatId = brawlapi.createChat(tId)
+        chatId = brawlapi.createChat(tourneyId)
         lobbyData['chatId'] = chatId
     
     # This needs to be done in the /chat namespace, so switch it temporarily
-    chat = brawlapi.getChat(tId, lobbyData['chatId'])
+    chat = brawlapi.getChat(tourneyId, lobbyData['chatId'])
     request.namespace = '/chat'
     join_room(chat.getRoom())
     request.namespace = '/participant'

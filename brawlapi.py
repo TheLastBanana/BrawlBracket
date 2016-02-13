@@ -62,7 +62,7 @@ def addOnlineUser(tourneyId, user):
     if tourneyId not in onlineUsers:
         onlineUsers[tourneyId] = []
     
-    onlineUsers[tourneyId].append(participantId)
+    onlineUsers[tourneyId].append(user)
 
 def removeOnlineUser(participantId):
     """

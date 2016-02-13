@@ -195,6 +195,11 @@ class User:
         
         return uIdEq and pIdEq and adminIdEq
     
+    def __repr__(self):
+        return 'User(uId: {}, pId: {}, isAdmin: {}, settings: {})' \
+            .format(self.userId, self.participantId, self.isAdmin,
+                    self._settings)
+    
     def getSettings(self):
         """
         Getter for settings.

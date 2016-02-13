@@ -583,7 +583,7 @@ def getParticipantMatch(tourneyId, user):
     Returns None if no valid match could be found.
     Returns the matchID as an *INT*.
     """
-    if None in (tourneyId, participantId):
+    if None in (tourneyId, user):
         return None
     
     # Try refreshing data if we can't find it

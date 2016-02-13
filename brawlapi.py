@@ -564,7 +564,7 @@ def getTournamentUsersOverview(tourneyId):
     data = []
     for user in uDatas:
         name = pDatas[user.participantId]['name']
-        data.append(name, str(user.userId), isUserOnline(tourneyId, user))
+        data.append((name, str(user.userId), isUserOnline(tourneyId, user)))
     
     return data
     

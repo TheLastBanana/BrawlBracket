@@ -1,3 +1,8 @@
+from collections import namedtuple
+import uuid
+import os
+import datetime
+
 from flask import Flask  
 from flask import render_template  
 from flask import request
@@ -10,10 +15,7 @@ from flask_socketio import SocketIO
 from flask_socketio import join_room, leave_room, rooms
 from flask_socketio import emit
 from bidict import bidict
-from collections import namedtuple
 
-import os
-import datetime
 import brawlapi
 import util
 
@@ -48,21 +50,17 @@ def user_login(tourneyName):
         prettyName = brawlapi.getTournamentName(tourneyId)
         tourneyURL = brawlapi.getTournamentURL(tourneyId)
         
-        participantData = brawlapi.getParticipants(tourneyId)
-        # Boolean value is whether the user is already logged in
-        participants = [(p[0], p[1], 
-                        brawlapi.isUserOnline(int(p[1])))
-                            for p in participantData]
+        userList = brawlapi.getTournamentUsersOverview(tourneyId)
 
         return render_template('user-login.html',
                                tourneyName=prettyName,
-                               participants=participants,
+                               participants=userList,
                                challongeURL=tourneyURL)
    
     # POST was used
     # TODO: validate user ID
-    participantId = request.form['user']
-    session['participantId'] = participantId
+    userIdStr = request.form['user']
+    session['userId'] = uuid.UUID(userIdStr)
     session['tourneyId'] = tourneyId
     
     return redirect(url_for('user_landing', tourneyName=tourneyName))
@@ -76,9 +74,17 @@ def user_landing(tourneyName):
         return redirect(url_for("user_login", tourneyName=tourneyName))
         
     tourneyId = session['tourneyId']
-    participantId = session['participantId']
+    userId = session['userId']
     
-    pData = brawlapi.getParticipantData(tourneyId, participantId)
+    user = brawlapi.getUser(tourneyId, userId)
+    
+    if user is None:
+        print('User doesn\'t exist; connection rejected')
+        emit('error', {'code': 'bad-participant'},
+            broadcast=False, include_self=True)
+        return False
+    
+    pData = brawlapi.getParticipantData(tourneyId, user.participantId)
 
     return render_template('user-app.html',
                            userName=pData['display-name'],

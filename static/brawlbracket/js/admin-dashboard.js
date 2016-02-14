@@ -1,3 +1,6 @@
+// Handle for table refresh interval
+var tableRefresh;
+
 // Custom sorting function to put empty elements at the bottom
 $.extend($.fn.dataTableExt.oSort, {
     'anti-empty-asc': function (a, b) {
@@ -15,116 +18,224 @@ $.extend($.fn.dataTableExt.oSort, {
     }
 });
 
-$(function() {
-    var lobbyTable = $('#bb-lobby-table');
+/**
+ * Return a formatted display string for a lobby's status.
+ * @param {json} data - The cell data received from the DataTable.
+ */
+function formatLobbyStatus(data) {
+    var cell = $(this);
+    var color = '';
+    var icon = '';
     
-    // Color and add icons for lobby status
-    lobbyTable.find('tbody tr td:nth-child(6)').each(function() {
-        var cell = $(this);
-        var status = cell.attr('status');
-        var color = '';
-        var icon = '';
-        
-        switch (status) {
-            case 'waitingForMatch':
-                icon = 'clock-o';
-                color = 'yellow';
-                break;
-                
-            case 'waitingForPlayers':
-                icon = 'user-times';
-                color = 'yellow';
-                break;
-                
-            case 'inGame':
-                icon = 'play';
-                color = 'green';
-                break;
-                
-            default:
-                // Assume setting up lobby
-                icon = 'cog';
-                color = 'aqua';
-                break;
-        }
-        
-        cell.prepend('<i class="fa fa-fw fa-' + icon + '"></i> ');
-        cell.wrapInner('<span class="text-' + color + '"></span>');
-    });
+    switch (data.state) {
+        case 'waitingForMatch':
+            icon = 'clock-o';
+            color = 'yellow';
+            break;
+            
+        case 'waitingForPlayers':
+            icon = 'user-times';
+            color = 'yellow';
+            break;
+            
+        case 'inGame':
+            icon = 'play';
+            color = 'green';
+            break;
+            
+        default:
+            // Assume setting up lobby
+            icon = 'cog';
+            color = 'aqua';
+            break;
+    }
     
-    lobbyTable.DataTable({
-        'columnDefs': [
-            { 'type': 'anti-empty', 'targets': [1, 2, 4] }
-        ],
+    return '<span class="text-' +
+           color +
+           '"><i class="fa fa-fw fa-' +
+           icon +
+           '"></i> ' +
+           data.display +
+           '</span>';
+}
+
+/**
+ * Return a formatted display string for a user's status.
+ * @param {json} data - The cell data received from the DataTable.
+ */
+function formatUserStatus(data) {
+    var cell = $(this);
+    var color = '';
+    var icon = '';
+        
+    switch (data.status) {
+        case 'waiting':
+            icon = 'clock-o';
+            color = 'yellow';
+            break;
+            
+        case 'waitingList':
+            icon = 'list-alt';
+            color = 'muted';
+            break;
+            
+        case 'eliminated':
+            icon = 'times';
+            color = 'red';
+            break;
+            
+        case 'playing':
+            icon = 'play';
+            color = 'green';
+            break;
+            
+        default:
+            // Assume setting up lobby
+            icon = 'cog';
+            color = 'info';
+            break;
+    }
+    
+    return '<span class="text-' +
+           color +
+           '"><i class="fa fa-fw fa-' +
+           icon +
+           '"></i> ' +
+           data.display +
+           '</span>';
+}
+
+/**
+ * Return a formatted display string for a user's online/offline status.
+ * @param {json} data - The cell data received from the DataTable.
+ */
+function formatUserOnline(data) {
+    var labelType;
+    
+    switch (data) {
+        case 'Online':
+            labelType = 'success';
+            break;
+        
+        case 'Offline':
+            labelType = 'danger';
+            break;
+            
+        default:
+            labelType = 'warning';
+            break;
+    }
+    
+    return '<span class="label label-' + labelType + '">' + data + '</span>';
+}
+
+$(function () {
+    // Set up the lobby table
+    var lobbyTable = $('#bb-lobby-table').DataTable({
+        // Sort by status, then by id
         'order': [
             [5, 'asc'],
             [0, 'asc']
+        ],
+        
+        'ajax': '/app-data/lobbies/' + tourneyName,
+        
+        'columns': [
+            { 'data': 'id' },
+            
+            {
+                'data': 'p1Name',
+                'type': 'anti-empty'
+            },
+            
+            {
+                'data': 'p2Name',
+                'type': 'anti-empty'
+            },
+            
+            { 'data': 'score' },
+            
+            {
+                'data': 'room',
+                'type': 'anti-empty'
+            },
+            
+            // Special rendering for colors and icons
+            { 
+                'data': 'status',
+                'render': function (data, type, full, meta) {
+                    switch (type) {
+                        case 'display':
+                            return formatLobbyStatus(data);
+                        
+                        case 'sort':
+                            return data.sort;
+                            
+                        case 'type':
+                            return 'string';
+                        
+                        default:
+                            return data.display;
+                    }
+                }
+            }
         ]
     });
     
-    
-    var userTable = $('#bb-user-table');
-    
-    // Color online/offline
-    userTable.find('tbody tr td:nth-child(3)').each(function() {
-        var cell = $(this);
-        var labelType;
+    // Set up the user table
+    var userTable = $('#bb-user-table').DataTable({
+        'ajax': '/app-data/users/' + tourneyName,
         
-        switch (cell.text()) {
-            case 'Online':
-                labelType = 'success';
-                break;
+        'columns': [
+            { 'data': 'seed' },
+            { 'data': 'name' },
             
-            case 'Offline':
-                labelType = 'danger';
-                break;
-                
-            default:
-                labelType = 'warning';
-                break;
-        }
-        
-        cell.wrapInner('<span class="label label-' + labelType + '"></span>');
+            // Special rendering for label coloring
+            {
+                'data': 'online',
+                'render': function(data, type, full, meta) {
+                    switch (type) {
+                        case 'display':
+                            return formatUserOnline(data);
+                            
+                        case 'type':
+                            return 'string';
+                        
+                        default:
+                            return data;
+                    }
+                }
+            },
+            
+            // Special rendering for colors and icons
+            {
+                'data': 'status',
+                'render': function(data, type, full, meta) {
+                    switch (type) {
+                        case 'display':
+                            return formatUserStatus(data);
+                            
+                        case 'type':
+                            return 'string';
+                        
+                        default:
+                            return data.display;
+                    }
+                }
+            }
+        ]
     });
     
-    // Color and add icons for user status
-    userTable.find('tbody tr td:nth-child(4)').each(function() {
-        var cell = $(this);
-        var status = cell.attr('status');
-        var color = '';
-        var icon = '';
+    // Refresh tables periodically
+    tableRefresh = setInterval(function() {
+        lobbyTable.ajax.reload(null, false); // Don't reset paging
+        userTable.ajax.reload(null, false);
         
-        switch (status) {
-            case 'waiting':
-                icon = 'clock-o';
-                color = 'yellow';
-                break;
-                
-            case 'waitingList':
-                icon = 'list-alt';
-                color = 'muted';
-                break;
-                
-            case 'eliminated':
-                icon = 'times';
-                color = 'red';
-                break;
-                
-            case 'playing':
-                icon = 'play';
-                color = 'green';
-                break;
-                
-            default:
-                // Assume setting up lobby
-                icon = 'cog';
-                color = 'info';
-                break;
-        }
-        
-        cell.prepend('<i class="fa fa-fw fa-' + icon + '"></i> ');
-        cell.wrapInner('<span class="text-' + color + '"></span>');
-    });
+        console.log('reload');
+    }, 5000);
     
-    userTable.DataTable();
+    // Called when the inner page content is removed to load a new page.
+    $('.content').on('destroy', function() {
+        window.clearInterval(tableRefresh);
+    });
 });

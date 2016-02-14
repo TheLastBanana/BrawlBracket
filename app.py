@@ -2,6 +2,7 @@ from collections import namedtuple
 import uuid
 import os
 import datetime
+import json
 
 from flask import Flask  
 from flask import render_template  
@@ -165,85 +166,10 @@ def admin_dashboard(tourneyName):
     # If not an admin, access is denied
     if not session['adminMode']:
         abort(403)
-        
-    # Get a condensed list of lobby data for display to the admin
-    lobbies = []
-    
-    DashLobbyData = namedtuple('DashLobbyData', [
-        'id',
-        'p1Name',
-        'p2Name',
-        'score',
-        'room',
-        'status',
-        'prettyStatus',
-        'statusOrder'
-    ])
-    
-    matches = brawlapi.getTournamentMatches(tourneyId)
-    for matchId in matches:
-        lobbyData = brawlapi.getLobbyData(tourneyId, matchId)
-        participants = lobbyData['participants']
-        
-        # Assemble score string 
-        if len(participants) == 2:
-            # If there are less than 2 players, this will be either empty or just show one number
-            scoreString = '-'.join([str(pData['wins']) for pData in participants])
-        else:
-            scoreString = '0-0'
-            
-        # Add on bestOf value (e.g. best of 3)
-        scoreString += ' (Bo{})'.format(lobbyData['bestOf'])
-        
-        status, prettyStatus, statusOrder = brawlapi.getLobbyStatus(tourneyId, matchId)
-        
-        dashLobbyData = DashLobbyData(
-            id = lobbyData['challongeId'],
-            p1Name = participants[0]['name'] if len(participants) > 0 else '',
-            p2Name = participants[1]['name'] if len(participants) > 1 else '',
-            score = scoreString,
-            room = lobbyData['roomNumber'] or '',
-            status = lobbyData['state']['name'],
-            prettyStatus = prettyStatus,
-            statusOrder = statusOrder)
-        
-        lobbies.append(dashLobbyData)
-        
-        
-    # Get a condensed list of user data for display to the admin
-    dashUserDatas = []
-    
-    DashUserData = namedtuple('DashUserData', [
-        'seed',
-        'name',
-        'prettyStatus',
-        'status',
-        'online'
-    ])
-    
-    users = brawlapi.getTournamentUsers(tourneyId)
-    for user in users:
-        status, prettyStatus = brawlapi.getParticipantStatus(tourneyId, user)
-        pData = brawlapi.getParticipantData(tourneyId, user.participantId)
-        
-        online = 'Offline'
-        if brawlapi.isUserOnline(tourneyId, user):
-            online = 'Online'
-    
-        dashUserData = DashUserData(
-            seed = pData['seed'],
-            name = pData['display-name'],
-            status = status,
-            prettyStatus = prettyStatus,
-            online = online)
-        
-        dashUserDatas.append(dashUserData)
 
     return render_template('app-content/admin-dashboard.html',
                            liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId),
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           lobbies=lobbies,
-                           users=dashUserDatas)
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
     
 #----- Page elements -----#
     
@@ -264,6 +190,85 @@ def realms():
     return render_template('app-content/lobby-realms.html',
                            realmData=util.orderedRealms)
 
+#----- Raw data -----#
+
+# Lobby data
+@app.route('/app-data/lobbies/<tourneyName>')
+def data_lobbies(tourneyName):
+    tourneyId = tourneys[tourneyName]
+
+    # Get a condensed list of lobby data for display to the admin
+    condensedData = []
+    
+    matches = brawlapi.getTournamentMatches(tourneyId)
+    for matchId in matches:
+        lobbyData = brawlapi.getLobbyData(tourneyId, matchId)
+        participants = lobbyData['participants']
+        
+        # Assemble score string 
+        if len(participants) == 2:
+            # If there are less than 2 players, this will be either empty or just show one number
+            scoreString = '-'.join([str(pData['wins']) for pData in participants])
+        else:
+            scoreString = '0-0'
+            
+        # Add on bestOf value (e.g. best of 3)
+        scoreString += ' (Bo{})'.format(lobbyData['bestOf'])
+        
+        status, prettyStatus, statusOrder = brawlapi.getLobbyStatus(tourneyId, matchId)
+        
+        condensed = {
+            'id': lobbyData['challongeId'],
+            'p1Name': participants[0]['name'] if len(participants) > 0 else '',
+            'p2Name': participants[1]['name'] if len(participants) > 1 else '',
+            'score': scoreString,
+            'room': lobbyData['roomNumber'] or '',
+            'status': {
+                'state': lobbyData['state']['name'],
+                'display': prettyStatus,
+                'sort': statusOrder
+            }
+        }
+        
+        condensedData.append(condensed)
+        
+    ajaxData = {
+        'data': condensedData
+    }
+    
+    return json.dumps(ajaxData)
+    
+# User data
+@app.route('/app-data/users/<tourneyName>')
+def data_users(tourneyName):
+    tourneyId = tourneys[tourneyName]
+    
+    # Get a condensed list of user data for display to the admin
+    condensedData = []
+    
+    users = brawlapi.getTournamentUsers(tourneyId)
+    for user in users:
+        status, prettyStatus = brawlapi.getParticipantStatus(tourneyId, user)
+        pData = brawlapi.getParticipantData(tourneyId, user.participantId)
+        
+        condensed = {
+            'seed': pData['seed'],
+            'name': pData['display-name'],
+            'status': {
+                'status': status,
+                'display': prettyStatus,
+            },
+            'online': 'Online' if brawlapi.isUserOnline(tourneyId, user) else 'Offline'
+        }
+        
+        condensedData.append(condensed)
+        
+    ajaxData = {
+        'data': condensedData
+    }
+    
+    return json.dumps(ajaxData)
+    
     
 #----- SocketIO events -----#
 @socketio.on('connect', namespace='/participant')

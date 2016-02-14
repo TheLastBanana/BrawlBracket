@@ -42,18 +42,6 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
-                {% for lobby in lobbies %}
-                <tr>
-                  <td>{{ lobby.id }}</td>
-                  <td>{{ lobby.p1Name }}</td>
-                  <td>{{ lobby.p2Name }}</td>
-                  <td>{{ lobby.score }}</td>
-                  <td>{{ lobby.room }}</td>
-                  <td status="{{ lobby.status }}" data-sort="{{ lobby.statusOrder }}">{{ lobby.prettyStatus }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
             </table>
           </div> <!-- /Lobby data -->
           
@@ -68,16 +56,6 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
-                {% for user in users %}
-                <tr>
-                  <td>{{ user.seed }}</td>
-                  <td>{{ user.name }}</td>
-                  <td>{{ user.online }}</td>
-                  <td status="{{ user.status }}">{{ user.prettyStatus }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
             </table>
           </div> <!-- /User data -->
           

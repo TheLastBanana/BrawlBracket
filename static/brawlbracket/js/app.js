@@ -7,6 +7,9 @@ var lobbyData;
 // Current page in the app
 var currentPage;
 
+// Default page within the app
+var defaultPage;
+
 // Challonge short name for the tourney
 var tourneyName;
 
@@ -32,10 +35,14 @@ var aSocket;
  * Connect to the server. Called when the app is first loaded.
  * @param {string} newTourneyName - The short tourney name (Challonge URL suffix).
  * @param {string} newUserId - The user's id.
+ * @param {string} newBasePath - The base path of the app.
+ * @param {string} startPage - The page to start on.
  */
-function brawlBracketInit(newTourneyName, newUserId) {
+function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     tourneyName = newTourneyName;
     userId = newUserId;
+    basePath = newBasePath;
+    currentPage = startPage;
     
     chatSocket = io.connect(window.location.origin + '/chat');
     
@@ -64,6 +71,13 @@ function brawlBracketInit(newTourneyName, newUserId) {
         
         return false;
     });
+
+    // When we change the URL, update the page
+    window.onpopstate = function(event) {
+        if (event.state) {
+            showPage(event.state.page, true);
+        }
+    }
 }
 
 /**
@@ -71,6 +85,7 @@ function brawlBracketInit(newTourneyName, newUserId) {
  */
 function brawlBracketParticipantInit() {
     pSocket = io.connect(window.location.origin + '/participant');
+    defaultPage = 'lobby';
 
     pSocket.on('error', function() {
         $('.content-wrapper').load(getContentURL('lobby-error'));
@@ -89,7 +104,7 @@ function brawlBracketParticipantInit() {
             'name': null
         };
         
-        showHashPage('lobby');
+        showPage(currentPage || defaultPage, true);
     });
     
     pSocket.on('update lobby', function(data) {
@@ -105,7 +120,8 @@ function brawlBracketParticipantInit() {
  * Connect to the admin socket.
  */
 function brawlBracketAdminInit() {
-    showHashPage('admin-dashboard');
+    defaultPage = 'admin-dashboard';
+    showPage(currentPage || defaultPage, true);
 }
 
 
@@ -190,45 +206,41 @@ function padString(str, count, padChar) {
 //////////////////
 
 /**
- * Show the page specified in the URL hash.
- * @param {string} defaultPage - The name of the page to show if there isn't a URL hash page.
- */
-function showHashPage(defaultPage) {
-    // Get menu option/page from URL hash
-    hashPage = window.location.hash.substring(1);
-    
-    if ($('.bb-menu-option[page="' + hashPage + '"]').length > 0) {
-        showPage(hashPage);
-    }
-    else {
-        showPage(defaultPage);
-    }
-}
-
-/**
- * Show an app page, update the menu, and update the URL hash.
+ * Show an app page, update the menu, and update the URL.
  * @param {string} pageName - The name of the page (see getContentURL()).
+ * @param {boolean} replace - If true, replace the page rather than pushing.
  */
-function showPage(pageName) {
+function showPage(pageName, replace) {
     if (!(pSocket in window) && !(aSocket in window)) return;
+
+    replace = replace || false;
     
+    // Show the active menu option
     $('.bb-menu-option').removeClass('active');
     $('.bb-menu-option[page="' + pageName + '"]').addClass('active');
     
+    // Load page content
     var wrapper = $('.content-wrapper');
     wrapper.find('.content').trigger('destroy');
     wrapper.addClass('not-ready');
     wrapper.load(getContentURL(pageName), function() {
         wrapper.removeClass('not-ready');
     });
-        
-    if (window.history.replaceState) {
-        window.history.replaceState(null, null, '#' + pageName);
-    }
-    else {
-        window.location.hash = pageName;
-    }
+    
+    // Update page
     currentPage = pageName;
+    
+    // Update browser history
+    var state = {
+        'page': currentPage
+    };
+    var page = basePath + pageName + '/';
+    
+    if (replace) {
+        window.history.replaceState(state, null, page);
+    } else {
+        window.history.pushState(state, null, page);
+    }
 }
 
 /**

@@ -1,6 +1,6 @@
-{% from 'macros.html' import pageLayout with context %}
+{% from 'macros.html' import pageLayout %}
 
-{% call pageLayout(tourneyName, tourneyFullName, participantId, 'admin-dashboard', 'brawlBracketAdminInit') %}
+{% call pageLayout(tourneyName, tourneyFullName, participantId, basePath, startPage or null, 'brawlBracketAdminInit') %}
   <li class="bb-menu-option active" page="admin-dashboard"><a href="#">
     <i class="fa fa-dashboard"></i> <span>Dashboard</span>
   </a></li>

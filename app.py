@@ -68,8 +68,9 @@ def user_login(tourneyName):
 #----- User pages -----#
 
 # User app page
-@app.route('/<tourneyName>/app/')
-def user_landing(tourneyName):
+@app.route('/<tourneyName>/app/', defaults={'startPage': None})
+@app.route('/<tourneyName>/app/<startPage>/')
+def user_landing(tourneyName, startPage):
     tourneyId = session.get('tourneyId', None)
     userId = session.get('userId', None)
     
@@ -88,11 +89,13 @@ def user_landing(tourneyName):
     pData = brawlapi.getParticipantData(tourneyId, user.participantId)
 
     return render_template('user-app.html',
+                           startPage=startPage,
                            userName=pData['display-name'],
                            userAvatar=brawlapi.getParticipantAvatar(pData),
                            tourneyName=tourneyName,
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           participantId=user.userId)
+                           participantId=user.userId,
+                           basePath='/{}/app/'.format(tourneyName))
 
 # Contact admin page
 @app.route('/app-content/contact-admin/<tourneyName>')
@@ -134,8 +137,9 @@ def lobby(tourneyName):
 #----- Admin pages -----#
                            
 # Admin app page
-@app.route('/<tourneyName>/admin/<adminKey>')
-def admin_landing(tourneyName, adminKey):
+@app.route('/<tourneyName>/admin/<adminKey>/', defaults={'startPage': None})
+@app.route('/<tourneyName>/admin/<adminKey>/<startPage>/')
+def admin_landing(tourneyName, adminKey, startPage):
     tourneyId = tourneys[tourneyName]
     tourneyKeys = brawlapi.adminKeys[tourneyId]
     
@@ -147,9 +151,11 @@ def admin_landing(tourneyName, adminKey):
         abort(404)
 
     return render_template('admin-app.html',
+                           startPage=startPage,
                            tourneyName=tourneyName,
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           participantId=-1)
+                           participantId=-1,
+                           basePath='/{}/admin/{}/'.format(tourneyName, adminKey))
                            
 # Admin dashboard
 @app.route('/app-content/admin-dashboard/<tourneyName>')

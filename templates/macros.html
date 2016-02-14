@@ -13,7 +13,7 @@
 {%- endmacro %}
 
 <!-- Outer page layout including menu -->
-{% macro pageLayout(tourneyName, tourneyFullName, participantId, basePath, startPage, subAppInit) -%}
+{% macro pageLayout(tourneyName, tourneyFullName, userId, basePath, startPage, subAppInit) -%}
   <!DOCTYPE html>
   <html>
     <head>
@@ -172,7 +172,7 @@
       <script src="/static/brawlbracket/js/app.js"></script>
       
       <script>
-        brawlBracketInit("{{ tourneyName }}", "{{ participantId }}", "{{ basePath }}", "{{ startPage }}");
+        brawlBracketInit("{{ tourneyName }}", "{{ userId }}", "{{ basePath }}", "{{ startPage }}");
         {{ subAppInit }}();
       </script>
     </body>

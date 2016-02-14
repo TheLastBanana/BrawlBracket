@@ -94,7 +94,7 @@ def user_landing(tourneyName, startPage):
                            userAvatar=brawlapi.getParticipantAvatar(pData),
                            tourneyName=tourneyName,
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           participantId=user.userId,
+                           userId=user.userId,
                            basePath='/{}/app/'.format(tourneyName))
 
 # Contact admin page
@@ -154,7 +154,7 @@ def admin_landing(tourneyName, adminKey, startPage):
                            startPage=startPage,
                            tourneyName=tourneyName,
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           participantId=-1,
+                           userId=-1,
                            basePath='/{}/admin/{}/'.format(tourneyName, adminKey))
                            
 # Admin dashboard

@@ -188,11 +188,7 @@ function updateLobbyUI() {
  * Update the timer text.
  */
 function updateLobbyTimer() {
-    var timeDiff = new Date(new Date() - new Date(lobbyData.startTime));
-    var minStr = "" + timeDiff.getMinutes();
-    var secStr = "" + timeDiff.getSeconds();
-
-    $('#bb-timer').text(padString(minStr, 2, '0') + ":" + padString(secStr, 2, '0'));
+    $('#bb-timer').text(getTimerString(lobbyData.startTime));
 }
 
 $(function() {

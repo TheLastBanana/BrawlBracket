@@ -201,6 +201,18 @@ function padString(str, count, padChar) {
     return pad.substring(0, pad.length - str.length) + str;
 }
 
+/**
+ * Get a string representing the time since a timer began.
+ * @param {string} isoTime - Time in ISO 8601 format.
+ */
+function getTimerString(isoTime) {
+    var timeDiff = new Date(new Date() - new Date(isoTime));
+    var minStr = "" + timeDiff.getMinutes();
+    var secStr = "" + timeDiff.getSeconds();
+    
+    return padString(minStr, 2, '0') + ":" + padString(secStr, 2, '0');
+}
+
 //////////////////
 // UI FUNCTIONS //
 //////////////////

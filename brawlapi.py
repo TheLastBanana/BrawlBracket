@@ -101,34 +101,6 @@ def isUserOnline(tourneyId, user):
 # +---------------+
 # | Chat Managing |
 # +---------------+
-class Chat:
-    """
-    Holds data about a chat.
-    """
-    
-    def __init__(self, id):
-        """
-        Create the chat with a unique id.
-        """
-        # Unique id
-        self.id = id
-        
-        # JSON message data
-        self.log = []
-        
-    def getRoom(self):
-        """
-        Get the socketIO name of the chat room.
-        """
-        
-        return 'chat-{}'.format(self.id)
-        
-    def addMessage(self, data):
-        """
-        Add message data to the chat log.
-        """
-        self.log.append(data)
-
 def createChat(tourneyId):
     """
     Add a chat to the tourney. Returns the chat's id.
@@ -140,7 +112,7 @@ def createChat(tourneyId):
         chatId = str(uuid.uuid4())
         chatPair = (tourneyId, chatId)
         
-    chats[chatPair] = Chat(chatId)
+    chats[chatPair] = util.Chat(chatId)
         
     return chatId
     

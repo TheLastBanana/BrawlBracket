@@ -223,6 +223,7 @@ def data_lobbies(tourneyName):
             'p2Name': participants[1]['name'] if len(participants) > 1 else '',
             'score': scoreString,
             'room': lobbyData['roomNumber'] or '',
+            'startTime': lobbyData['startTime'] or '',
             'status': {
                 'state': lobbyData['state']['name'],
                 'display': prettyStatus,

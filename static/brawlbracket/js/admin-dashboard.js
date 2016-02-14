@@ -160,6 +160,22 @@ $(function () {
                 'type': 'anti-empty'
             },
             
+            // Special rendering for time formatting
+            { 
+                'data': 'startTime',
+                'render': function (data, type, full, meta) {
+                    switch (type) {
+                        case 'type':
+                            return 'date';
+                        
+                        default:
+                            return data == ''
+                                   ? 'N/A'
+                                   : getTimerString(data);
+                    }
+                }
+            },
+            
             // Special rendering for colors and icons
             { 
                 'data': 'status',

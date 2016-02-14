@@ -118,7 +118,7 @@ var lobbyUIFunctions = {
         if (lobbyData.state.name == 'waitingForMatch') return;
         
         updateLobbyTimer();
-        if (!lobbyTimer) setInterval(updateLobbyTimer, 1000);
+        if (!lobbyTimer) lobbyTimer = setInterval(updateLobbyTimer, 1000);
     },
     
     'roomNumber': function () {
@@ -203,4 +203,6 @@ updateLobbyUI();
 // Clean up socketIO handlers.
 $('.content').on('destroy', function() {
     chatSocket.off('update lobby', onUpdateLobby);
+    clearInterval(lobbyTimer);
+    lobbyTimer = null;
 });

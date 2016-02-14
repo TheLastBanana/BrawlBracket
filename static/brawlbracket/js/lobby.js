@@ -195,14 +195,15 @@ function updateLobbyTimer() {
     $('#bb-timer').text(padString(minStr, 2, '0') + ":" + padString(secStr, 2, '0'));
 }
 
-// Code below is called when lobby is loaded
-pSocket.on('update lobby', onUpdateLobby);
-updateLobbyUI();
+$(function() {
+    pSocket.on('update lobby', onUpdateLobby);
+    updateLobbyUI();
 
-// Called when the inner page content is removed to load a new page.
-// Clean up socketIO handlers.
-$('.content').on('destroy', function() {
-    chatSocket.off('update lobby', onUpdateLobby);
-    clearInterval(lobbyTimer);
-    lobbyTimer = null;
+    // Called when the inner page content is removed to load a new page.
+    // Clean up socketIO handlers.
+    $('.content').on('destroy', function() {
+        chatSocket.off('update lobby', onUpdateLobby);
+        clearInterval(lobbyTimer);
+        lobbyTimer = null;
+    });
 });

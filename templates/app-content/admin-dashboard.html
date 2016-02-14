@@ -15,7 +15,7 @@
     
     <div class="col-lg-6">
       <!-- Tournament data -->
-      <div class="nav-tabs-custom">
+      <div class="nav-tabs-custom" id="bb-admin-dash-tables">
         <ul class="nav nav-tabs pull-right">
           <li class="active">
             <a data-toggle="tab" href="#tourney-data-lobbies">Lobbies</a>
@@ -31,12 +31,12 @@
         <div class="tab-content">
           <!-- Lobby data -->
           <div id="tourney-data-lobbies" class="tab-pane active">
-            <table id="bb-lobby-table" class="table table-striped">
+            <table id="bb-lobby-table" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Participant 1</th>
-                  <th>Participant 2</th>
+                  <th>Player 1</th>
+                  <th>Player 2</th>
                   <th>Score</th>
                   <th>Room</th>
                   <th>Time</th>
@@ -48,7 +48,7 @@
           
           <!-- User data -->
           <div id="tourney-data-users" class="tab-pane">
-            <table id="bb-user-table" class="table table-striped">
+            <table id="bb-user-table" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
               <thead>
                 <tr>
                   <th>Seed</th>

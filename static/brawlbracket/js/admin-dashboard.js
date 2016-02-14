@@ -141,16 +141,21 @@ $(function () {
         'ajax': '/app-data/lobbies/' + tourneyName,
         
         'columns': [
-            { 'data': 'id' },
+            {
+                'data': 'id',
+                'responsivePriority': 1
+            },
             
             {
                 'data': 'p1Name',
-                'type': 'anti-empty'
+                'type': 'anti-empty',
+                'responsivePriority': 3
             },
             
             {
                 'data': 'p2Name',
-                'type': 'anti-empty'
+                'type': 'anti-empty',
+                'responsivePriority': 3
             },
             
             { 'data': 'score' },
@@ -173,7 +178,8 @@ $(function () {
                                    ? 'N/A'
                                    : getTimerString(data);
                     }
-                }
+                },
+                'responsivePriority': 4
             },
             
             // Special rendering for colors and icons
@@ -193,7 +199,8 @@ $(function () {
                         default:
                             return data.display;
                     }
-                }
+                },
+                'responsivePriority': 2
             }
         ]
     });
@@ -240,6 +247,11 @@ $(function () {
                 }
             }
         ]
+    });
+    
+    // When tabs are switched, we need to recalculate the responsize table's width since it was hidden before
+    $('#bb-admin-dash-tables').on('shown.bs.tab', function(e) {
+        $(this).find('.table').DataTable().responsive.recalc();
     });
     
     // Refresh tables periodically

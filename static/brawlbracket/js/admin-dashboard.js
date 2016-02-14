@@ -134,7 +134,7 @@ $(function () {
     var lobbyTable = $('#bb-lobby-table').DataTable({
         // Sort by status, then by id
         'order': [
-            [5, 'asc'],
+            [6, 'asc'],
             [0, 'asc']
         ],
         

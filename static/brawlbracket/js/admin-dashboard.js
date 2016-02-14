@@ -246,8 +246,6 @@ $(function () {
     tableRefresh = setInterval(function() {
         lobbyTable.ajax.reload(null, false); // Don't reset paging
         userTable.ajax.reload(null, false);
-        
-        console.log('reload');
     }, 5000);
     
     // Called when the inner page content is removed to load a new page.

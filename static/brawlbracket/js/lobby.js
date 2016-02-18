@@ -81,7 +81,7 @@ var lobbyUIFunctions = {
             case 'waitingForPlayers':
                 // Add a notice about the player missing.
                 addCallout('state', 'warning',
-                           'Your opponent hasn\'t finished their game yet!',
+                           'Your opponent hasn\'t joined the lobby yet!',
                            'You\'ll be notified as soon as they\'re ready.');
                 break;
                 

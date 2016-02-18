@@ -27,6 +27,9 @@ var playerSettings;
 // Admin socket connection
 var aSocket;
 
+// Page notified by each chat
+var chatNotifies = {};
+
 //////////////////
 // SOCKET STUFF //
 //////////////////
@@ -47,6 +50,7 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     chatSocket = io.connect(window.location.origin + '/chat');
     
     chatSocket.on('receive', function(data) {
+        chatNotify(data.chatId, data.messageData.senderId);
         onReceiveChat($('.direct-chat[chatId=' + data.chatId + ']'), data.messageData, false);
     });
     
@@ -58,6 +62,7 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
         
         for (id in data.log) {
             var msgData = data.log[id];
+            chatNotify(data.chatId, msgData.senderId);
             onReceiveChat(chatBox, msgData, true);
         }
         
@@ -65,8 +70,19 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
         msgBox.scrollTop(msgBox[0].scrollHeight);
     });
 
+    var menuOptions = $('.bb-menu-option');
+    
+    // Add notification label to menu options
+    menuOptions.each(function() {
+        var $this = $(this);
+        var label = $('<span class="notify-label label label-primary pull-right"></span>');
+        $this.find('a').append(label);
+        
+        label.data('notifyCount', 0);
+    });
+    
     // Add functionality to menu options
-    $('.bb-menu-option').on('click', function(event) {
+    menuOptions.on('click', function(event) {
         showPage($(this).attr('page'));
         
         return false;
@@ -99,6 +115,9 @@ function brawlBracketParticipantInit() {
         lobbyData = data.lobbyData;
         playerSettings = data.playerSettings;
         
+        // Tie chat id to lobby page's notifications
+        chatNotifies[lobbyData.chatId] = 'lobby';
+        
         // Set empty previous state
         lobbyData.prevState = {
             'name': null
@@ -108,11 +127,27 @@ function brawlBracketParticipantInit() {
     });
     
     pSocket.on('update lobby', function(data) {
+        // Maintain previous state so we can compare
         if (data.property == 'state') {
             lobbyData.prevState = lobbyData.state;
         }
         
+        // Update specified property
         lobbyData[data.property] = data.value;
+        
+        // Add notifications when state changes
+        if (currentPage != 'lobby' && data.property == 'state') {
+            // Lobby was previously waiting, but we're now ready to do stuff
+            if ((lobbyData.prevState.name == 'waitingForPlayers' ||
+                lobbyData.prevState.name == 'waitingForMatch') &&
+                lobbyData.state.name != 'waitingForPlayers' &&
+                lobbyData.state.name != 'waitingForMatch') {
+                
+                addPageNotification('lobby');
+            }
+            
+            // TODO: Add notifications for room chosen and score changed
+        }
     });
 }
 
@@ -253,6 +288,8 @@ function showPage(pageName, replace) {
     } else {
         window.history.pushState(state, null, page);
     }
+    
+    clearPageNotifications(pageName);
 }
 
 /**
@@ -346,6 +383,36 @@ function sendChat(chatBox) {
     input.val('');
 }
 
+/**
+ * Add a notification for a page's menu option.
+ * @param {string} pageName - The name of the page.
+ */
+function addPageNotification(pageName) {
+    $('.bb-menu-option[page="' + pageName + '"] .notify-label').addNotification();
+}
+
+/**
+ * Clean notifications for a page's menu option.
+ * @param {string} pageName - The name of the page.
+ */
+function clearPageNotifications(pageName) {
+    $('.bb-menu-option[page="' + pageName + '"] .notify-label').clearNotifications();
+}
+
+/**
+ * Notify about a chat message if necessary.
+ * @param {string} chatId - The chat's id.
+ * @param {string} senderId - The sender's user id.
+ */
+function chatNotify(chatId, senderId) {
+    var notifyPage = chatNotifies[chatId];
+    
+    // Chat message from another page, so add a notification
+    if (notifyPage && currentPage != notifyPage && senderId != userId) {
+        addPageNotification(notifyPage);
+    }
+}
+
 $.fn.extend({
     toggleDisabled: function() {
         return $(this).each(function() {
@@ -383,6 +450,35 @@ $.fn.extend({
             chatSocket.emit('request log', {
                 'chatId': chatId
             });
+        });
+    },
+    
+    clearNotifications: function() {
+        return $(this).each(function() {
+            var $this = $(this);
+            
+            // Set count to 0
+            $this.data('notifyCount', 0);
+            $this.updateNotificationCount(0);
+        });
+    },
+    
+    addNotification: function() {
+        return $(this).each(function() {
+            var $this = $(this);
+            var count = $this.data('notifyCount');
+            ++count;
+            
+            // Add 1 to count
+            $this.data('notifyCount', count);
+            $this.updateNotificationCount(count);
+        });
+    },
+    
+    updateNotificationCount: function(newCount) {
+        return $(this).each(function() {
+            // Display empty string if count is 0
+            $(this).text(newCount || '');
         });
     }
 });

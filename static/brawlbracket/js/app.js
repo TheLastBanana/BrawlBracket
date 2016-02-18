@@ -51,11 +51,16 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     
     chatSocket.on('receive', function(data) {
         chatNotify(data.chatId, data.messageData.senderId);
-        onReceiveChat($('.direct-chat[chatId=' + data.chatId + ']'), data.messageData, false);
+        
+        var chatBox = $('.direct-chat[chatId=' + data.chatId + ']');
+        if (chatBox.length == 0) return;
+        onReceiveChat(chatBox, data.messageData, false);
     });
     
     chatSocket.on('receive log', function(data) {
         var chatBox = $('.direct-chat[chatId=' + data.chatId + ']');
+        if (chatBox.length == 0) return;
+        
         var msgBox = chatBox.find('.direct-chat-messages');
         
         msgBox.empty();
@@ -351,6 +356,7 @@ function removeCallout(id) {
 function onReceiveChat(chatBox, msgData, instant) {
     var msg = createChatMessage(msgData.name, msgData.sentTime, msgData.avatar,
                                 msgData.message, msgData.senderId == userId);
+                                
     var msgBox = chatBox.find('.direct-chat-messages');
     
     // Only scroll down if user is already at bottom

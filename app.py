@@ -476,7 +476,7 @@ def chat_request_log(data):
     emit('receive log', {
         'log': chat.log,
         'chatId': chatId
-    }, broadcast=False, include_self=True, room=room)
+    }, broadcast=False, include_self=True)
         
 if __name__ == '__main__':
     app.debug = True

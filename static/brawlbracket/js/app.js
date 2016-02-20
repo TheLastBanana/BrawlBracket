@@ -59,8 +59,6 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     chatSocket = io.connect(location.protocol + "//" + location.host + '/chat');
     
     chatSocket.on('receive', function(data) {
-        console.log('receive', data);
-        
         chatNotify(data.chatId, data.messageData.senderId);
         
         // Play sound/desktop notify for other users' messages
@@ -83,8 +81,6 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     });
     
     chatSocket.on('receive log', function(data) {
-        console.log('receive log', data);
-        
         // Replace cache entirely, as this contains all chat history
         chatCache[data.chatId] = data.log;
         

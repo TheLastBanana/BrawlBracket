@@ -372,27 +372,68 @@ def getLobbyData(tourneyId, matchId):
     # Only add if we have participant data
     pDatas = [p for p in [p1Data, p2Data] if p is not None]
     
-    prereqData = None
-    prereqIds = [matchData['player1-prereq-match-id'], matchData['player2-prereq-match-id']]
-    
-    # Check if there's an unfinished prerequisite match
-    # Don't check ids that are None
-    for checkId in [id for id in prereqIds if id]:
-        checkData = getMatchData(tourneyId, checkId)
+    # Extract scores from score string
+    scoreCSV = matchData['scores-csv']
+    if scoreCSV:
+        scores = scoreCSV.split('-')
         
-        # No winner, so this is unfinished
-        if not checkData['winner-id']:
-            prereqData = checkData
-            break
+        # Insert into player data struct for convenience
+        for id, score in enumerate(scores):
+            pDatas[id]['wins'] = int(score)
             
-    if prereqData:
-        prereqMatchNum = matchIdToNumber(prereqData['identifier'])
+    else:
+        for pData in pDatas:
+            pData['wins'] = 0
+    
+    # Determine state
+    state = None
+    
+    if matchData['winner-id']:
+        # If there's a winner, the match is finished
+        state = {
+            'name': 'complete'
+        }
+    else:
+        # The match isn't finished, so we need to check if it's started
+        prereqData = None
+        prereqIds = [matchData['player1-prereq-match-id'], matchData['player2-prereq-match-id']]
         
-        prereqP1Data = getParticipantData(tourneyId, prereqData['player1-id'])
-        prereqP1Name = prereqP1Data['display-name'] if prereqP1Data else '?'
+        # Check if there's an unfinished prerequisite match
+        # Don't check ids that are None
+        for checkId in [id for id in prereqIds if id]:
+            checkData = getMatchData(tourneyId, checkId)
+            
+            # No winner, so this is unfinished
+            if not checkData['winner-id']:
+                prereqData = checkData
+                break
+                
+        if prereqData:
+            prereqMatchNum = matchIdToNumber(prereqData['identifier'])
+            
+            prereqP1Data = getParticipantData(tourneyId, prereqData['player1-id'])
+            prereqP1Name = prereqP1Data['display-name'] if prereqP1Data else '?'
+            
+            prereqP2Data = getParticipantData(tourneyId, prereqData['player2-id'])
+            prereqP2Name = prereqP2Data['display-name'] if prereqP2Data else '?'
+            
         
-        prereqP2Data = getParticipantData(tourneyId, prereqData['player2-id'])
-        prereqP2Name = prereqP2Data['display-name'] if prereqP2Data else '?'
+        
+        if prereqData:
+            # There's an unfinished prerequisite match
+            state = {
+                'name': 'waitingForMatch',
+                'matchNumber': prereqMatchNum,
+                'participantNames': [
+                    prereqP1Name,
+                    prereqP2Name
+                ]
+            }
+        else:
+            # Lobby hasn't started, so we're waiting for players to join
+            state = {
+                'name': 'waitingForPlayers'
+            }
         
     lobbyData = {
         'participants': [
@@ -401,7 +442,7 @@ def getLobbyData(tourneyId, matchId):
                 'id': playerData['id'],
                 'seed': playerData['seed'],
                 'ready': False,
-                'wins': 0,
+                'wins': playerData['wins'],
                 'avatar': getParticipantAvatar(playerData)
             } for playerData in pDatas
         ],
@@ -416,16 +457,7 @@ def getLobbyData(tourneyId, matchId):
             } for playerData in pDatas
         ],
         
-        'state': {
-            'name': 'waitingForMatch',
-            'matchNumber': prereqMatchNum,
-            'participantNames': [
-                prereqP1Name,
-                prereqP2Name
-            ]
-        } if prereqData else {
-            'name': 'waitingForPlayers'
-        },
+        'state': state,
         
         'chatId': None,
         'realmBans': [],
@@ -476,6 +508,12 @@ def getLobbyStatus(tourneyId, matchId):
                 'Waiting for {}'.format(notReady[0]),
                 # One player inactive, so lower priority than if both are online
                 3)
+                
+    elif stateName == 'complete':
+        return (stateName,
+                'Complete',
+                # Completed matches have low priority
+                7)
             
     return ('unknown', 'Unknown', 98)
     

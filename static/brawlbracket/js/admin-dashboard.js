@@ -43,6 +43,11 @@ function formatLobbyStatus(data) {
             color = 'green';
             break;
             
+        case 'complete':
+            icon = 'check';
+            color = 'green';
+            break;
+            
         default:
             // Assume setting up lobby
             icon = 'cog';

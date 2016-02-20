@@ -50,7 +50,7 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     basePath = newBasePath;
     currentPage = startPage;
     
-    chatSocket = io.connect(window.location.origin + '/chat');
+    chatSocket = io.connect(location.protocol + "//" + location.host + '/chat');
     
     chatSocket.on('receive', function(data) {
         console.log('receive', data);
@@ -118,13 +118,17 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     createjs.Sound.alternateExtensions = ['mp3'];
     createjs.Sound.registerSound('/static/brawlbracket/sfx/message.ogg', 'message');
     createjs.Sound.registerSound('/static/brawlbracket/sfx/state.ogg', 'state');
+    
+    if ("Notification" in window) {
+        Notification.requestPermission();
+    }
 }
 
 /**
  * Connect to the participant socket.
  */
 function brawlBracketParticipantInit() {
-    pSocket = io.connect(window.location.origin + '/participant');
+    pSocket = io.connect(location.protocol + "//" + location.host + '/participant');
     defaultPage = 'lobby';
 
     pSocket.on('error', function() {

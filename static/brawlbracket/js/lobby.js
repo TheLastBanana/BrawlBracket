@@ -191,6 +191,17 @@ function updateLobbyTimer() {
     $('#bb-timer').text(getTimerString(lobbyData.startTime));
 }
 
+/**
+ * Create a participant status DOM element.
+ * @param {boolean} ready - If true, the status is "Ready," else "Not Ready."
+ */
+function createStatus(ready) {
+    color = ready ? 'green' : 'yellow';
+    status = ready ? 'Ready' : 'Not Ready';
+    
+    return $('<h2 class="description-status text-' + color + '">' + status + '</h2>');
+}
+
 $(function() {
     pSocket.on('update lobby', onUpdateLobby);
     updateLobbyUI();

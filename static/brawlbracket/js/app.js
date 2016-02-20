@@ -208,17 +208,6 @@ function getContentURL(pageName) {
 }
 
 /**
- * Create a participant status DOM element.
- * @param {boolean} ready - If true, the status is "Ready," else "Not Ready."
- */
-function createStatus(ready) {
-    color = ready ? 'green' : 'yellow';
-    status = ready ? 'Ready' : 'Not Ready';
-    
-    return $('<h2 class="description-status text-' + color + '">' + status + '</h2>');
-}
-
-/**
  * Create a chat message DOM element.
  * @param {string} name - The name of the sender.
  * @param {string} time - Date string representing the time the message was sent.

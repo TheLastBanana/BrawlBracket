@@ -1,6 +1,8 @@
-{% from 'macros.html' import pageLayout %}
+{% extends "layout.html" %}
 
-{% call pageLayout(tourneyName, tourneyFullName, userId, basePath, startPage or null, 'brawlBracketAdminInit') %}
+{% block menu %}
+  {{ super() }}
+
   <li class="bb-menu-option active" page="admin-dashboard"><a href="#">
     <i class="fa fa-dashboard"></i> <span>Dashboard</span>
   </a></li>
@@ -12,4 +14,9 @@
   <li class="bb-menu-option" page="tournament-settings"><a href="#">
     <i class="fa fa-cogs"></i> <span>Tournament Settings</span>
   </a></li>
-{% endcall %}
+{% endblock %}
+
+{% block script %}
+  {{ super() }}
+  brawlBracketAdminInit();
+{% endblock %}

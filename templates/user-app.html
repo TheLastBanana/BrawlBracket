@@ -1,6 +1,8 @@
-{% from 'macros.html' import pageLayout %}
+{% extends "layout.html" %}
 
-{% call pageLayout(tourneyName, tourneyFullName, userId, basePath, startPage or null, 'brawlBracketParticipantInit') %}
+{% block menu %}
+  {{ super() }}
+
   <li class="bb-menu-option active" page="lobby"><a href="#">
     <i class="fa fa-gamepad"></i> <span>Current Match</span>
   </a></li>
@@ -16,4 +18,9 @@
   <li class="bb-menu-option" page="player-settings"><a href="#">
     <i class="fa fa-cogs"></i> <span>User Settings</span>
   </a></li>
-{% endcall %}
+{% endblock %}
+
+{% block script %}
+  {{ super() }}
+  brawlBracketParticipantInit();
+{% endblock %}

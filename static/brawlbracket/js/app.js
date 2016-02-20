@@ -57,6 +57,11 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
         
         chatNotify(data.chatId, data.messageData.senderId);
         
+        // Play sound for other users' messages
+        if (data.messageData.senderId != userId) {
+            createjs.Sound.play('message');
+        }
+        
         // If the cache doesn't exist, we should just get the full log from the 'receive log' event anyway
         if (data.chatId in chatCache) {
             chatCache[data.chatId].push(data.messageData);
@@ -108,6 +113,11 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
             showPage(event.state.page, true);
         }
     }
+    
+    // Create sounds
+    createjs.Sound.alternateExtensions = ['mp3'];
+    createjs.Sound.registerSound('/static/brawlbracket/sfx/message.ogg', 'message');
+    createjs.Sound.registerSound('/static/brawlbracket/sfx/state.ogg', 'state');
 }
 
 /**
@@ -163,6 +173,7 @@ function brawlBracketParticipantInit() {
                 lobbyData.state.name != 'waitingForMatch') {
                 
                 addPageNotification('lobby');
+                createjs.Sound.play('state');
             }
             
             // TODO: Add notifications for room chosen and score changed

@@ -1,3 +1,9 @@
+// Length (in ms) to display notifications for.
+var desktopNotifyLength = 3000;
+
+// Whether the window is currently active.
+var isActive = false;
+
 // Chat socket connection
 var chatSocket;
 
@@ -57,9 +63,12 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
         
         chatNotify(data.chatId, data.messageData.senderId);
         
-        // Play sound for other users' messages
+        // Play sound/desktop notify for other users' messages
         if (data.messageData.senderId != userId) {
             createjs.Sound.play('message');
+            desktopNotify('Message from ' + data.messageData.name,
+                          data.messageData.message,
+                          data.messageData.avatar);
         }
         
         // If the cache doesn't exist, we should just get the full log from the 'receive log' event anyway
@@ -122,6 +131,14 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     if ("Notification" in window) {
         Notification.requestPermission();
     }
+    
+    $(window).blur(function() {
+        isActive = false;
+    });
+    
+    $(window).focus(function() {
+        isActive = true;
+    });
 }
 
 /**
@@ -178,6 +195,9 @@ function brawlBracketParticipantInit() {
                 
                 addPageNotification('lobby');
                 createjs.Sound.play('state');
+                
+                desktopNotify('BrawlBracket update',
+                              'Your next match is ready!');
             }
             
             // TODO: Add notifications for room chosen and score changed
@@ -455,6 +475,28 @@ function chatNotifyLog(chatId, log) {
         
         chatNotify(chatId, log[id].senderId);
     }
+}
+
+/**
+ * Show a desktop notification if they're enabled and the user is outside the window.
+ * @param {string} title - The notification title.
+ * @param {string} body - The notification body.
+ * @param {string} icon - The notification icon.
+ */
+function desktopNotify(title, body, icon) {
+    if (!("Notification" in window)) return;
+    if (!Notification.permission == "granted") return;
+    if (isActive) return;
+    
+    var options = {
+        body: body,
+        icon: icon || ''
+    };
+    
+    var notification = new Notification(title, options);
+    
+    // Close after desktopNotifyLength elapses
+    setTimeout(notification.close.bind(notification), desktopNotifyLength);
 }
 
 /**

@@ -30,6 +30,9 @@ var aSocket;
 // Page notified by each chat
 var chatNotifies = {};
 
+// Cached chat logs
+var chatCache = {};
+
 //////////////////
 // SOCKET STUFF //
 //////////////////
@@ -50,29 +53,35 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     chatSocket = io.connect(window.location.origin + '/chat');
     
     chatSocket.on('receive', function(data) {
+        console.log('receive', data);
+        
         chatNotify(data.chatId, data.messageData.senderId);
         
+        // If the cache doesn't exist, we should just get the full log from the 'receive log' event anyway
+        if (data.chatId in chatCache) {
+            chatCache[data.chatId].push(data.messageData);
+        }
+        
+        // If this page includes the chat box, update it
         var chatBox = $('.direct-chat[chatId=' + data.chatId + ']');
         if (chatBox.length == 0) return;
-        onReceiveChat(chatBox, data.messageData, false);
+        addChatMessage(chatBox, data.messageData, false);
     });
     
     chatSocket.on('receive log', function(data) {
+        console.log('receive log', data);
+        
+        // Replace cache entirely, as this contains all chat history
+        chatCache[data.chatId] = data.log;
+        
+        // Add notifications
+        chatNotifyLog(data.chatId, data.log);
+        
+        // If this page includes the chat box, update it
         var chatBox = $('.direct-chat[chatId=' + data.chatId + ']');
         if (chatBox.length == 0) return;
         
-        var msgBox = chatBox.find('.direct-chat-messages');
-        
-        msgBox.empty();
-        
-        for (id in data.log) {
-            var msgData = data.log[id];
-            chatNotify(data.chatId, msgData.senderId);
-            onReceiveChat(chatBox, msgData, true);
-        }
-        
-        // Skip to bottom
-        msgBox.scrollTop(msgBox[0].scrollHeight);
+        addAllChatMessages(chatBox, data.log);
     });
 
     var menuOptions = $('.bb-menu-option');
@@ -119,6 +128,11 @@ function brawlBracketParticipantInit() {
     pSocket.on('join lobby', function(data) {
         lobbyData = data.lobbyData;
         playerSettings = data.playerSettings;
+        
+        // Request chat log so we get notifications
+        chatSocket.emit('request log', {
+            'chatId': lobbyData.chatId
+        });
         
         // Tie chat id to lobby page's notifications
         chatNotifies[lobbyData.chatId] = 'lobby';
@@ -353,7 +367,7 @@ function removeCallout(id) {
  *     @param {string} msgData.senderId - The Challonge participant id of the sender.
  * @param {string} msgData - The string.
  */
-function onReceiveChat(chatBox, msgData, instant) {
+function addChatMessage(chatBox, msgData, instant) {
     var msg = createChatMessage(msgData.name, msgData.sentTime, msgData.avatar,
                                 msgData.message, msgData.senderId == userId);
                                 
@@ -368,6 +382,8 @@ function onReceiveChat(chatBox, msgData, instant) {
     if (atBottom && !instant) {
         msgBox.animate({ scrollTop: msgBox[0].scrollHeight }, "slow");
     }
+    
+    localStorage.setItem('lastTime-' + chatBox.attr('chatId'), msgData.sentTime);
 }
 
 /**
@@ -419,6 +435,42 @@ function chatNotify(chatId, senderId) {
     }
 }
 
+/**
+ * Notify about chat messages from a log if necessary.
+ * @param {string} chatId - The chat's id.
+ * @param {array} log - The array of messages.
+ */
+function chatNotifyLog(chatId, log) {
+    var lastTime = localStorage.getItem('lastTime-' + chatId);
+    var lastDate = new Date(lastTime);
+    
+    for (id in log) {
+        // This came before or on last message date, so don't notify
+        var messageDate = new Date(log[id].sentTime);
+        if (messageDate <= lastDate) continue;
+        
+        chatNotify(chatId, log[id].senderId);
+    }
+}
+
+/**
+ * Add all the messages in a chat log to a chat box.
+ * @param {jQuery object} chatBox - The chatbox to populate.
+ * @param {array} log - The chat log to use.
+ */
+function addAllChatMessages(chatBox, log) {
+    var msgBox = chatBox.find('.direct-chat-messages');
+        
+    msgBox.empty();
+    
+    for (id in log) {
+        addChatMessage(chatBox, log[id], true);
+    }
+    
+    // Skip to bottom
+    msgBox.scrollTop(msgBox[0].scrollHeight);
+}
+
 $.fn.extend({
     toggleDisabled: function() {
         return $(this).each(function() {
@@ -452,10 +504,21 @@ $.fn.extend({
                 }
             });
             
-            // Request chat history to populate box
-            chatSocket.emit('request log', {
-                'chatId': chatId
-            });
+            if (chatId in chatCache) {
+                var cache = chatCache[chatId];
+                
+                // Fill chat from cache
+                addAllChatMessages(chatBox, cache);
+        
+                // Add notifications
+                chatNotifyLog(chatId, cache);
+                
+            } else {
+                // Request chat history to populate box
+                chatSocket.emit('request log', {
+                    'chatId': chatId
+                });
+            }
         });
     },
     

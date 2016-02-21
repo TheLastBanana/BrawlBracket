@@ -39,6 +39,12 @@ var chatNotifies = {};
 // Cached chat logs
 var chatCache = {};
 
+// Notification volume
+var notificationVolume;
+
+// Whether desktop notifications are enabled
+var desktopNotifyEnabled;
+
 //////////////////
 // SOCKET STUFF //
 //////////////////
@@ -124,16 +130,49 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     createjs.Sound.registerSound('/static/brawlbracket/sfx/message.ogg', 'message');
     createjs.Sound.registerSound('/static/brawlbracket/sfx/state.ogg', 'state');
     
-    if ("Notification" in window) {
+    // Request notification permission
+    desktopNotifyEnabled = localStorage.getItem('desktopNotifyEnabled') || true;
+    if (desktopNotifyEnabled && "Notification" in window && Notification.permission != "granted") {
         Notification.requestPermission();
     }
     
+    // Track whether we have window focus
     $(window).blur(function() {
         isActive = false;
     });
     
     $(window).focus(function() {
         isActive = true;
+    });
+    
+    
+    // Set up control sidebar
+    // Notification olume
+    notificationVolume = localStorage.getItem('notificationVolume') || 100;
+    createjs.Sound.volume = notificationVolume / 100;
+    
+    $('#bb-volume').ionRangeSlider({
+        min: 0,
+        max: 100,
+        from: notificationVolume,
+        hide_min_max: true,
+        
+        onFinish: function(data) {
+            notificationVolume = data.from;
+            createjs.Sound.volume = notificationVolume / 100;
+            localStorage.setItem('notificationVolume', notificationVolume);
+        }
+    });
+    
+    // Desktop notifications
+    
+    var notifyCheckbox = $('#bb-allow-notify');
+    notifyCheckbox.checked = desktopNotifyEnabled;
+    
+    notifyCheckbox.change(function() {
+        desktopNotifyEnabled = notifyCheckbox.is(':checked');
+        console.log(desktopNotifyEnabled);
+        localStorage.setItem('desktopNotifyEnabled', desktopNotifyEnabled);
     });
 }
 
@@ -480,8 +519,9 @@ function chatNotifyLog(chatId, log) {
  * @param {string} icon - The notification icon.
  */
 function desktopNotify(title, body, icon) {
+    if (!desktopNotifyEnabled) return;
     if (!("Notification" in window)) return;
-    if (!Notification.permission == "granted") return;
+    if (Notification.permission != "granted") return;
     if (isActive) return;
     
     var options = {

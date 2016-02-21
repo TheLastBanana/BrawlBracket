@@ -14,6 +14,10 @@
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <!-- DataTables -->
     <link rel="stylesheet" href="/static/datatables/datatables.min.css"/>
+    <!-- Ion Slider -->
+    <link rel="stylesheet" href="/static/ionslider/css/ion.rangeSlider.css">
+    <!-- Ion Slider Nice -->
+    <link rel="stylesheet" href="/static/ionslider/css/ion.rangeSlider.skinFlat.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="/static/adminlte/css/AdminLTE.min.css">
     <!-- AdminLTE Skin -->
@@ -120,15 +124,26 @@
           <!-- Settings tab content -->
           <div class="tab-pane active" id="control-sidebar-settings-tab">
             <form method="post">
-              <h3 class="control-sidebar-heading">General Settings</h3>
+              <h3 class="control-sidebar-heading">Notification Options</h3>
+              
               <div class="form-group">
                 <label class="control-sidebar-subheading">
-                  Report panel usage
-                  <input type="checkbox" class="pull-right" checked>
+                  Notification Volume
+                  
+                  <input id="bb-volume" type="text" name="volume" value="">
                 </label>
-                <p>
-                  Some information about this general settings option
-                </p>
+                  
+                <p>Sounds will be played when you receive messages and when your lobby updates.</p>
+              </div><!-- /.form-group -->
+              
+              <div class="form-group">
+                <label class="control-sidebar-subheading">
+                  Desktop Notifications
+                  
+                  <input id="bb-allow-notify" class="pull-right" type="checkbox" data-layout="fixed"></input>
+                </label>
+                  
+                <p>This allows the app to notify you while you're in another window or tab.</p>
               </div><!-- /.form-group -->
             </form>
           </div><!-- /.tab-pane -->
@@ -147,6 +162,8 @@
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <!-- DataTables -->
     <script src="/static/datatables/datatables.min.js"></script>
+    <!-- Ion Slider -->
+    <script src="/static/ionslider/js/ion.rangeSlider.min.js"></script>
     <!-- AdminLTE App -->
     <script src="/static/adminlte/js/app.min.js"></script>
     <!-- SocketIO -->

@@ -26,6 +26,7 @@ legendData = {
     'barraza':      'Barraza',
     'ember':        'Ember',
     'azoth':        'Azoth',
+    'koji':         'Koji'
 }
 
 # Order they appear in-game, with random always last
@@ -49,6 +50,7 @@ legendOrder = [
     'barraza',
     'ember',
     'azoth',
+    'koji',
     'random'
 ]
 orderedLegends = [(id, legendData[id]) for id in legendOrder]

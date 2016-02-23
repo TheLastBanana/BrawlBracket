@@ -146,8 +146,10 @@ var lobbyUIFunctions = {
  *      @param {json} data.value - The new value.    
  */
 function onUpdateLobby(data) {
-    if (data.property in lobbyUIFunctions) {
-        lobbyUIFunctions[data.property]();
+    for (property in data) {
+        if (property in lobbyUIFunctions) {
+            lobbyUIFunctions[property]();
+        }
     }
 }
 

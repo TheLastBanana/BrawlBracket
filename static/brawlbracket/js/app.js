@@ -212,30 +212,32 @@ function brawlBracketParticipantInit() {
     });
     
     pSocket.on('update lobby', function(data) {
-        // Maintain previous state so we can compare
-        if (data.property == 'state') {
-            lobbyData.prevState = lobbyData.state;
-        }
-        
-        // Update specified property
-        lobbyData[data.property] = data.value;
-        
-        // Add notifications when state changes
-        if (currentPage != 'lobby' && data.property == 'state') {
-            // Lobby was previously waiting, but we're now ready to do stuff
-            if ((lobbyData.prevState.name == 'waitingForPlayers' ||
-                lobbyData.prevState.name == 'waitingForMatch') &&
-                lobbyData.state.name != 'waitingForPlayers' &&
-                lobbyData.state.name != 'waitingForMatch') {
-                
-                addPageNotification('lobby');
-                createjs.Sound.play('state');
-                
-                desktopNotify('BrawlBracket update',
-                              'Your next match is ready!');
+        for (property in data) {
+            // Maintain previous state so we can compare
+            if (property == 'state') {
+                lobbyData.prevState = lobbyData.state;
             }
             
-            // TODO: Add notifications for room chosen and score changed
+            // Update specified property
+            lobbyData[property] = data[property];
+            
+            // Add notifications when state changes
+            if (currentPage != 'lobby' && property == 'state') {
+                // Lobby was previously waiting, but we're now ready to do stuff
+                if ((lobbyData.prevState.name == 'waitingForPlayers' ||
+                    lobbyData.prevState.name == 'waitingForMatch') &&
+                    lobbyData.state.name != 'waitingForPlayers' &&
+                    lobbyData.state.name != 'waitingForMatch') {
+                    
+                    addPageNotification('lobby');
+                    createjs.Sound.play('state');
+                    
+                    desktopNotify('BrawlBracket update',
+                                  'Your next match is ready!');
+                }
+                
+                // TODO: Add notifications for room chosen and score changed
+            }
         }
     });
 }

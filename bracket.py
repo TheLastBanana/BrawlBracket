@@ -1,44 +1,78 @@
 import math
 
-class BracketNode:
-    seedLen = 2
-
-    def __init__(self):
-        # The parent node to this
-        self._parent = None
+class Match():
+    """
+    A match between two Teams in the tournament.
+    """
     
-        # How deeply nested this is in the tournament (leaves are at 0)
-        self._nesting = 0
-        
-        # The seed of the player to advance to the next round
-        self._winner = None
+    printSeedLen = 2
 
-class Match(BracketNode):
-    def __init__(self, a = None, b = None, winningChild = None):
-        super(Match, self).__init__()
+    def __init__(self, prereqMatches = None, teams = None, winnerSide = None):
+        # The next match
+        self.nextMatch = None
+    
+        # The match round (inverse of depth in the graph, essentially)
+        self.round = 0
         
-        self.children = [None, None]
-        self.setChild(0, a)
-        self.setChild(1, b)
+        # The prerequisite matches
+        if prereqMatches:
+            if len(prereqMatches) != 2:
+                raise ValueError('Matches must have 2 prerequisites')
+            
+            self.prereqMatches = prereqMatches
+            
+            for match in self.prereqMatches:
+                if match is None:
+                    continue
+                    
+                match.nextMatch = self
+            
+        else:
+            self.prereqMatches = [None, None]
         
-        self.winningChild = winningChild
-        self.updateWinner()
+        # The teams in this match
+        if teams:
+            if len(teams) != 2:
+                raise ValueError('Matches must have 2 teams')
+            
+            self.teams = [None, None]
+            for i, team in enumerate(teams):
+                # No team, so try to get the previous match's winner
+                if team is None:
+                    self.updateTeamFromPrereq(i)
+                
+                else:
+                    self.teams[i] = team
+            
+        else:
+            # Take winners from previous matches
+            self.updateTeamsFromPrereqs()
+        
+        # Winning team
+        if winnerSide is None:
+            self.winner = None
+            
+        else:
+            self.winner = self.teams[winnerSide]
 
     def getLines(self):
         """
         Get the lines which, if printed in sequence, make up the graphical representation
         of this node and its children.
         """
-        pnSpaces = 2 ** (self._nesting - 1) - 1
-        nSpaces = 2 ** (self._nesting) - 1
+        pnSpaces = 2 ** self.round - 1
+        nSpaces = 2 ** (self.round + 1) - 1
         
         # Length of an empty seed
-        seedSpace = ' ' * BracketNode.seedLen
+        seedSpace = ' ' * Match.printSeedLen
         
-        aLines = self.getPaddedChildLines(self.children[0])
-        bLines = self.getPaddedChildLines(self.children[1])
+        aLines = self.getPaddedChildLines(0)
+        bLines = self.getPaddedChildLines(1)
         
-        winner = '{:<2}'.format(self._winner) or seedSpace
+        if self.winner:
+            winner = ('{:<' + str(Match.printSeedLen) + '}').format(self.winner.seed)
+        else:
+            winner = seedSpace
         
         # Combine previous lines vertically, adding a space between them
         combined = aLines + [''] + bLines
@@ -63,129 +97,224 @@ class Match(BracketNode):
         
         return combined
         
-    def getPaddedChildLines(self, child):
+    def getPaddedChildLines(self, side):
         """
         Get a child node's lines, including extra padding to line up leaf nodes.
         """
-        if child is None:
-            lines = [' ' * BracketNode.seedLen]
-        
-        else:
-            lines = child.getLines()
+        if self.prereqMatches[side]:
+            # Get match lines
+            lines = self.prereqMatches[side].getLines()
             
-            # Child is not a leaf, so use its actual lines
-            if child._nesting != 0:
-                return lines
+            return lines
+            
+        else:
+            # Child is a leaf, so we have to do some padding
+            if self.teams[side]:
+                # Get team seed
+                seed = self.teams[side].seed
+                lines = [('{:<' + str(Match.printSeedLen) + '}').format(seed)]
+            
+            else:
+                lines = [' ' * Match.printSeedLen]
+                
     
-        # Child is a leaf, so we have to do some padding
-        # Horizontal padding
-        lines[0] = ' ' * 6 * (self._nesting - 1) + lines[0]
-        
-        # Vertical padding
-        pnSpaces = 2 ** (self._nesting - 1) - 1
-        lines = [''] * pnSpaces + lines + [''] * pnSpaces
-        
-        return lines
-        
-    def setChild(self, num, child):
-        """
-        Set one of the match's children.
-        """
-        if num < 0 or num > 1:
-            raise ValueError('num must be 0 or 1')
+            # Horizontal padding
+            lines[0] = ' ' * 6 * self.round + lines[0]
             
-        self.children[num] = child
-        if child is not None:
-            child.parent = self
-        
-        self.updateNesting()
-        
-    def updateNesting(self):
-        """
-        Update nesting to reflect children.
-        """
-        oldNesting = self._nesting
-        
-        # Treat None children as leaves
-        self._nesting = max([(child._nesting if child else 0) for child in self.children]) + 1
-        
-        # Update parent if we changed
-        if self._parent and oldNesting != self._nesting:
-            self._parent.updateNesting()
+            # Vertical padding
+            pnSpaces = 2 ** self.round - 1
+            lines = [''] * pnSpaces + lines + [''] * pnSpaces
             
-    def updateWinner(self):
-        """
-        Set the winner.
-        """
-        oldWinner = self._winner
-        if self.winningChild is None:
-            # no winner yet
-            self._winner = ''
-        
-        elif self.winningChild == 0 or self.winningChild == 1:
-            # Use winning child's winner
-            self._winner = self.children[self.winningChild]._winner
+            return lines
             
+    def updateTeamsFromPrereqs(self):
+        """
+        Update all teams based on the prerequisite matches' winners.
+        """
+        self.teams = [(match.winner if match else None) for match in self.prereqMatches]
+        
+    def updateTeamFromPrereq(self, side):
+        """
+        Update a side's team based on the prerequisite match's winners.
+        """
+        if self.prereqMatches[side]:
+            self.teams[side] = self.prereqMatches[side].winner
         else:
-            raise ValueError('winningChild must be 0, 1, or None. Got {}'.format(self.winningChild))
-            
-        # Update parent if we changed
-        if self._parent and oldWinner != self._winner:
-            self._parent.updateWinner()
+            self.teams[side] = None
+        
+    def getTreeDepth(self):
+        """
+        Get the maximum depth of the match tree.
+        """
+        return max([(match.getTreeDepth() if match else 0) for match in self.prereqMatches]) + 1
         
     def __repr__(self):
         return '\n'.join(self.getLines())
 
-class Player(BracketNode):
+class Team():
+    """
+    A seeded entry in the tournament.
+    """
     def __init__(self, seed):
-        super(Player, self).__init__()
-        
+        # The seed
         self.seed = str(seed)
-        self._winner = self.seed
         
-    def getLines(self):
-        return ['{:<2}'.format(self.seed)]
+    def __repr__(self):
+        return self.seed
 
-
-def genEmpty2nTourney(n):
+class Tournament():
     """
-    Generate an empty tourney bracket for 2^n players.
+    Contains all the data for a tournament. Is responsible for creation of Matches, Teams, and any other
+    classes tied to a specific tournament. Also contains convenience functions for updating and getting data.
     """
-    if n == 0:
-        return None
-
-    tourney = Match(genEmpty2nTourney(n - 1), genEmpty2nTourney(n - 1))
+    def __init__(self):
+        # Set of all matches
+        self.matches = set()
         
-    return tourney
-    
-def genTourney(n):
-    """
-    Generate a tourney bracket for n players and populate it with initial seeds.
-    """
-    nLog = math.log(n, 2)
-    floorLog = math.floor(nLog)
-    ceilLog = math.ceil(nLog)
-    
-    minPower = 2 ** floorLog
-    maxPower = 2 ** ceilLog
-    
-    # Find the closest power of two. In a tie, pick the smallest
-    nearLog = ceilLog if (maxPower - n) < (n - minPower) else floorLog
-    
-    tourney = genEmpty2nTourney(nearLog)
-    
-    return tourney
+        # Set of all teams
+        self.teams = set()
+        
+        # Last match created
+        self.lastMatch = None
+        
+    def createMatch(self, *args):
+        """
+        Create a match and add it to the tournament.
+        """
+        match = Match(*args)
+        self.matches.add(match)
+        
+        self.lastMatch = match
+        
+        return match
+        
+    def createTeam(self, *args):
+        """
+        Create a team and add it to the tournament.
+        """
+        team = Team(*args)
+        self.teams.add(team)
+        
+        return team
+        
+    def updateMatchRounds(self, match = None, maxDepth = None, depth = 0):
+        """
+        Determine the rounds for each match.
+        """
+        if match is None:
+            match = self.lastMatch
+        
+        if maxDepth is None:
+            # Subtract 1 to 0-index rounds
+            maxDepth = match.getTreeDepth() - 1
+            
+        match.round = maxDepth - depth
+        
+        for prereq in match.prereqMatches:
+            if prereq is None:
+                continue
+        
+            self.updateMatchRounds(prereq, maxDepth, depth + 1)
+            
+        
+    def __repr__(self):
+        return str(self.lastMatch)
 
-print(Match(
-    Match(
-        Match(
-            Player(1),
-            Player(2)
+# def genEmpty2nTourney(n):
+    # """
+    # Generate an empty tourney bracket for 2^n players.
+    # """
+    # if n == 0:
+        # return None
+
+    # tourney = Match(genEmpty2nTourney(n - 1), genEmpty2nTourney(n - 1))
+        
+    # return tourney
+    
+# def genTourney(n):
+    # """
+    # Generate a tourney bracket for n players and populate it with initial seeds.
+    # """
+    # nLog = math.log(n, 2)
+    # floorLog = math.floor(nLog)
+    # ceilLog = math.ceil(nLog)
+    
+    # minPower = 2 ** floorLog
+    # maxPower = 2 ** ceilLog
+    
+    # # Find the closest power of two. In a tie, pick the smallest
+    # nearLog = ceilLog if (maxPower - n) < (n - minPower) else floorLog
+    
+    # tourney = genEmpty2nTourney(nearLog)
+    
+    # return tourney
+    
+t1 = Tournament()
+t1.createMatch(
+    [
+        t1.createMatch(
+            None,
+            [t1.createTeam(1), t1.createTeam(2)],
+            1
         ),
-        Player(3)
-    ),
-    Match(
-        Player(5),
-        Player(6)
-    )
-))
+        
+        t1.createMatch(
+            None,
+            [t1.createTeam(3), t1.createTeam(4)],
+            0
+        )
+    ],
+    None,
+    0
+)
+t1.updateMatchRounds()
+    
+t2 = Tournament()
+t2.createMatch(
+    [
+        t2.createMatch(
+            None,
+            [t2.createTeam(1), t2.createTeam(2)],
+            1
+        ),
+        None
+    ],
+    [
+        None,
+        t2.createTeam(3)
+    ],
+    0
+)
+t2.updateMatchRounds()
+    
+t3 = Tournament()
+t3.createMatch(
+    [
+        t3.createMatch(
+            [
+                t3.createMatch(
+                    None,
+                    [t3.createTeam(1), t3.createTeam(2)],
+                    1
+                ),
+                None
+            ],
+            [
+                None,
+                t3.createTeam(3)
+            ],
+            0
+        ),
+        
+        None
+    ],
+    [None, t3.createTeam(4)],
+    1
+)
+t3.updateMatchRounds()
+
+print(t1)
+print()
+print(t2)
+print()
+print(t3)

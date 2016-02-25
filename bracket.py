@@ -39,14 +39,14 @@ class Match():
             for i, team in enumerate(teams):
                 # No team, so try to get the previous match's winner
                 if team is None:
-                    self.updateTeamFromPrereq(i)
+                    self._updateTeamFromPrereq(i)
                 
                 else:
                     self.teams[i] = team
             
         else:
             # Take winners from previous matches
-            self.updateTeamsFromPrereqs()
+            self._updateTeamsFromPrereqs()
         
         # Winning team
         if winnerSide is None:
@@ -54,8 +54,29 @@ class Match():
             
         else:
             self.winner = self.teams[winnerSide]
+            
+    def _updateTeamsFromPrereqs(self):
+        """
+        Update all teams based on the prerequisite matches' winners.
+        """
+        self.teams = [(match.winner if match else None) for match in self.prereqMatches]
+        
+    def _updateTeamFromPrereq(self, side):
+        """
+        Update a side's team based on the prerequisite match's winners.
+        """
+        if self.prereqMatches[side]:
+            self.teams[side] = self.prereqMatches[side].winner
+        else:
+            self.teams[side] = None
+        
+    def _getTreeDepth(self):
+        """
+        Get the maximum depth of the match tree.
+        """
+        return max([(match._getTreeDepth() if match else 0) for match in self.prereqMatches]) + 1
 
-    def getLines(self):
+    def _getDisplayLines(self):
         """
         Get the lines which, if printed in sequence, make up the graphical representation
         of this node and its children.
@@ -66,8 +87,8 @@ class Match():
         # Length of an empty seed
         seedSpace = ' ' * Match.printSeedLen
         
-        aLines = self.getPaddedChildLines(0)
-        bLines = self.getPaddedChildLines(1)
+        aLines = self._getChildDisplayLines(0)
+        bLines = self._getChildDisplayLines(1)
         
         if self.winner:
             winner = ('{:<' + str(Match.printSeedLen) + '}').format(self.winner.seed)
@@ -97,13 +118,13 @@ class Match():
         
         return combined
         
-    def getPaddedChildLines(self, side):
+    def _getChildDisplayLines(self, side):
         """
         Get a child node's lines, including extra padding to line up leaf nodes.
         """
         if self.prereqMatches[side]:
             # Get match lines
-            lines = self.prereqMatches[side].getLines()
+            lines = self.prereqMatches[side]._getDisplayLines()
             
             return lines
             
@@ -126,30 +147,9 @@ class Match():
             lines = [''] * pnSpaces + lines + [''] * pnSpaces
             
             return lines
-            
-    def updateTeamsFromPrereqs(self):
-        """
-        Update all teams based on the prerequisite matches' winners.
-        """
-        self.teams = [(match.winner if match else None) for match in self.prereqMatches]
-        
-    def updateTeamFromPrereq(self, side):
-        """
-        Update a side's team based on the prerequisite match's winners.
-        """
-        if self.prereqMatches[side]:
-            self.teams[side] = self.prereqMatches[side].winner
-        else:
-            self.teams[side] = None
-        
-    def getTreeDepth(self):
-        """
-        Get the maximum depth of the match tree.
-        """
-        return max([(match.getTreeDepth() if match else 0) for match in self.prereqMatches]) + 1
         
     def __repr__(self):
-        return '\n'.join(self.getLines())
+        return '\n'.join(self._getDisplayLines())
 
 class Team():
     """
@@ -218,7 +218,7 @@ class Tournament():
         
         if maxDepth is None:
             # Subtract 1 to 0-index rounds
-            maxDepth = match.getTreeDepth() - 1
+            maxDepth = match._getTreeDepth() - 1
             
         match.round = maxDepth - depth
         

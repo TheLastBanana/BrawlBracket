@@ -91,11 +91,6 @@ class Match():
         aLines = self._getChildDisplayLines(0)
         bLines = self._getChildDisplayLines(1)
         
-        if self.winner:
-            winner = ('{:<' + str(Match.printSeedLen) + '}').format(self.winner.seed)
-        else:
-            winner = seedSpace
-        
         # Combine previous lines vertically, adding a space between them
         combined = aLines + [''] + bLines
         
@@ -104,18 +99,27 @@ class Match():
         for i in range(len(combined)):
             combined[i] = ('{:<' + str(childLen) + '}').format(combined[i])
         
-        # Add corners
-        combined[pnSpaces] += '─┐' + seedSpace
-        combined[-pnSpaces - 1] += '─┘' + seedSpace
+        # Add team seeds and corners
+        seeds = []
+        seedFormat = '{:<' + str(Match.printSeedLen) + '}'
+        for team in self.teams:
+            if team:
+                seeds.append(seedFormat.format(team.seed))
+                
+            else:
+                seeds.append(seedSpace)
+        
+        combined[pnSpaces] += seeds[0] + '─┐'
+        combined[-pnSpaces - 1] += seeds[1] + '─┘'
         
         for i in range(pnSpaces + 1, len(combined) - pnSpaces - 1):
             # Connector for center piece
             if i == nSpaces:
-                combined[i] += ' ├─ ' + winner
+                combined[i] += seedSpace + ' ├─ '
                 
             # Connecting bars for every other line between corners
             else:
-                combined[i] += ' │' + seedSpace
+                combined[i] += seedSpace + ' │'
         
         return combined
         
@@ -130,24 +134,7 @@ class Match():
             return lines
             
         else:
-            # Child is a leaf, so we have to do some padding
-            if self.teams[side]:
-                # Get team seed
-                seed = self.teams[side].seed
-                lines = [('{:<' + str(Match.printSeedLen) + '}').format(seed)]
-            
-            else:
-                lines = [' ' * Match.printSeedLen]
-                
-    
-            # Horizontal padding
-            lines[0] = ' ' * 6 * self.round + lines[0]
-            
-            # Vertical padding
-            pnSpaces = 2 ** self.round - 1
-            lines = [''] * pnSpaces + lines + [''] * pnSpaces
-            
-            return lines
+            return ['']
         
     def __repr__(self):
         return '\n'.join(self._getDisplayLines())

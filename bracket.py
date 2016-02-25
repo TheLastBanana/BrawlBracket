@@ -2,9 +2,10 @@ import math
 
 class Match():
     """
-    A match between two Teams in the tournament.
+    A match between two Teams in the tournament. The Tournament class will create these for you as necessary.
     """
     
+    # When printing a match tree, this is the maximum length (in chars) of a seed.
     printSeedLen = 2
 
     def __init__(self, prereqMatches = None, teams = None, winnerSide = None):
@@ -153,31 +154,42 @@ class Match():
 
 class Team():
     """
-    A seeded entry in the tournament.
+    A seeded entry in the tournament. Create these through the Tournament class.
     """
     def __init__(self, seed):
         # The seed
-        self.seed = str(seed)
+        self.seed = seed
         
     def __repr__(self):
-        return self.seed
+        return str(self.seed)
 
 class Tournament():
     """
     Contains all the data for a tournament. Is responsible for creation of Matches, Teams, and any other
     classes tied to a specific tournament. Also contains convenience functions for updating and getting data.
     """
-    def __init__(self):
-        # Set of all matches
+    def __init__(self, teamCount = 0):
+        # Set of all matches. This should only be read by outside classes.
         self.matches = set()
         
-        # Set of all teams
+        # Set of all teams. This should only be read by outside classes.
         self.teams = set()
         
-        # Last match created
-        self.lastMatch = None
+        for i in range(teamCount):
+            self.createTeam(i)
         
-    def createMatch(self, *args):
+        self._generate()
+        
+    def createTeam(self, *args):
+        """
+        Create a team and add it to the tournament.
+        """
+        team = Team(*args)
+        self.teams.add(team)
+        
+        return team
+        
+    def _createMatch(self, *args, **kwargs):
         """
         Create a match and add it to the tournament.
         """
@@ -193,28 +205,36 @@ class Tournament():
                 if team not in self.teams:
                     raise ValueError('Team not in tournament')
         
-        match = Match(*args)
+        match = Match(*args, **kwargs)
         self.matches.add(match)
         
-        self.lastMatch = match
-        
         return match
-        
-    def createTeam(self, *args):
+            
+    def _generate(self):
         """
-        Create a team and add it to the tournament.
+        Generate a tournament fitting the number of existing teams.
         """
-        team = Team(*args)
-        self.teams.add(team)
+        return
         
-        return team
+class TreeTournament(Tournament):
+    """
+    A tournament that follows a tree structure (with each match leading into the next).
+    """
+    def __init__(self, *args, **kwargs):
+        # Root match
+        self._root = None
         
-    def updateMatchRounds(self, match = None, maxDepth = None, depth = 0):
+        super().__init__(*args, **kwargs)
+        
+    def _updateMatchRounds(self, match = None, maxDepth = None, depth = 0):
         """
         Determine the rounds for each match.
         """
         if match is None:
-            match = self.lastMatch
+            if self._root is None:
+                return
+                
+            match = self._root
         
         if maxDepth is None:
             # Subtract 1 to 0-index rounds
@@ -226,11 +246,29 @@ class Tournament():
             if prereq is None:
                 continue
         
-            self.updateMatchRounds(prereq, maxDepth, depth + 1)
+            self._updateMatchRounds(prereq, maxDepth, depth + 1)
             
+    def _generate(self):
+        super()._generate()
         
+        self._updateMatchRounds()
+            
     def __repr__(self):
-        return str(self.lastMatch)
+        return str(self._root)
+        
+class GenericTreeTournament(TreeTournament):
+    """
+    A tree tournament with match creation exposed.
+    """
+    def createMatch(self, *args, **kwargs):
+        """
+        Create a match and add it to the tournament.
+        The last match created is always assumed to be the root.
+        """
+        self._root = self._createMatch(*args, **kwargs)
+        self._updateMatchRounds()
+        
+        return self._root
 
 # def genEmpty2nTourney(n):
     # """
@@ -261,7 +299,7 @@ class Tournament():
     
     # return tourney
     
-t1 = Tournament()
+t1 = GenericTreeTournament()
 t1.createMatch(
     [
         t1.createMatch(
@@ -279,9 +317,8 @@ t1.createMatch(
     None,
     0
 )
-t1.updateMatchRounds()
-    
-t2 = Tournament()
+
+t2 = GenericTreeTournament()
 t2.createMatch(
     [
         t2.createMatch(
@@ -297,9 +334,8 @@ t2.createMatch(
     ],
     0
 )
-t2.updateMatchRounds()
     
-t3 = Tournament()
+t3 = GenericTreeTournament()
 t3.createMatch(
     [
         t3.createMatch(
@@ -323,7 +359,6 @@ t3.createMatch(
     [None, t3.createTeam(4)],
     1
 )
-t3.updateMatchRounds()
 
 print(t1)
 print()

@@ -158,10 +158,10 @@ class Team():
     """
     def __init__(self, seed):
         # The seed
-        self.seed = str(seed)
+        self.seed = seed
         
     def __repr__(self):
-        return self.seed
+        return str(self.seed)
 
 class Tournament():
     """

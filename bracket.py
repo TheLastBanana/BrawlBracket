@@ -163,7 +163,7 @@ class Tournament():
         self.teams = set()
         
         for i in range(teamCount):
-            self.createTeam(i)
+            self.createTeam(i + 1)
         
         self._generate()
         

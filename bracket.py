@@ -256,99 +256,118 @@ class GenericTreeTournament(TreeTournament):
         self._updateMatchRounds()
         
         return self._root
-
-# def genEmpty2nTourney(n):
-    # """
-    # Generate an empty tourney bracket for 2^n players.
-    # """
-    # if n == 0:
-        # return None
-
-    # tourney = Match(genEmpty2nTourney(n - 1), genEmpty2nTourney(n - 1))
         
-    # return tourney
+class SingleElimTournament(TreeTournament):
+    """
+    A single elimintation tournament.
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
     
-# def genTourney(n):
-    # """
-    # Generate a tourney bracket for n players and populate it with initial seeds.
-    # """
-    # nLog = math.log(n, 2)
-    # floorLog = math.floor(nLog)
-    # ceilLog = math.ceil(nLog)
-    
-    # minPower = 2 ** floorLog
-    # maxPower = 2 ** ceilLog
-    
-    # # Find the closest power of two. In a tie, pick the smallest
-    # nearLog = ceilLog if (maxPower - n) < (n - minPower) else floorLog
-    
-    # tourney = genEmpty2nTourney(nearLog)
-    
-    # return tourney
-    
-t1 = GenericTreeTournament()
-t1.createMatch(
-    [
-        t1.createMatch(
-            None,
-            [t1.createTeam(1), t1.createTeam(2)],
-            1
-        ),
+    def _generate(self):
+        n = len(self.teams)
         
-        t1.createMatch(
-            None,
-            [t1.createTeam(3), t1.createTeam(4)],
-            0
-        )
-    ],
-    None,
-    0
-)
-
-t2 = GenericTreeTournament()
-t2.createMatch(
-    [
-        t2.createMatch(
-            None,
-            [t2.createTeam(1), t2.createTeam(2)],
-            1
-        ),
-        None
-    ],
-    [
-        None,
-        t2.createTeam(3)
-    ],
-    0
-)
-    
-t3 = GenericTreeTournament()
-t3.createMatch(
-    [
-        t3.createMatch(
-            [
-                t3.createMatch(
-                    None,
-                    [t3.createTeam(1), t3.createTeam(2)],
-                    1
-                ),
-                None
-            ],
-            [
-                None,
-                t3.createTeam(3)
-            ],
-            0
-        ),
+        if (n < 2):
+            return
         
-        None
-    ],
-    [None, t3.createTeam(4)],
-    1
-)
+        logN = math.log(n, 2)
+        floorLog = math.floor(logN)
+        ceilLog = math.ceil(logN)
+        
+        # Nearest powers of two
+        lowPo2 = 2 ** floorLog
+        highPo2 = 2 ** ceilLog
+        
+        # Generate symmetric tree
+        roundMatches = []
+        self._root = self._genMatchTree(ceilLog, roundMatches)
+        firstMatches = roundMatches[0]
+        
+        # List of teams that haven't been assigned
+        # TODO: sort by appropriate order
+        teamsToAssign = list(self.teams)
+        
+        # Number of byes needed
+        numByes = min(n - lowPo2, highPo2 - n)
+        
+        # Number of pairs to include in first round
+        # This formula is ugly, but it replicates the pattern you can see in these charts:
+        # http://www.printyourbrackets.com/single-elimination-tournament-brackets.html
+        numFirstRoundPairs = (n - 1 - lowPo2) % (2 ** math.floor(math.log(n - 1, 2))) + 1
+        
+        # Number of pairs that will skip the first round
+        # Byes are only 1 player, and pairs are 2. Divide by 2 to get remaining pairs
+        numSkipPairs = (n - numByes - numFirstRoundPairs * 2) / 2
+        assert numSkipPairs == math.floor(numSkipPairs), 'Pairs to skip first round must be a whole number'
+        
+        # Fill in first round
+        i = 0
+        while i < len(firstMatches) and len(teamsToAssign) > 0:
+            # Do we have any byes left? If so, add one
+            if numByes > 0:
+                print('bye')
+                numByes -= 1
+                match = firstMatches[i]
+                match.nextMatch.teams = [teamsToAssign.pop(), None]
+                i += 1
+            
+            # Do we have any pairs skipping the first round? If so, add them both
+            if numFirstRoundPairs > 0:
+                print('pair')
+                numFirstRoundPairs -= 1
+                match = firstMatches[i]
+                match.teams = [teamsToAssign.pop(), teamsToAssign.pop()]
+                i += 1
+                
+            # If we have room, add a pair that skips the first round.
+            # We always add 
+            if numSkipPairs > 0:
+                print('skip pair')
+                numSkipPairs -= 1
+            
+                match = firstMatches[i]
+                match.nextMatch.teams = [teamsToAssign.pop(), teamsToAssign.pop()]
+                
+                # Two matches have been skipped, so advance by 2
+                i += 2
+            
+        # Fill in byes
+        for i in range(numByes):
+            match = roundMatches[1][i]
+            match.teams = [teamsToAssign.pop(), None]
+        
+        # Set the actual round number for each match
+        self._updateMatchRounds()
+        
+    def _genMatchTree(self, rounds, roundMatches, maxRounds = None):
+        """
+        Generate a symmetric match tree with the given number of rounds (2^rounds matches).
+        """
+        # First call, so set the max rounds
+        if maxRounds is None:
+            maxRounds = rounds
+            
+            # Create an empty list of matches for each of the rounds
+            for i in range(rounds):
+                roundMatches.append([])
+        
+        # First round has no children
+        if rounds == 1:
+            match = self._createMatch()
 
-print(t1)
-print()
-print(t2)
-print()
-print(t3)
+        # Recurse to next round
+        else:
+            match = self._createMatch([
+                self._genMatchTree(rounds - 1, roundMatches, maxRounds),
+                self._genMatchTree(rounds - 1, roundMatches, maxRounds)
+            ])
+        
+        # Add this match to the list of matches in the current round
+        roundMatches[rounds - 1].append(match)
+        
+        return match
+
+for i in range(1, 20):
+    print('{} players:'.format(i))
+    print(SingleElimTournament(i))
+    print()

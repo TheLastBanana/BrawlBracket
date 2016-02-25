@@ -8,10 +8,15 @@ class User:
     
     def __init__(self, uuid, steamId, username, avatar):
         """
-        id: BrawlBracket id (uuid)
-        steamId: Steam oid (string)
-        username: Steam username (string)
-        avatar: Avatar Url (string)
+        User data:
+         id: BrawlBracket id (uuid)
+         steamId: Steam oid (string)
+         username: Steam username (string)
+         avatar: Avatar Url (string)
+        
+        Settings:
+         ownedLegends: list of legends ids (string id)
+         preferredServer: server id (string id)
         """
         self.id = uuid
         self.steamId = steamId

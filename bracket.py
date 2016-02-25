@@ -193,13 +193,13 @@ class Tournament():
         """
         Create a match and add it to the tournament.
         """
-        if args[0]:
+        if len(args) > 0 and args[0]:
             for match in args[0]:
                 if match is None: continue
                 if match not in self.matches:
                     raise ValueError('Match not in tournament')
                     
-        if args[1]:
+        if len(args) > 1 and args[1]:
             for team in args[1]:
                 if team is None: continue
                 if team not in self.teams:

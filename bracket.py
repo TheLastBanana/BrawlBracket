@@ -364,7 +364,6 @@ class SingleElimTournament(TreeTournament):
         while i < len(firstMatches) and len(teamsToAssign) > 0:
             # Do we have any byes left? If so, add one
             if byes:
-                print('bye')
                 match = firstMatches[i]
                 match.nextMatch.teams = [byes.popleft(), None]
                 
@@ -375,7 +374,6 @@ class SingleElimTournament(TreeTournament):
             
             # Do we have any pairs skipping the first round? If so, add them both
             if firstRoundPairs:
-                print('pair')
                 match = firstMatches[i]
                 match.teams = list(firstRoundPairs.pop())
                 
@@ -383,7 +381,6 @@ class SingleElimTournament(TreeTournament):
                 
             # If we have room, add a pair that skips the first round.
             if skipPairs:
-                print('skip pair')
                 match = firstMatches[i]
                 match.nextMatch.teams = list(skipPairs.pop())
                 
@@ -424,8 +421,3 @@ class SingleElimTournament(TreeTournament):
         roundMatches[rounds - 1].append(match)
         
         return match
-
-for i in range(1, 20):
-    print('{} players:'.format(i))
-    print(SingleElimTournament(i))
-    print()

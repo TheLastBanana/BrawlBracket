@@ -145,6 +145,21 @@ class Match():
             
         else:
             return ['']
+            
+    def _destroy(self):
+        """
+        Unlink the match from other matches.
+        """
+        if self.nextMatch:
+            nextPrereqs = self.nextMatch.prereqMatches
+            side = nextPrereqs.index(self)
+            nextPrereqs[side] = None
+            
+        for match in self.prereqMatches:
+            if match is None:
+                continue
+            
+            match.nextMatch = None
         
     def __repr__(self):
         return '\n'.join(self._getDisplayLines())
@@ -185,6 +200,15 @@ class Tournament():
         self.teams.add(team)
         
         return team
+        
+    def _removeTeam(self, team):
+        """
+        Remove a team from the tournament.
+        """
+        if team not in self.teams:
+            raise ValueError('Team not in tournament')
+            
+        self.teams.remove(team)
         
     def _createMatch(self, *args, **kwargs):
         """

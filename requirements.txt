@@ -4,4 +4,4 @@ Flask==0.10.1
 Flask-Login==0.3.2
 Flask-SocketIO==1.2
 eventlet==0.17.4
-python-graph-core==1.8.2
+Flask-OpenID==1.2.5

@@ -301,6 +301,16 @@ class GenericTreeTournament(TreeTournament):
         
         return self._root
         
+    def setRoot(self, match):
+        """
+        Set the root match.
+        """
+        if match not in self.matches:
+            raise ValueError('Match not in tournament')
+        
+        self._root = match
+        self._updateMatchRounds()
+        
 class SingleElimTournament(TreeTournament):
     """
     A single elimintation tournament.

@@ -116,7 +116,7 @@ class Match():
         for i in range(pnSpaces + 1, len(combined) - pnSpaces - 1):
             # Connector for center piece
             if i == nSpaces:
-                combined[i] += seedSpace + ' ├─ '
+                combined[i] += seedSpace + ' ├─'
                 
             # Connecting bars for every other line between corners
             else:
@@ -133,6 +133,15 @@ class Match():
             lines = self.prereqMatches[side]._getDisplayLines()
             
             return lines
+            
+        elif self.round > 0:
+            # Each match is 6 characters wide plus seed length
+            hSpace = 5 * self.round
+            
+            # Leaf nodes are 3 wide, and this grows exponentially
+            vSpace = 2 ** self.round + 1
+            
+            return [' ' * hSpace] * vSpace
             
         else:
             return ['']

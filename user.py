@@ -10,7 +10,7 @@ class User:
         """
         User data:
          id: BrawlBracket id (uuid)
-         steamId: Steam oid (string)
+         steamId: Steam oid (int)
          username: Steam username (string)
          avatar: Avatar Url (string)
         

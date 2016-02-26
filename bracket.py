@@ -1,4 +1,5 @@
 import math
+from collections import deque
 
 class Match():
     """
@@ -283,10 +284,6 @@ class SingleElimTournament(TreeTournament):
         self._root = self._genMatchTree(ceilLog, roundMatches)
         firstMatches = roundMatches[0]
         
-        # List of teams that haven't been assigned
-        # TODO: sort by appropriate order
-        teamsToAssign = list(self.teams)
-        
         # Number of byes needed
         numByes = min(n - lowPo2, highPo2 - n)
         
@@ -299,42 +296,61 @@ class SingleElimTournament(TreeTournament):
         # Byes are only 1 player, and pairs are 2. Divide by 2 to get remaining pairs
         numSkipPairs = (n - numByes - numFirstRoundPairs * 2) / 2
         assert numSkipPairs == math.floor(numSkipPairs), 'Pairs to skip first round must be a whole number'
+        numSkipPairs = math.floor(numSkipPairs)
         
-        # Fill in first round
+        # List of teams that haven't been assigned
+        teamsToAssign = list(self.teams)
+        teamsToAssign.sort(key=lambda team: team.seed)
+        
+        # Select the teams to assign in each category
+        # Byes are given to highest-seed players, as they get the biggest advantage
+        byes = deque(teamsToAssign[:numByes])
+        
+        # Skipping pairs go to next highest seeds
+        skippers = deque(teamsToAssign[numByes:numByes + numSkipPairs * 2])
+        
+        # Create pairs of skippers, matching highest against lowest seed
+        skipPairs = []
+        while skippers:
+            skipPairs.append((skippers.popleft(), skippers.pop()))
+        
+        # Remainder stay in first round
+        firstRounders = deque(teamsToAssign[numByes + numSkipPairs * 2:])
+        
+        # Create pairs of first rounders, matching highest against lowest seed
+        firstRoundPairs = []
+        while firstRounders:
+            firstRoundPairs.append((firstRounders.popleft(), firstRounders.pop()))
+        
+        # Fill in first round with matches
+        # This loop interleaves byes, first round pairs, and skipper pairs so that:
+        # - first round pairs may match each other
+        # - byes are matched against the winner of a first round pair
+        # - skip pair winners will be matched against the winner of a bye/first rounder
         i = 0
         while i < len(firstMatches) and len(teamsToAssign) > 0:
             # Do we have any byes left? If so, add one
-            if numByes > 0:
+            if byes:
                 print('bye')
-                numByes -= 1
                 match = firstMatches[i]
-                match.nextMatch.teams = [teamsToAssign.pop(), None]
+                match.nextMatch.teams = [byes.popleft(), None]
                 i += 1
             
             # Do we have any pairs skipping the first round? If so, add them both
-            if numFirstRoundPairs > 0:
+            if firstRoundPairs:
                 print('pair')
-                numFirstRoundPairs -= 1
                 match = firstMatches[i]
-                match.teams = [teamsToAssign.pop(), teamsToAssign.pop()]
+                match.teams = list(firstRoundPairs.pop())
                 i += 1
                 
             # If we have room, add a pair that skips the first round.
-            # We always add 
-            if numSkipPairs > 0:
+            if skipPairs:
                 print('skip pair')
-                numSkipPairs -= 1
-            
                 match = firstMatches[i]
-                match.nextMatch.teams = [teamsToAssign.pop(), teamsToAssign.pop()]
+                match.nextMatch.teams = list(skipPairs.pop())
                 
                 # Two matches have been skipped, so advance by 2
                 i += 2
-            
-        # Fill in byes
-        for i in range(numByes):
-            match = roundMatches[1][i]
-            match.teams = [teamsToAssign.pop(), None]
         
         # Set the actual round number for each match
         self._updateMatchRounds()

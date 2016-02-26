@@ -230,6 +230,16 @@ class Tournament():
         self.matches.add(match)
         
         return match
+        
+    def _removeMatch(self, match):
+        """
+        Remove a match from the tournament.
+        """
+        if match not in self.matches:
+            raise ValueError('Match not in tournament')
+            
+        self.matches.remove(match)
+        match._destroy()
             
     def _generate(self):
         """

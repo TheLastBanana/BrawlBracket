@@ -367,6 +367,10 @@ class SingleElimTournament(TreeTournament):
                 print('bye')
                 match = firstMatches[i]
                 match.nextMatch.teams = [byes.popleft(), None]
+                
+                # This match will be skipped
+                self._removeMatch(match)
+                
                 i += 1
             
             # Do we have any pairs skipping the first round? If so, add them both
@@ -374,6 +378,7 @@ class SingleElimTournament(TreeTournament):
                 print('pair')
                 match = firstMatches[i]
                 match.teams = list(firstRoundPairs.pop())
+                
                 i += 1
                 
             # If we have room, add a pair that skips the first round.
@@ -381,6 +386,10 @@ class SingleElimTournament(TreeTournament):
                 print('skip pair')
                 match = firstMatches[i]
                 match.nextMatch.teams = list(skipPairs.pop())
+                
+                # These matches will both be skipped
+                self._removeMatch(match)
+                self._removeMatch(firstMatches[i + 1])
                 
                 # Two matches have been skipped, so advance by 2
                 i += 2

@@ -3,6 +3,7 @@ import uuid
 import os
 import datetime
 import json
+import re
 
 from flask import Flask  
 from flask import render_template  
@@ -15,9 +16,11 @@ from flask import g
 from flask_socketio import SocketIO
 from flask_socketio import join_room, leave_room, rooms
 from flask_socketio import emit
+from flask.ext.openid import OpenID
 from bidict import bidict
 
 import brawlapi
+import usermanager
 import util
 
 # Bi-directional map from tournament's Challonge URL suffix to its ID.
@@ -27,12 +30,38 @@ tourneys = bidict({ 'thelastbanana_test': '2119181' })
 app = Flask(__name__)
 app.secret_key = os.environ.get('BB_SECRET_KEY')
 socketio = SocketIO(app)
+oid = OpenID(app)
+
+_steam_id_re = re.compile('steamcommunity.com/openid/id/(.*?)$')
     
 #----- Flask routing -----#
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
+@app.route('/test/')
+@oid.loginhandler
+def login():
+    if session.get('user', None) is not None:
+        return redirect(oid.get_next_url())
+    return oid.try_login('http://steamcommunity.com/openid')
+
+@oid.after_login
+def createOrLogin(resp):
+    match = _steam_id_re.search(resp.identity_url)
+    match = int(match.group(1))
+    
+    user = usermanager.getUserBySteamId(match)
+    if user is None:
+        user = usermanager.createUser(match)
+        
+        if user is None:
+            print('Couldn\'t make user!')
+            return
+    
+    session['user'] = user.id
+    return redirect(oid.get_next_url())
+    
 @app.route('/')
 @app.route('/index/')
 def index():

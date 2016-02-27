@@ -18,16 +18,7 @@ class Match():
         
         # The prerequisite matches
         if prereqMatches:
-            if len(prereqMatches) != 2:
-                raise ValueError('Matches must have 2 prerequisites')
-            
-            self.prereqMatches = prereqMatches
-            
-            for match in self.prereqMatches:
-                if match is None:
-                    continue
-                    
-                match.nextMatch = self
+            self.setPrereqMatches(prereqMatches)
             
         else:
             self.prereqMatches = [None, None]
@@ -56,6 +47,21 @@ class Match():
             
         else:
             self.winner = self.teams[winnerSide]
+            
+    def setPrereqMatches(self, prereqMatches):
+        """
+        Set the prereq matches and update them to point to this.
+        """
+        if len(prereqMatches) != 2:
+            raise ValueError('Matches must have 2 prerequisites')
+            
+        self.prereqMatches = prereqMatches
+        
+        for match in self.prereqMatches:
+            if match is None:
+                continue
+                
+            match.nextMatch = self
             
     def _updateTeamsFromPrereqs(self):
         """

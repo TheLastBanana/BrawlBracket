@@ -33,7 +33,7 @@ def createUser(steamId):
                 break
         else:
             break
-        id = uuid.uuid4()
+        id = uuid.uuid1()
     
     name = steamInfo['personaname']
     avatar = steamInfo['avatarfull']

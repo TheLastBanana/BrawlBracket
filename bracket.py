@@ -171,7 +171,10 @@ class Match():
             
             match.nextMatch = None
         
-    def __repr__(self):
+    def prettyPrint(self):
+        """
+        Print the match out as a tree structure.
+        """
         return '\n'.join(self._getDisplayLines())
 
 class Team():
@@ -183,7 +186,7 @@ class Team():
         self.seed = seed
         
     def __repr__(self):
-        return str(self.seed)
+        return 'Team ({})'.format(self.seed)
 
 class Tournament():
     """
@@ -328,7 +331,7 @@ class TreeTournament(Tournament):
             self._updateMatchRounds(prereq, maxDepth, depth + 1)
             
     def __repr__(self):
-        return str(self._root)
+        return self._root.prettyPrint()
         
 class SingleElimTournament(TreeTournament):
     """

@@ -196,8 +196,6 @@ class Tournament():
         for i in range(teamCount):
             self.createTeam(i + 1)
         
-        self._generate()
-        
     def createTeam(self, *args):
         """
         Create a team and add it to the tournament.
@@ -216,7 +214,7 @@ class Tournament():
             
         self.teams.remove(team)
         
-    def _createMatch(self, *args, **kwargs):
+    def createMatch(self, *args, **kwargs):
         """
         Create a match and add it to the tournament.
         """
@@ -237,6 +235,20 @@ class Tournament():
         
         return match
         
+    def finalize(self):
+        """
+        Call this when finished creating matches. This will run any graph analysis that needs
+        to be done on the matches before the tournament can be used.
+        """
+        return
+            
+    def generateMatches(self):
+        """
+        Generate matches fitting the number of existing teams.
+        The algorithm will depend on the kind of tournament. It should always call finalize() at the end.
+        """
+        return
+        
     def _removeMatch(self, match):
         """
         Remove a match from the tournament.
@@ -246,12 +258,6 @@ class Tournament():
             
         self.matches.remove(match)
         match._destroy()
-            
-    def _generate(self):
-        """
-        Generate a tournament fitting the number of existing teams.
-        """
-        return
         
 class TreeTournament(Tournament):
     """
@@ -262,6 +268,21 @@ class TreeTournament(Tournament):
         self._root = None
         
         super().__init__(*args, **kwargs)
+        
+    def setRoot(self, match):
+        """
+        Set the root match.
+        """
+        if match not in self.matches:
+            raise ValueError('Match not in tournament')
+        
+        self._root = match
+        
+    def finalize(self):
+        """
+        Update rounds starting from the root match.
+        """
+        self._updateMatchRounds()
         
     def _updateMatchRounds(self, match = None, maxDepth = None, depth = 0):
         """
@@ -285,37 +306,8 @@ class TreeTournament(Tournament):
         
             self._updateMatchRounds(prereq, maxDepth, depth + 1)
             
-    def _generate(self):
-        super()._generate()
-        
-        self._updateMatchRounds()
-            
     def __repr__(self):
         return str(self._root)
-        
-class GenericTreeTournament(TreeTournament):
-    """
-    A tree tournament with match creation exposed.
-    """
-    def createMatch(self, *args, **kwargs):
-        """
-        Create a match and add it to the tournament.
-        The last match created is always assumed to be the root.
-        """
-        self._root = self._createMatch(*args, **kwargs)
-        self._updateMatchRounds()
-        
-        return self._root
-        
-    def setRoot(self, match):
-        """
-        Set the root match.
-        """
-        if match not in self.matches:
-            raise ValueError('Match not in tournament')
-        
-        self._root = match
-        self._updateMatchRounds()
         
 class SingleElimTournament(TreeTournament):
     """
@@ -324,7 +316,7 @@ class SingleElimTournament(TreeTournament):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
-    def _generate(self):
+    def generateMatches(self):
         n = len(self.teams)
         
         if (n < 2):
@@ -417,8 +409,7 @@ class SingleElimTournament(TreeTournament):
                 # Two matches have been skipped, so advance by 2
                 i += 2
         
-        # Set the actual round number for each match
-        self._updateMatchRounds()
+        self.finalize()
         
     def _genMatchTree(self, rounds, roundMatches, maxRounds = None):
         """
@@ -434,11 +425,11 @@ class SingleElimTournament(TreeTournament):
         
         # First round has no children
         if rounds == 1:
-            match = self._createMatch()
+            match = self.createMatch()
 
         # Recurse to next round
         else:
-            match = self._createMatch([
+            match = self.createMatch([
                 self._genMatchTree(rounds - 1, roundMatches, maxRounds),
                 self._genMatchTree(rounds - 1, roundMatches, maxRounds)
             ])

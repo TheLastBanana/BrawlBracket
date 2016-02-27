@@ -269,10 +269,15 @@ class TreeTournament(Tournament):
         
         super().__init__(*args, **kwargs)
         
-    def setRoot(self, match):
+    @property
+    def root(self):
         """
-        Set the root match.
+        The root (usually final) match.
         """
+        return self._root
+        
+    @root.setter
+    def root(self, match):
         if match not in self.matches:
             raise ValueError('Match not in tournament')
         

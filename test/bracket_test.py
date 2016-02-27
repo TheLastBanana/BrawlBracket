@@ -1,5 +1,5 @@
 import json
-import bracket
+from tournament import SingleElimTournament
 
 def tourneyFromFile(filename):
     """
@@ -14,7 +14,7 @@ def tourneyFromFile(filename):
     matches = {}
 
     # Create a tourney to fit the participants
-    tourney = bracket.SingleElimTournament(len(participantDataById))
+    tourney = SingleElimTournament(len(participantDataById))
 
     # Sort teams so we can get them by seed
     teams = list(tourney.teams)
@@ -29,7 +29,7 @@ def tourneyFromFile(filename):
         matchData = matchDataById[id]
         match = matches[id]
         
-        match.setPrereqMatches([matches[str(prereqId)] if prereqId else None for prereqId in matchData['prereqs']])
+        match.prereqMatches = [matches[str(prereqId)] if prereqId else None for prereqId in matchData['prereqs']]
         match.teams = [teams[seed - 1] if seed else None for seed in matchData['teams']]
 
     # Find the root node, which will have no next match
@@ -71,7 +71,7 @@ def test_singleElimTraditional(tourneySize):
     """
     premade = tourneyFromFile('test/data/single-elim-traditional/{}.tourney'.format(tourneySize))
     
-    generated = bracket.SingleElimTournament(tourneySize)
+    generated = SingleElimTournament(tourneySize)
     generated.generateMatches()
     
     print('Testing single elimination tournament size {}'.format(tourneySize))

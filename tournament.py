@@ -1,213 +1,36 @@
 import math
+import uuid
 from collections import deque
 
-class Match():
-    """
-    A match between two Teams in the tournament. The Tournament class will create these for you as necessary.
-    """
-    
-    # When printing a match tree, this is the maximum length (in chars) of a seed.
-    printSeedLen = 2
-
-    def __init__(self, prereqMatches = None, teams = None, winnerSide = None):
-        # The next match
-        self.nextMatch = None
-        
-        # The side of the next match this branches from (0 or 1, or None if no next match)
-        self.nextMatchSide = None
-    
-        # The match round (inverse of depth in the graph, essentially)
-        self.round = 0
-        
-        # The prerequisite matches
-        if prereqMatches:
-            self.setPrereqMatches(prereqMatches)
-            
-        else:
-            self.prereqMatches = [None, None]
-        
-        # The teams in this match
-        if teams:
-            if len(teams) != 2:
-                raise ValueError('Matches must have 2 teams')
-            
-            self.teams = [None, None]
-            for i, team in enumerate(teams):
-                # No team, so try to get the previous match's winner
-                if team is None:
-                    self._updateTeamFromPrereq(i)
-                
-                else:
-                    self.teams[i] = team
-            
-        else:
-            # Take winners from previous matches
-            self._updateTeamsFromPrereqs()
-        
-        # Winning team
-        if winnerSide is None:
-            self.winner = None
-            
-        else:
-            self.winner = self.teams[winnerSide]
-            
-    def setPrereqMatches(self, prereqMatches):
-        """
-        Set the prereq matches and update them to point to this.
-        """
-        if len(prereqMatches) != 2:
-            raise ValueError('Matches must have 2 prerequisites')
-            
-        self.prereqMatches = prereqMatches
-        
-        for side, match in enumerate(self.prereqMatches):
-            if match is None:
-                continue
-                
-            match.nextMatch = self
-            match.nextMatchSide = side
-            
-    def _updateTeamsFromPrereqs(self):
-        """
-        Update all teams based on the prerequisite matches' winners.
-        """
-        self.teams = [(match.winner if match else None) for match in self.prereqMatches]
-        
-    def _updateTeamFromPrereq(self, side):
-        """
-        Update a side's team based on the prerequisite match's winners.
-        """
-        if self.prereqMatches[side]:
-            self.teams[side] = self.prereqMatches[side].winner
-        else:
-            self.teams[side] = None
-        
-    def _getTreeDepth(self):
-        """
-        Get the maximum depth of the match tree.
-        """
-        return max([(match._getTreeDepth() if match else 0) for match in self.prereqMatches]) + 1
-
-    def _getDisplayLines(self):
-        """
-        Get the lines which, if printed in sequence, make up the graphical representation
-        of this node and its children.
-        """
-        pnSpaces = 2 ** self.round - 1
-        nSpaces = 2 ** (self.round + 1) - 1
-        
-        # Length of an empty seed
-        seedSpace = ' ' * Match.printSeedLen
-        
-        aLines = self._getChildDisplayLines(0)
-        bLines = self._getChildDisplayLines(1)
-        
-        # Combine previous lines vertically, adding a space between them
-        combined = aLines + [''] + bLines
-        
-        # Pad line lengths
-        childLen = max(len(line) for line in combined)
-        for i in range(len(combined)):
-            combined[i] = ('{:<' + str(childLen) + '}').format(combined[i])
-        
-        # Add team seeds and corners
-        seeds = []
-        seedFormat = '{:<' + str(Match.printSeedLen) + '}'
-        for team in self.teams:
-            if team:
-                seeds.append(seedFormat.format(team.seed))
-                
-            else:
-                seeds.append(seedSpace)
-        
-        combined[pnSpaces] += seeds[0] + '─┐'
-        combined[-pnSpaces - 1] += seeds[1] + '─┘'
-        
-        for i in range(pnSpaces + 1, len(combined) - pnSpaces - 1):
-            # Connector for center piece
-            if i == nSpaces:
-                combined[i] += seedSpace + ' ├─'
-                
-            # Connecting bars for every other line between corners
-            else:
-                combined[i] += seedSpace + ' │'
-        
-        return combined
-        
-    def _getChildDisplayLines(self, side):
-        """
-        Get a child node's lines, including extra padding to line up leaf nodes.
-        """
-        if self.prereqMatches[side]:
-            # Get match lines
-            lines = self.prereqMatches[side]._getDisplayLines()
-            
-            return lines
-            
-        elif self.round > 0:
-            # Each match is 6 characters wide plus seed length
-            hSpace = 5 * self.round
-            
-            # Leaf nodes are 3 wide, and this grows exponentially
-            vSpace = 2 ** self.round + 1
-            
-            return [' ' * hSpace] * vSpace
-            
-        else:
-            return ['']
-            
-    def _destroy(self):
-        """
-        Unlink the match from other matches.
-        """
-        if self.nextMatch:
-            nextPrereqs = self.nextMatch.prereqMatches
-            side = nextPrereqs.index(self)
-            nextPrereqs[side] = None
-            
-        for match in self.prereqMatches:
-            if match is None:
-                continue
-            
-            match.nextMatch = None
-        
-    def prettyPrint(self):
-        """
-        Print the match out as a tree structure.
-        """
-        return '\n'.join(self._getDisplayLines())
-
-class Team():
-    """
-    A seeded entry in the tournament. Create these through the Tournament class.
-    """
-    def __init__(self, seed):
-        # The seed
-        self.seed = seed
-        
-    def __repr__(self):
-        return 'Team ({})'.format(self.seed)
+from team import Team
+from match import Match
 
 class Tournament():
     """
     Contains all the data for a tournament. Is responsible for creation of Matches, Teams, and any other
     classes tied to a specific tournament. Also contains convenience functions for updating and getting data.
     """
-    def __init__(self, teamCount = 0):
-        # Set of all matches. This should only be read by outside classes.
-        self.matches = set()
+    def __init__(self, teamCount = 0, **kwargs):
+        """
+        If teamCount is provided, automatically creates teamCount teams.
         
-        # Set of all teams. This should only be read by outside classes.
+        id: BrawlBracket id (uuid)
+        matches: All matches in the tournament. Read-only to outside classes. (list of Match)
+        teams: All teams in the tournament. Read-only to outside classes. (list of Team)
+        """
+        self.id = kwargs.get('uuid') or uuid.uuid1()
+        
+        self.matches = set()
         self.teams = set()
         
         for i in range(teamCount):
             self.createTeam(i + 1)
         
-    def createTeam(self, *args):
+    def createTeam(self, *args, **kwargs):
         """
         Create a team and add it to the tournament.
         """
-        team = Team(*args)
+        team = Team(*args, **kwargs)
         self.teams.add(team)
         
         return team

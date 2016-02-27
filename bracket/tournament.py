@@ -4,6 +4,7 @@ from collections import deque
 
 from .team import Team
 from .match import Match
+from .player import Player
 
 class Tournament():
     """
@@ -17,11 +18,13 @@ class Tournament():
         id: BrawlBracket id (uuid)
         matches: All matches in the tournament. Read-only to outside classes. (list of Match)
         teams: All teams in the tournament. Read-only to outside classes. (list of Team)
+        players: All players in the tournament. Read-only to outside classes. (list of Player)
         """
         self.id = kwargs.get('uuid') or uuid.uuid1()
         
         self.matches = set()
         self.teams = set()
+        self.players = set()
         
         for i in range(teamCount):
             self.createTeam(i + 1)
@@ -34,27 +37,6 @@ class Tournament():
         self.teams.add(team)
         
         return team
-        
-    def reset(self):
-        """
-        Reset the tournament back to starting state.
-        """
-        for match in self.matches:
-            match.winner = None
-            
-            for side, prereq in enumerate(match.prereqMatches):
-                # Clear team if this isn't the team's first match
-                if prereq is not None:
-                    match.teams[side] = None
-        
-    def _removeTeam(self, team):
-        """
-        Remove a team from the tournament.
-        """
-        if team not in self.teams:
-            raise ValueError('Team not in tournament')
-            
-        self.teams.remove(team)
         
     def createMatch(self, *args, **kwargs):
         """
@@ -77,6 +59,27 @@ class Tournament():
         
         return match
         
+    def createPlayer(self, *args, **kwargs):
+        """
+        Create a player and add it to the tournament.
+        """
+        player = Player(*args, **kwargs)
+        self.players.add(player)
+        
+        return player
+        
+    def reset(self):
+        """
+        Reset the tournament back to starting state.
+        """
+        for match in self.matches:
+            match.winner = None
+            
+            for side, prereq in enumerate(match.prereqMatches):
+                # Clear team if this isn't the team's first match
+                if prereq is not None:
+                    match.teams[side] = None
+        
     def finalize(self):
         """
         Call this when finished creating matches. This will run any graph analysis that needs
@@ -90,6 +93,15 @@ class Tournament():
         The algorithm will depend on the kind of tournament. It should always call finalize() at the end.
         """
         return
+        
+    def _removeTeam(self, team):
+        """
+        Remove a team from the tournament.
+        """
+        if team not in self.teams:
+            raise ValueError('Team not in tournament')
+            
+        self.teams.remove(team)
         
     def _removeMatch(self, match):
         """

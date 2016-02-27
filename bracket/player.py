@@ -1,3 +1,5 @@
+import uuid
+
 class Player:
     """
     A Player on a Team in a Tournament. This is linked to a single team in a
@@ -13,9 +15,7 @@ class Player:
          currentLegend: currently selected legend (string id)
          online: indicates logged into tournament (boolean)
         """
-        self.id = uuid
+        self.id = kwargs.get('uuid') or uuid.uuid1()
         self.user = user
         self.currentLegend = None
         self.online = False
-    
-    

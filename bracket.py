@@ -209,6 +209,18 @@ class Tournament():
         
         return team
         
+    def reset(self):
+        """
+        Reset the tournament back to starting state.
+        """
+        for match in self.matches:
+            match.winner = None
+            
+            for side, prereq in enumerate(match.prereqMatches):
+                # Clear team if this isn't the team's first match
+                if prereq is not None:
+                    match.teams[side] = None
+        
     def _removeTeam(self, team):
         """
         Remove a team from the tournament.

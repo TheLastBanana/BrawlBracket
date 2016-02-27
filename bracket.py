@@ -344,95 +344,62 @@ class SingleElimTournament(TreeTournament):
             return
         
         logN = math.log(n, 2)
-        floorLog = math.floor(logN)
         ceilLog = math.ceil(logN)
         
-        # Nearest powers of two
-        lowPo2 = 2 ** floorLog
+        # Nearest power of two
         highPo2 = 2 ** ceilLog
         
         # Generate symmetric tree
-        roundMatches = []
-        self._root = self._genMatchTree(ceilLog, roundMatches)
-        firstMatches = roundMatches[0]
+        matchesByRound = []
+        self._root = self._genMatchTree(ceilLog, matchesByRound)
         
         # Number of byes needed
-        numByes = min(n - lowPo2, highPo2 - n)
+        numByes = highPo2 - n
         
-        # Number of pairs to include in first round
-        # This formula is ugly, but it replicates the pattern you can see in these charts:
-        # http://www.printyourbrackets.com/single-elimination-tournament-brackets.html
-        numFirstRoundPairs = (n - 1 - lowPo2) % (2 ** math.floor(math.log(n - 1, 2))) + 1
-        
-        # Number of pairs that will skip the first round
-        # Byes are only 1 player, and pairs are 2. Divide by 2 to get remaining pairs
-        numSkipPairs = (n - numByes - numFirstRoundPairs * 2) / 2
-        assert numSkipPairs == math.floor(numSkipPairs), 'Pairs to skip first round must be a whole number'
-        numSkipPairs = math.floor(numSkipPairs)
-        
-        # List of teams that haven't been assigned
+        # List of teams sorted by seed
         teamsToAssign = list(self.teams)
         teamsToAssign.sort(key=lambda team: team.seed)
         
-        # Select the teams to assign in each category
-        # Byes are given to highest-seed players, as they get the biggest advantage
-        byes = deque(teamsToAssign[:numByes])
+        # Add None to represent byes
+        teamsToAssign += [None] * numByes
         
-        # Skipping pairs go to next highest seeds
-        skippers = deque(teamsToAssign[numByes:numByes + numSkipPairs * 2])
+        # To build the tournament, predict the winner (based on seed) for each match starting from the final match
+        # Final prediction should be our lowest seed
+        self._root.winner = teamsToAssign[0]
         
-        # Create pairs of skippers, matching highest against lowest seed
-        skipPairs = []
-        while skippers:
-            skipPairs.append((skippers.popleft(), skippers.pop()))
+        # Work down from final round
+        matchesByRound.reverse()
+        for roundMatches in matchesByRound[:-1]:
+            # Sort matches by predicted winners and determine which teams need to be assigned
+            sortedMatches, roundTeams = self.__roundData(roundMatches, teamsToAssign)
         
-        # Remainder stay in first round
-        firstRounders = deque(teamsToAssign[numByes + numSkipPairs * 2:])
-        
-        # Create pairs of first rounders, matching highest against lowest seed
-        firstRoundPairs = []
-        while firstRounders:
-            firstRoundPairs.append((firstRounders.popleft(), firstRounders.pop()))
-        
-        # Fill in first round with matches
-        # This loop interleaves byes, first round pairs, and skipper pairs so that:
-        # - first round pairs may match each other
-        # - byes are matched against the winner of a first round pair
-        # - skip pair winners will be matched against the winner of a bye/first rounder
-        i = 0
-        while i < len(firstMatches) and len(teamsToAssign) > 0:
-            # Do we have any byes left? If so, add one
-            if byes:
-                match = firstMatches[i]
-                match.nextMatch.teams = [byes.popleft(), None]
+            for match in sortedMatches:
+                # Propagate predicted winner to next level
+                match.prereqMatches[0].winner = match.winner
                 
-                # This match will be skipped
-                self._removeMatch(match)
-                
-                i += 1
+                # Expected loser is lowest seed in the teams available for this round
+                match.prereqMatches[1].winner = roundTeams.pop()
+        
+        # For the first round, add the predicted winners as actual playing teams
+        sortedMatches, roundTeams = self.__roundData(matchesByRound[-1], teamsToAssign)
+        for match in sortedMatches:
+            loser = roundTeams.pop()
             
-            # Do we have any pairs skipping the first round? If so, add them both
-            if firstRoundPairs:
-                match = firstMatches[i]
-                match.teams = list(firstRoundPairs.pop())
-                
-                i += 1
-                
-            # If we have room, add a pair that skips the first round.
-            if skipPairs:
-                match = firstMatches[i]
-                match.nextMatch.teams = list(skipPairs.pop())
-                
-                # These matches will both be skipped
+            # This team will be playing its first match in the second round, so remove this match
+            if loser is None:
+                match.nextMatch.teams[match.nextMatchSide] = match.winner
                 self._removeMatch(match)
-                self._removeMatch(firstMatches[i + 1])
                 
-                # Two matches have been skipped, so advance by 2
-                i += 2
+            else:
+                match.teams[0] = match.winner
+                match.teams[1] = loser
+                
+        # Clear predicted winners
+        self.reset()
         
         self.finalize()
         
-    def _genMatchTree(self, rounds, roundMatches, maxRounds = None):
+    def _genMatchTree(self, rounds, matchesByRound, maxRounds = None):
         """
         Generate a symmetric match tree with the given number of rounds (2^rounds matches).
         """
@@ -442,7 +409,7 @@ class SingleElimTournament(TreeTournament):
             
             # Create an empty list of matches for each of the rounds
             for i in range(rounds):
-                roundMatches.append([])
+                matchesByRound.append([])
         
         # First round has no children
         if rounds == 1:
@@ -451,11 +418,25 @@ class SingleElimTournament(TreeTournament):
         # Recurse to next round
         else:
             match = self.createMatch([
-                self._genMatchTree(rounds - 1, roundMatches, maxRounds),
-                self._genMatchTree(rounds - 1, roundMatches, maxRounds)
+                self._genMatchTree(rounds - 1, matchesByRound, maxRounds),
+                self._genMatchTree(rounds - 1, matchesByRound, maxRounds)
             ])
         
         # Add this match to the list of matches in the current round
-        roundMatches[rounds - 1].append(match)
+        matchesByRound[rounds - 1].append(match)
         
         return match
+        
+    def __roundData(self, matches, teams):
+        """
+        Internal function to gather data about a round.
+        """
+        matches.sort(key=lambda match: match.winner.seed)
+        numMatches = len(matches)
+        
+        # Teams to be assigned in this round
+        # We already assigned numMatches in the previous rounds, and there are numMatches matches in the round,
+        # so we pick the first remaining numMatches teams
+        roundTeams = teams[numMatches:numMatches*2]
+        
+        return (matches, roundTeams)

@@ -2,8 +2,8 @@ import math
 import uuid
 from collections import deque
 
-from team import Team
-from match import Match
+from .team import Team
+from .match import Match
 
 class Tournament():
     """

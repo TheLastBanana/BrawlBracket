@@ -1,5 +1,5 @@
 import json
-from tournament import SingleElimTournament
+from bracket.tournament import SingleElimTournament
 
 def tourneyFromFile(filename):
     """

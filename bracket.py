@@ -12,6 +12,9 @@ class Match():
     def __init__(self, prereqMatches = None, teams = None, winnerSide = None):
         # The next match
         self.nextMatch = None
+        
+        # The side of the next match this branches from (0 or 1, or None if no next match)
+        self.nextMatchSide = None
     
         # The match round (inverse of depth in the graph, essentially)
         self.round = 0
@@ -57,11 +60,12 @@ class Match():
             
         self.prereqMatches = prereqMatches
         
-        for match in self.prereqMatches:
+        for side, match in enumerate(self.prereqMatches):
             if match is None:
                 continue
                 
             match.nextMatch = self
+            match.nextMatchSide = side
             
     def _updateTeamsFromPrereqs(self):
         """

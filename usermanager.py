@@ -25,20 +25,10 @@ def createUser(steamId):
     if steamInfo is None:
         return None
     
-    # Ensure we get a unique uuid
-    id = uuid.uuid4()
-    while True:
-        for u in _users:
-            if u.id == id:
-                break
-        else:
-            break
-        id = uuid.uuid1()
-    
     name = steamInfo['personaname']
     avatar = steamInfo['avatarfull']
     
-    newUser = user.User(id, steamId, name, avatar)
+    newUser = user.User(steamId, name, avatar)
     _users.append(newUser)
     
     return newUser

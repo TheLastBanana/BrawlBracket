@@ -1,4 +1,5 @@
 import util
+import uuid
 
 class User:
     """
@@ -6,7 +7,7 @@ class User:
     linked to a User's steam account.
     """
     
-    def __init__(self, uuid, steamId, username, avatar):
+    def __init__(self, steamId, username, avatar, **kwargs):
         """
         User data:
          id: BrawlBracket id (uuid)
@@ -18,7 +19,7 @@ class User:
          ownedLegends: list of legends ids (string id)
          preferredServer: server id (string id)
         """
-        self.id = uuid
+        self.id = kwargs.get('uuid', uuid.uuid1())
         self.steamId = steamId
         self.username = username
         self.avatar = avatar

@@ -69,7 +69,7 @@ def index():
     brawlapi.init_example_db()
 
 # Log in a tourney participant
-@app.route('/<tourneyName>/', methods=['GET', 'POST'])
+@app.route('/t/<tourneyName>/', methods=['GET', 'POST'])
 def user_login(tourneyName):
     if tourneyName not in tourneys:
         abort(404)
@@ -82,7 +82,7 @@ def user_login(tourneyName):
         
         userList = brawlapi.getTournamentUsersOverview(tourneyId)
 
-        return render_template('user-login.html',
+        return render_template('app/user-login.html',
                                tourneyName=prettyName,
                                participants=userList,
                                challongeURL=tourneyURL)
@@ -93,14 +93,14 @@ def user_login(tourneyName):
     session['userId'] = uuid.UUID(userIdStr)
     session['tourneyId'] = tourneyId
     
-    return redirect(url_for('user_landing', tourneyName=tourneyName))
+    return redirect(url_for('user_app', tourneyName=tourneyName))
 
 #----- User pages -----#
 
 # User app page
-@app.route('/<tourneyName>/app/', defaults={'startPage': None})
-@app.route('/<tourneyName>/app/<startPage>/')
-def user_landing(tourneyName, startPage):
+@app.route('/t/<tourneyName>/app/', defaults={'startPage': None})
+@app.route('/t/<tourneyName>/app/<startPage>/')
+def user_app(tourneyName, startPage):
     tourneyId = session.get('tourneyId', None)
     userId = session.get('userId', None)
     
@@ -118,7 +118,7 @@ def user_landing(tourneyName, startPage):
     # finding a user
     pData = brawlapi.getParticipantData(tourneyId, user.participantId)
 
-    return render_template('user-app.html',
+    return render_template('app/user-app.html',
                            startPage=startPage,
                            userName=pData['display-name'],
                            userAvatar=brawlapi.getParticipantAvatar(pData),
@@ -130,7 +130,7 @@ def user_landing(tourneyName, startPage):
 # Contact admin page
 @app.route('/app-content/contact-admin/<tourneyName>')
 def contact_admin(tourneyName):
-    return render_template('app-content/contact-admin.html',
+    return render_template('app/content/contact-admin.html',
                            tourneyFullName=brawlapi.getTournamentName(tourneyName))
     
 # Bracket viewer page
@@ -138,7 +138,7 @@ def contact_admin(tourneyName):
 def bracket(tourneyName):
     tourneyId = tourneys[tourneyName]
 
-    return render_template('app-content/bracket.html',
+    return render_template('app/content/bracket.html',
                            tourneyName=tourneyName,
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
                            liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId))
@@ -151,7 +151,7 @@ def player_settings(tourneyName):
         print('No userId; returned to login.')
         return redirect(url_for("user_login", tourneyName=tourneyName))
         
-    return render_template('app-content/player-settings.html',
+    return render_template('app/content/player-settings.html',
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
                            tourneyName=tourneyName,
                            participantId=session['userId'],
@@ -161,15 +161,15 @@ def player_settings(tourneyName):
 # Lobby content
 @app.route('/app-content/lobby/<tourneyName>')
 def lobby(tourneyName):
-    return render_template('app-content/lobby.html',
+    return render_template('app/content/lobby.html',
                            tourneyFullName=brawlapi.getTournamentName(tourneyName))
 
 #----- Admin pages -----#
                            
 # Admin app page
-@app.route('/<tourneyName>/admin/<adminKey>/', defaults={'startPage': None})
-@app.route('/<tourneyName>/admin/<adminKey>/<startPage>/')
-def admin_landing(tourneyName, adminKey, startPage):
+@app.route('/t/<tourneyName>/admin/<adminKey>/', defaults={'startPage': None})
+@app.route('/t/<tourneyName>/admin/<adminKey>/<startPage>/')
+def admin_app(tourneyName, adminKey, startPage):
     tourneyId = tourneys[tourneyName]
     tourneyKeys = brawlapi.adminKeys[tourneyId]
     
@@ -180,7 +180,7 @@ def admin_landing(tourneyName, adminKey, startPage):
     if adminKey not in tourneyKeys:
         abort(404)
 
-    return render_template('admin-app.html',
+    return render_template('app/admin-app.html',
                            startPage=startPage,
                            tourneyName=tourneyName,
                            tourneyFullName=brawlapi.getTournamentName(tourneyName),
@@ -196,7 +196,7 @@ def admin_dashboard(tourneyName):
     if not session['adminMode']:
         abort(403)
 
-    return render_template('app-content/admin-dashboard.html',
+    return render_template('app/content/admin-dashboard.html',
                            liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId),
                            tourneyFullName=brawlapi.getTournamentName(tourneyName))
     
@@ -205,18 +205,18 @@ def admin_dashboard(tourneyName):
 # Connect error
 @app.route('/app-content/lobby-error/<tourneyName>')
 def lobby_error(tourneyName):
-    return render_template('app-content/lobby-error.html')
+    return render_template('app/content/lobby-error.html')
     
 # Legend roster
 @app.route('/app-content/roster')
 def roster():
-    return render_template('app-content/lobby-roster.html',
+    return render_template('app/content/lobby-roster.html',
     legendData=util.orderedLegends)
     
 # Map picker
 @app.route('/app-content/realms')
 def realms():
-    return render_template('app-content/lobby-realms.html',
+    return render_template('app/content/lobby-realms.html',
                            realmData=util.orderedRealms)
 
 #----- Raw data -----#

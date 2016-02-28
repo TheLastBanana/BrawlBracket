@@ -21,11 +21,8 @@ from bidict import bidict
 
 import brawlapi
 import usermanager
+import tournamentmanager
 import util
-
-# Bi-directional map from tournament's Challonge URL suffix to its ID.
-# We'll actually build this from the Challonge API later.
-tourneys = bidict({ 'thelastbanana_test': '2119181' })
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('BB_SECRET_KEY')
@@ -33,6 +30,28 @@ socketio = SocketIO(app)
 oid = OpenID(app)
 
 _steam_id_re = re.compile('steamcommunity.com/openid/id/(.*?)$')
+
+# Start temp tournament generation
+steamIds = [76561198042414835, 76561198078549692, 76561197993702532,
+            76561198069178478, 76561198065399638, 76561197995127703,
+            76561198068388037, 76561198050490587, 76561198072175457,
+            76561198063265824, 76561198042403860]
+tempUsers = []
+for id in steamIds:
+    user = usermanager.createUser(id)
+    tempUsers.append(user)
+tempTourney = tournamentmanager.createTournament(
+                'test',
+                name='BrawlBracket Test Tourney'
+                )
+for i, user in enumerate(tempUsers):
+    team = tempTourney.createTeam(i) # i = seed
+    player = tempTourney.createPlayer(user)
+    team.players.append(player)
+print('Tournament has {} users!'.format(len(tempTourney.teams)))
+tempTourney.generateMatches()
+print(tempTourney)
+# End temp tournament generation
     
 #----- Flask routing -----#
 @app.errorhandler(404)

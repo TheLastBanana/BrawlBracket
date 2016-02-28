@@ -2,7 +2,7 @@ import chat
 
 _chats = {}
 
-def createChat(tourneyId):
+def createChat():
     """
     Create a chat.
     

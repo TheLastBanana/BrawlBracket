@@ -38,7 +38,7 @@ class User:
     def __repr__(self):
         return 'User(name: {}, id: {}, sid: {}, server: {}, legends:{})' \
             .format(self.username, self.id, self.steamId, self.preferredServer,
-                    self.ownedLegends)
+                    len(self.ownedLegends))
     
     def getSettings(self):
         """

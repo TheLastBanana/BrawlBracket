@@ -142,28 +142,55 @@ class TreeTournament(Tournament):
         Update rounds starting from the root match.
         """
         self._updateMatchRounds()
+        self._numberMatches()
         
-    def _updateMatchRounds(self, match = None, maxDepth = None, depth = 0):
+    def _updateMatchRounds(self, root = None, maxDepth = None, depth = 0):
         """
         Determine the rounds for each match.
         """
-        if match is None:
+        if root is None:
             if self._root is None:
                 return
                 
-            match = self._root
+            root = self._root
         
         if maxDepth is None:
             # Subtract 1 to 0-index rounds
-            maxDepth = match._getTreeDepth() - 1
+            maxDepth = root._getTreeDepth() - 1
             
-        match.round = maxDepth - depth
+        root.round = maxDepth - depth
         
-        for prereq in match.prereqMatches:
+        for prereq in root.prereqMatches:
             if prereq is None:
                 continue
         
             self._updateMatchRounds(prereq, maxDepth, depth + 1)
+            
+    def _numberMatches(self, root = None, start = 1):
+        if root is None:
+            if self._root is None:
+                return
+                
+            root = self._root
+            
+        traversed = []
+        toVisit = deque([root])
+        
+        # Traverse matches from highest to lowest level of tree
+        while toVisit:
+            match = toVisit.popleft()
+            traversed.append(match)
+            
+            # In reverse so side 0 comes before side 1 when we reverse again later
+            for prereq in reversed(match.prereqMatches):
+                if prereq:
+                    toVisit.append(prereq)
+                    
+        # Number from lowest to highest in tree
+        for match in reversed(traversed):
+            match.number = start
+            start += 1
+        
             
     def __repr__(self):
         return self._root.prettyPrint()

@@ -21,12 +21,14 @@ class Match():
         Tournament data:
             winner: The winning team of this match (Team)
             round: Round in the tournament (int)
+            number: The number of the match in the tournament. Roughly the order they'll be played in. (int)
         """
         self.id = kwargs.get('uuid') or uuid.uuid1()
         
         self.nextMatch = None
         self.nextMatchSide = None
         self.round = 0
+        self.number = 0
         
         # Set prerequisite matches
         self.prereqMatches = prereqMatches

@@ -187,6 +187,12 @@ class Match():
         """
         return '\n'.join(self._getDisplayLines())
     
+    def finalize(self):
+        """
+        Finalize this match. Should be able to confidently update state now.
+        """
+        self._updateState()
+    
     def _updateState(self):
         """
         Updates this Match's state.
@@ -200,7 +206,8 @@ class Match():
             if m.winner is None:
                 self.state.clear()
                 self.state['name'] = 'waitingForMatch'
-                self.state['teamNames'] = [x.name for x in m.teams]
+                self.state['teamNames'] = [x.name for x in m.teams
+                                            if x is not None]
                 self.state['matchNumber'] = m.number
                 return
         

@@ -1,3 +1,6 @@
+{% from 'macros.html' import footerContent with context %}
+{% from 'macros.html' import userDropdown with context %}
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -56,33 +59,8 @@
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
               <!-- User Account Menu -->
-              <li class="dropdown user user-menu">
-                <!-- Menu Toggle Button -->
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                  {%- if userAvatar %}
-                    <img src="{{ userAvatar }}" class="user-image" alt="User Image">
-                  {%- endif %}
-                  <span class="hidden-xs">{{ userName or tourneyFullName }}</span>
-                </a>
-                <ul class="dropdown-menu">
-                  <!-- The user image in the menu -->
-                  <li class="user-header" style="height: auto;">
-                    {%- if userAvatar %}
-                      <img src="{{ userAvatar }}" class="img-circle" alt="User Image">
-                    {%- endif %}
-                    <p>
-                      {{ userName or tourneyFullName }}
-                    </p>
-                  </li>
-                  <!-- Menu Footer-->
-                  <li class="user-footer">
-                    <div class="text-center">
-                      <a href="#" class="btn btn-default btn-flat">Sign out</a>
-                    </div>
-                  </li>
-                </ul>
-              </li>
+              {{ userDropdown() }}
+              
               <!-- Control Sidebar Toggle Button -->
               <li>
                 <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
@@ -114,8 +92,7 @@
 
       <!-- Main Footer -->
       <footer class="main-footer">
-        <!-- Default to the left -->
-        <strong>&copy; 2016 BrawlBracket.</strong> Images used with permission of Blue Mammoth Games.
+        {{ footerContent() }}
       </footer>
 
       <!-- Control Sidebar -->

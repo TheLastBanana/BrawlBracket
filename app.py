@@ -24,6 +24,8 @@ import usermanager as um
 import tournamentmanager as tm
 import util
 
+__version__ = '0.1.0'
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('BB_SECRET_KEY')
 socketio = SocketIO(app)
@@ -53,12 +55,16 @@ tempTourney.generateMatches()
 print(tempTourney)
 # End temp tournament generation
     
+@app.context_processor
+def default_template_data():
+    return dict(versionNumber = __version__)
+    
 #----- Flask routing -----#
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
-@app.route('/test/')
+@app.route('/login/')
 @oid.loginhandler
 def login():
     if session.get('userId', None) is not None:
@@ -85,7 +91,15 @@ def createOrLogin(resp):
 @app.route('/')
 @app.route('/index/')
 def index():
-    return render_template('index.html')
+    userId = session.get('userId', None)
+    user = um.getUserById(userId)
+    
+    userName = user.username if user else None
+    userAvatar = user.avatar if user else None
+    
+    return render_template('index.html',
+                           userName=userName,
+                           userAvatar=userAvatar)
     brawlapi.init_example_db()
 
 # Log in a tourney participant

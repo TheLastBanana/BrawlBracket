@@ -1,0 +1,46 @@
+<!-- Content that goes in the page footer -->
+{% macro footerContent() -%}
+  <div class="pull-right">
+    <strong>Version</strong> {{ versionNumber }}
+  </div>
+  <strong>&copy; 2016 BrawlBracket.</strong> <a href="http://steampowered.com">Powered by Steam</a>.
+{%- endmacro %}
+
+<!-- User Account Menu -->
+{% macro userDropdown() -%}
+  {% if userName -%}
+    <li class="dropdown user user-menu">
+      <!-- Menu Toggle Button -->
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        <!-- hidden-xs hides the username on small devices so only the image appears. -->
+        {%- if userAvatar %}
+          <img src="{{ userAvatar }}" class="user-image" alt="User Image">
+        {%- endif %}
+        <span class="hidden-xs">{{ userName }}</span>
+      </a>
+      <ul class="dropdown-menu">
+        <!-- The user image in the menu -->
+        <li class="user-header" style="height: auto;">
+          {%- if userAvatar %}
+            <img src="{{ userAvatar }}" class="img-circle" alt="User Image">
+          {%- endif %}
+          <p>
+            {{ userName }}
+          </p>
+        </li>
+        <!-- Menu Footer-->
+        <li class="user-footer">
+          <div class="text-center">
+            <a href="#" class="btn btn-default btn-flat">Sign out</a>
+          </div>
+        </li>
+      </ul>
+    </li>
+  {%- else -%}
+    <li class="login-button">
+      <a href="/login">
+        <img src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_large_noborder.png">
+      </a>
+    </li>
+  {%- endif %}
+{%- endmacro %}

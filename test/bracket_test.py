@@ -14,7 +14,8 @@ def tourneyFromFile(filename):
     matches = {}
 
     # Create a tourney to fit the participants
-    tourney = SingleElimTournament(len(participantDataById))
+    # Pass '' as shortName, it doesn't matter here
+    tourney = SingleElimTournament('', len(participantDataById))
 
     # Sort teams so we can get them by seed
     teams = list(tourney.teams)
@@ -71,7 +72,8 @@ def test_singleElimTraditional(tourneySize):
     """
     premade = tourneyFromFile('test/data/single-elim-traditional/{}.tourney'.format(tourneySize))
     
-    generated = SingleElimTournament(tourneySize)
+    # Pass '' as shortName, it doesn't matter here
+    generated = SingleElimTournament('', tourneySize)
     generated.generateMatches()
     
     print('Testing single elimination tournament size {}'.format(tourneySize))

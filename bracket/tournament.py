@@ -11,7 +11,7 @@ class Tournament():
     Contains all the data for a tournament. Is responsible for creation of Matches, Teams, and any other
     classes tied to a specific tournament. Also contains convenience functions for updating and getting data.
     """
-    def __init__(self, teamCount = 0, **kwargs):
+    def __init__(self, shortName, teamCount = 0, **kwargs):
         """
         If teamCount is provided, automatically creates teamCount teams.
         
@@ -20,9 +20,14 @@ class Tournament():
         teams: All teams in the tournament. Read-only to outside classes. (list of Team)
         players: All players in the tournament. Read-only to outside classes. (list of Player)
         name: The tournament's name (string)
+        shortName: The tournament's short name identifier, this is unique (string)
         """
         self.id = kwargs.get('uuid', uuid.uuid1())
         self.name = kwargs.get('name', '')
+        
+        if shortName is None:
+            raise ValueError('Short name can\'t be None.')
+        self.shortName = shortName
         
         self.matches = set()
         self.teams = set()

@@ -132,7 +132,15 @@ class Tournament():
         Returns None otherwise.
         """
         for m in self.matches:
+            # We want an active game, not one that's already done
+            if m.winner is not None:
+                continue
+            
             for t in m.teams:
+                # Team not set yet
+                if t is None:
+                    continue
+                
                 for p in t.players:
                     if p.user == user:
                         return (m, t, p)

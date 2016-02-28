@@ -127,13 +127,15 @@ def user_app(tourneyName, startPage):
         return redirect(url_for("user_login", tourneyName=tourneyName))
         
     user = um.getUserById(userId)
-    
     if user is None:
         print('User doesn\'t exist; returned to login.')
         # TODO: Redirect to the right login
         return redirect(url_for("user_login", tourneyName=tourneyName))
 
     tournament = tm.getTournamentByName(tourneyName)
+    session['tourneyId'] = tournament.id
+    
+    
     return render_template('app/user-app.html',
                            startPage=startPage,
                            userName=user.username,
@@ -318,9 +320,10 @@ def data_users(tourneyName):
     
 #----- SocketIO events -----#
 @socketio.on('connect', namespace='/participant')
-def participant_connect():
+def user_connect():
     userId = session.get('userId', None)
     tourneyId = session.get('tourneyId', None)
+    tournament = tm.getTournamentById(tourneyId)
     
     # Weren't passed a userId
     if userId is None:
@@ -329,7 +332,7 @@ def participant_connect():
             broadcast=False, include_self=True)
         return False
     
-    user = brawlapi.getUser(tourneyId, userId)
+    user = um.getUserById(userId)
     
     # User doesn't exist
     if user is None:
@@ -338,45 +341,34 @@ def participant_connect():
             broadcast=False, include_self=True)
         return False
     
-    if brawlapi.isUserOnline(tourneyId, user):
+    info = tournament.getUserInfo(user)
+    
+    if info is None:
+        # TODO: Issue error saying we somehow got into a tournament that
+        # we don't live in
+        pass
+    
+    match, team, player = info
+    
+    if player.online:
         print('User {} rejected (already connected)'
             .format(user.userId))
         emit('error', {'code': 'already-connected'},
             broadcast=False, include_self=True)
         return False
     
-    brawlapi.addOnlineUser(tourneyId, user)
-    
-    # Find current match
-    matchId = brawlapi.getParticipantMatch(tourneyId, user)
-        
-    # Handle no match found
-    if matchId is None:
-        print('User {} connected but found no match.'.format(user.userId))
-        emit('error', {'code': 'no-match'},
-            broadcast=False, include_self=True)
-        return False
+    player.online = True
     
     # Join new room
-    session['matchId'] = matchId
+    session['matchId'] = match.id
     join_room(matchId)
     
-    print(request.sid)
-    
     print('Participant {} connected, joined room #{}'
-        .format(user.userId, matchId))
-        
-    lobbyData = brawlapi.getLobbyData(tourneyId, matchId)
-    
-    # Join chat room
-    if lobbyData['chatId'] == None:
-        chatId = brawlapi.createChat(tourneyId)
-        lobbyData['chatId'] = chatId
+        .format(user.userId, match.id))
     
     # This needs to be done in the /chat namespace, so switch it temporarily
-    chat = brawlapi.getChat(tourneyId, lobbyData['chatId'])
     request.namespace = '/chat'
-    join_room(chat.getRoom())
+    join_room(match.chat.getRoom())
     request.namespace = '/participant'
         
     emit('join lobby', {

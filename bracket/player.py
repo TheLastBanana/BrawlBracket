@@ -5,7 +5,7 @@ class Player:
     A Player on a Team in a Tournament. This is linked to a single team in a
     single tournament.
     """
-    def __init__(user, **kwargs):
+    def __init__(self, user, **kwargs):
         """
         Player data:
          id: BrawlBracket id (uuid)

@@ -1,6 +1,6 @@
 import chat
 
-_chats = {}
+_chats = []
 
 def createChat():
     """
@@ -8,9 +8,9 @@ def createChat():
     
     Returns the Chat.
     """
-    chat = chat.Chat()
+    newChat = chat.Chat()
     
-    _chats.append(chat)
+    _chats.append(newChat)
         
     return chat
     
@@ -21,8 +21,8 @@ def getChat(id):
     Returns the Chat if it exists.
     Returns None otherwise.
     """
-    for chat in _chats:
-        if chat.id == id:
-            return chat
+    for c in _chats:
+        if c.id == id:
+            return c
     
     return None

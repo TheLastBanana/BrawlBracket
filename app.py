@@ -21,7 +21,7 @@ from bidict import bidict
 
 import brawlapi
 import usermanager
-import tournamentmanager
+import tournamentmanager as tm
 import util
 
 app = Flask(__name__)
@@ -40,7 +40,7 @@ tempUsers = []
 for id in steamIds:
     user = usermanager.createUser(id)
     tempUsers.append(user)
-tempTourney = tournamentmanager.createTournament(
+tempTourney = tm.createTournament(
                 'test',
                 name='BrawlBracket Test Tourney'
                 )
@@ -90,7 +90,7 @@ def index():
 # Log in a tourney participant
 @app.route('/t/<tourneyName>/', methods=['GET', 'POST'])
 def user_login(tourneyName):
-    if tourneyName not in tourneys:
+    if not tm.tournamentNameExists(tourneyName):
         abort(404)
 
     tourneyId = tourneys[tourneyName]

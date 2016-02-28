@@ -23,7 +23,7 @@ class Match():
             round: Round in the tournament (int)
             number: The number of the match in the tournament. Roughly the order they'll be played in. (int)
         """
-        self.id = kwargs.get('uuid') or uuid.uuid1()
+        self.id = kwargs.get('uuid', uuid.uuid1())
         
         self.nextMatch = None
         self.nextMatchSide = None

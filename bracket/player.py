@@ -15,7 +15,7 @@ class Player:
          currentLegend: currently selected legend (string id)
          online: indicates logged into tournament (boolean)
         """
-        self.id = kwargs.get('uuid') or uuid.uuid1()
+        self.id = kwargs.get('uuid', uuid.uuid1())
         self.user = user
         self.currentLegend = None
         self.online = False

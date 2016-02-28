@@ -16,7 +16,7 @@ class Team:
          eliminated: Has this team been eliminated (boolean)
          checkedIn: Has this team checked in (boolean)
         """
-        self.id = kwargs.get('uuid') or uuid.uuid1()
+        self.id = kwargs.get('uuid', uuid.uuid1())
         
         self.seed = seed
         self.name = kwargs.get('name')

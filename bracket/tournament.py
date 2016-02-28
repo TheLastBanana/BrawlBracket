@@ -20,7 +20,7 @@ class Tournament():
         teams: All teams in the tournament. Read-only to outside classes. (list of Team)
         players: All players in the tournament. Read-only to outside classes. (list of Player)
         """
-        self.id = kwargs.get('uuid') or uuid.uuid1()
+        self.id = kwargs.get('uuid', uuid.uuid1())
         
         self.matches = set()
         self.teams = set()

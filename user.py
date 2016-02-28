@@ -56,6 +56,7 @@ class User:
         values are valid.
         
         Return True if the settings were valid and were updated, else False.
+        # TODO: notify usermanager of update.
         """
         # Bad region
         if settings['preferredServer'] not in util.serverRegions:

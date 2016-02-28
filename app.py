@@ -40,7 +40,9 @@ steamIds = [76561198042414835, 76561198078549692, 76561197993702532,
             76561198063265824, 76561198042403860]
 tempUsers = []
 for id in steamIds:
-    user = um.createUser(id)
+    user = um.getUserBySteamId(id)
+    if user is None:
+        user = um.createUser(id)
     tempUsers.append(user)
 tempTourney = tm.createTournament(
                 'test',
@@ -50,9 +52,8 @@ for i, user in enumerate(tempUsers):
     team = tempTourney.createTeam(i) # i = seed
     player = tempTourney.createPlayer(user)
     team.players.append(player)
-print('Tournament has {} users!'.format(len(tempTourney.teams)))
+print('Temp tournament has {} users!'.format(len(tempTourney.teams)))
 tempTourney.generateMatches()
-print(tempTourney)
 # End temp tournament generation
     
 @app.context_processor

@@ -63,9 +63,9 @@ class DBWrapper(metaclass=KeySingleton):
         else:
             return False
     
-    def row_exists(self, table_name, row_name):
+    def column_exists(self, table_name, row_name):
         """
-        Returns whether or not a row exists in a table.
+        Returns whether or not a column exists in a table.
         """
         # Prep statement and symbols
         stmt = ('SELECT ? '
@@ -157,6 +157,7 @@ class DBWrapper(metaclass=KeySingleton):
             stmt = stmt.format(*col_names)
 
         #self.log.log('Select statement: {}'.format(stmt))
+        #print('Select statement: {}'.format(stmt))
         
         # Get cursor and execute the statement
         curs = self.conn.cursor()
@@ -194,6 +195,7 @@ class DBWrapper(metaclass=KeySingleton):
                     'VALUES {}').format(table, vals_str)
         
         #self.log.log('Insert statement: {}'.format(stmt))
+        #print('Insert statement: {}'.format(stmt))
         
         # Execute the statement
         curs = self.conn.cursor()

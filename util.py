@@ -4,6 +4,10 @@ import uuid
 # | Util Data |
 # +-----------+
 
+# Name and path of data base
+dbName = 'brawlbracketdata'
+dbPath = './data'
+
 # Mapping from legend internal name to full name
 legendData = {
     'random':       'Random',

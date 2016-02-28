@@ -5,8 +5,12 @@ import uuid
 import requests
 
 import user
+import db_wrapper
+import util
 
 _users = []
+
+_db = None
 
 def createUser(steamId):
     """
@@ -29,6 +33,9 @@ def createUser(steamId):
     avatar = steamInfo['avatarfull']
     
     newUser = user.User(steamId, name, avatar)
+    
+    _writeUserToDB(newUser)
+    
     _users.append(newUser)
     
     return newUser
@@ -40,6 +47,9 @@ def getUserById(id):
     Returns None if the uuid isn't associated with a user.
     Returns User otherwise.
     """
+    if id is None:
+        return None
+    
     for u in _users:
         if u.id == id:
             return u
@@ -53,9 +63,20 @@ def getUserBySteamId(steamId):
     Returns None if the steamId isn't associated with a user.
     Returns User otherwise.
     """
+    if id is None:
+        return None
+    
+    # Check cache first
     for u in _users:
         if u.steamId == steamId:
+            print('return u')
             return u
+    
+    # Check DB last'
+    u = _getUserFromDBBySteamId(steamId)
+    if u is not None:
+        _users.append(u)
+        return u
     
     return None
 
@@ -90,6 +111,92 @@ def _getSteamInfo(steamId):
     except requests.exceptions.HTTPError as e:
         print('Bad steam request! {} {}'.format(url, options))
         return None
+
+def _getUserFromDBById(id):
+    """
+    """
+    pass
+
+def _getUserFromDBBySteamId(steamId):
+    """
+    Gets a user from the database by steamId.
+    
+    Returns user if user was in database
+    Returns None otherwise
+    """
+    if _db is None:
+        _initDB()
+    
+    rows = _db.select_values('users', ['*'], ['steamId = {}'.format(steamId)])
+    
+    if rows:
+        userData = rows[0]
+        print('Making user from: ', userData)
+        id = uuid.UUID(userData[0])
+        steamId = userData[1]
+        username = userData[2]
+        avatar = userData[3]
+        ownedLegends = userData[4].split(',')
+        preferredServer = userData[5]
+        
+        u = user.User(steamId, username, avatar, uuid=id)
+        
+        # Don't use setSettings because we don't want validation and we
+        # don't want to be renotified that we've updated
+        u.preferredServer = preferredServer
+        u.ownedLegends = ownedLegends
+        
+        return u
+    else:
+        return None
+        
+def _writeUserToDB(u):
+    """
+    Serializes a user and then inserts it into the user table of the database.
+    """
+    if _db is None:
+        _initDB()
+    
+    # Quick function that just wraps a string in quotes
+    q = lambda x: '\'{}\''.format(x)
+    
+    userData = (
+        q(str(u.id)),
+        u.steamId,
+        q(u.username),
+        q(u.avatar),
+        q(','.join(u.ownedLegends)),
+        q(u.preferredServer)
+        )
+    print('Writing user with: ', userData)
+    _db.insert_values('users', [userData])
+        
+def _initDB():
+    print('----INIT USER DATABASE----')
+    # Need to global because _db is not local to this context
+    global _db
+    _db = db_wrapper.DBWrapper(util.dbName, filepath=util.dbPath)
+    
+    # Make user table
+    if not _db.table_exists('users'):
+        fieldNames = [
+            'id',
+            'steamId',
+            'username',
+            'avatar',
+            'ownedLegends',
+            'preferredServer'
+            ]
+        fieldTypes = [
+            'TEXT',
+            'INTEGER',
+            'TEXT',
+            'TEXT',
+            'TEXT',
+            'TEXT'
+            ]
+            
+        _db.create_table('users', fieldNames, fieldTypes, 'id')
 
 if __name__ == '__main__':
     steamIds = [76561198042414835, 76561198078549692, 76561197993702532,

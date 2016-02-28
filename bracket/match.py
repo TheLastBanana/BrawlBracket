@@ -193,6 +193,43 @@ class Match():
         """
         self._updateState()
     
+    def getLobbyData(self):
+        """
+        Get data relevant to the lobby.
+        See https://github.com/TheLastBanana/BrawlBracket/wiki/JSON-objects
+        for listing.
+        """
+        lobbyData = {}
+        
+        lobbyData['state'] = self.state
+        lobbyData['chatId'] = self.chat.id
+        lobbyData['realmBans'] = self.realmBans
+        lobbyData['bestOf'] = self.bestOf
+        lobbyData['startTime'] = self.startTime
+        lobbyData['roomNumber'] = self.roomNumber
+        lobbyData['currentRealm'] = self.currentRealm
+        
+        lobbyData['teams'] = []
+        lobbyData['players'] = []
+        for t, wins in zip(self.teams, self.score):
+            team = {}
+            team['name'] = t.name
+            team['id'] = t.id
+            team['seed'] = t.seed
+            team['ready'] = False not in [p.online for p in t.players]
+            team['wins'] = wins
+            team['avatar'] = t.players[0].user.avatar
+            lobbyData['teams'].append(team)
+            
+            for p in t.players:
+                player = {}
+                player['name'] = p.user.username
+                player['status'] = 'Online' if p.online else 'Offline'
+                player['legend'] = 'none'
+                lobbyData['players'].append(player)
+        
+        return lobbyData
+    
     def _updateState(self):
         """
         Updates this Match's state.

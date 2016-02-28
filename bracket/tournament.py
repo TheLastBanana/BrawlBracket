@@ -85,6 +85,10 @@ class Tournament():
         Call this when finished creating matches. This will run any graph analysis that needs
         to be done on the matches before the tournament can be used.
         """
+        # Finalize matches
+        for m in self.matches:
+            m.finalize()
+        
         return
             
     def generateMatches(self):
@@ -143,6 +147,9 @@ class TreeTournament(Tournament):
         """
         self._updateMatchRounds()
         self._numberMatches()
+        
+        # Super class finalize
+        Tournament.finalize(self)
         
     def _updateMatchRounds(self, root = None, maxDepth = None, depth = 0):
         """

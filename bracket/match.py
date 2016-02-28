@@ -202,7 +202,7 @@ class Match():
         lobbyData = {}
         
         lobbyData['state'] = self.state
-        lobbyData['chatId'] = self.chat.id
+        lobbyData['chatId'] = str(self.chat.id)
         lobbyData['realmBans'] = self.realmBans
         lobbyData['bestOf'] = self.bestOf
         lobbyData['startTime'] = self.startTime
@@ -212,9 +212,12 @@ class Match():
         lobbyData['teams'] = []
         lobbyData['players'] = []
         for t, wins in zip(self.teams, self.score):
+            if t is None:
+                continue
+            
             team = {}
             team['name'] = t.name
-            team['id'] = t.id
+            team['id'] = str(t.id)
             team['seed'] = t.seed
             team['ready'] = False not in [p.online for p in t.players]
             team['wins'] = wins

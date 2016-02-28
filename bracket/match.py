@@ -1,4 +1,5 @@
 import uuid
+import chatmanager
 
 class Match():
     """
@@ -8,7 +9,7 @@ class Match():
     # When printing a match tree, this is the maximum length (in chars) of a seed.
     printSeedLen = 2
 
-    def __init__(self, prereqMatches = [None, None], teams = [None, None], **kwargs):
+    def __init__(self, prereqMatches = None, teams = None, **kwargs):
         """
         If winnerSide is provided, teams[winnerSide] will be set as the winner.
         
@@ -17,11 +18,20 @@ class Match():
             nextMatch: The match to which the winner will advance (Match)
             nextMatchSide: Side of next match this leads to, i.e. self.nextMatch[self.nextMatchSide] == self (int)
             prereqMatches: The matches that lead into this one (list of Match)
+            chat: The chat log (Chat)
+            score: Team scores, team index 0 is score index 0 (list of int)
+            teams: Teams participating in this match (list of Team)
+            realmBans: Which realms are currently banned (list of string id)
+            startTime: When this match started (date)
+            roomNumber: Brawlhalla custom room number (int)
+            currentRealm: Current realm being played (string id)
+            banRule: The method of determining bans and picks (BanRule)
             
         Tournament data:
-            winner: The winning team of this match (Team)
+            winner: The winning team of this match, None if no winner yet (Team)
             round: Round in the tournament (int)
             number: The number of the match in the tournament. Roughly the order they'll be played in. (int)
+            bestOf: Maximum number of games in this match (int)
         """
         self.id = kwargs.get('uuid', uuid.uuid1())
         
@@ -31,11 +41,36 @@ class Match():
         self.number = 0
         
         # Set prerequisite matches
-        self.prereqMatches = prereqMatches
+        if prereqMatches is None:
+            self.prereqMatches = [None, None]
+        else:
+            self.prereqMatches = prereqMatches
         
         # Set teams in this match
-        self.teams = teams
-            
+        if teams is None:
+            self.teams = [None, None]
+        else:
+            self.teams = teams
+        
+        # Generate a new chat room
+        self.chat = chatmanager.createChat()
+        
+        self.score = [0, 0]
+        
+        # Set to None to begin with, this should be set later
+        self.bestOf = None
+        
+        self.winner = None
+        
+        self.state = {}
+        self.state['name'] = 'building'
+        
+        self.realmBans = []
+        self.startTime = None
+        self.roomNumber = None
+        self.currentRealm = None
+        self.banRule = None
+                        
     @property
     def prereqMatches(self):
         return self._prereqMatches
@@ -151,3 +186,28 @@ class Match():
         Print the match out as a tree structure.
         """
         return '\n'.join(self._getDisplayLines())
+    
+    def _updateState(self):
+        """
+        Updates this Match's state.
+        """
+        for m in self.prereqMatches:
+            # No prereq
+            if m is None:
+                continue
+                
+            # Match isn't done
+            if m.winner is None:
+                self.state.clear()
+                self.state['name'] = 'waitingForMatch'
+                self.state['teamNames'] = [x.name for x in m.teams]
+                self.state['matchNumber'] = m.number
+                return
+        
+        for team in self.teams:
+            # No team yet
+            for player in team.players:
+                if not player.online:
+                    self.state.clear()
+                    self.state['name'] = 'waitingForPlayers'
+                    return

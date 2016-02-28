@@ -193,8 +193,9 @@ def player_settings(tourneyName):
 # Lobby content
 @app.route('/app-content/lobby/<tourneyName>')
 def lobby(tourneyName):
+    tournament = tm.getTournamentByName(tourneyName)
     return render_template('app/content/lobby.html',
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
+                           tourneyFullName=tournament.name)
 
 #----- Admin pages -----#
                            
@@ -366,7 +367,7 @@ def user_connect():
     
     if player.online:
         print('User {} rejected (already connected)'
-            .format(user.userId))
+            .format(user.id))
         emit('error', {'code': 'already-connected'},
             broadcast=False, include_self=True)
         return False
@@ -375,10 +376,10 @@ def user_connect():
     
     # Join new room
     session['matchId'] = match.id
-    join_room(matchId)
+    join_room(match.id)
     
     print('Participant {} connected, joined room #{}'
-        .format(user.userId, match.id))
+        .format(user.id, match.id))
     
     # This needs to be done in the /chat namespace, so switch it temporarily
     request.namespace = '/chat'
@@ -386,7 +387,7 @@ def user_connect():
     request.namespace = '/participant'
         
     emit('join lobby', {
-            'lobbyData': lobbyData,
+            'lobbyData': match.getLobbyData(),
             'playerSettings': user.getSettings()
         },
         broadcast=False, include_self=True)

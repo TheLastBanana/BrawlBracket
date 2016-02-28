@@ -124,6 +124,21 @@ class Tournament():
         self.matches.remove(match)
         match._destroy()
         
+    def getUserInfo(self, user):
+        """
+        Get info relevant to a user. This is the user's match, team, and player.
+        
+        Returns (Match, Team, Player) if user is in tournament.
+        Returns None otherwise.
+        """
+        for m in self.matches:
+            for t in m.teams:
+                for p in t.players:
+                    if p.user == user:
+                        return (m, t, p)
+        
+        return None
+        
 class TreeTournament(Tournament):
     """
     A tournament that follows a tree structure (with each match leading into the next).

@@ -12,7 +12,7 @@ def createChat():
     
     _chats.append(newChat)
         
-    return chat
+    return newChat
     
 def getChat(id):
     """

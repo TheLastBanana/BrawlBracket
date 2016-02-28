@@ -1,6 +1,6 @@
 {% extends "app/layout.html" %}
 
-{% block menu %}
+{%- block menu -%}
   {{ super() }}
 
   <li class="bb-menu-option active" page="admin-dashboard"><a href="#">
@@ -14,9 +14,9 @@
   <li class="bb-menu-option" page="tournament-settings"><a href="#">
     <i class="fa fa-cogs"></i> <span>Tournament Settings</span>
   </a></li>
-{% endblock %}
+{%- endblock -%}
 
-{% block script %}
+{%- block script -%}
   {{ super() }}
   brawlBracketAdminInit();
-{% endblock %}
+{%- endblock -%}

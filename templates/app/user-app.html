@@ -1,6 +1,6 @@
 {% extends "app/layout.html" %}
 
-{% block menu %}
+{%- block menu -%}
   {{ super() }}
 
   <li class="bb-menu-option active" page="lobby"><a href="#">
@@ -18,9 +18,9 @@
   <li class="bb-menu-option" page="player-settings"><a href="#">
     <i class="fa fa-cogs"></i> <span>User Settings</span>
   </a></li>
-{% endblock %}
+{%- endblock -%}
 
-{% block script %}
+{%- block script -%}
   {{ super() }}
   brawlBracketParticipantInit();
-{% endblock %}
+{%- endblock -%}

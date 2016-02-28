@@ -20,7 +20,7 @@ def createTournament(shortName, **kwargs):
     
     return tournament
     
-def getTournament(id):
+def getTournamentById(id):
     """
     Gets a tournament by uuid.
     
@@ -30,6 +30,15 @@ def getTournament(id):
     for tournament in _tournaments:
         if tournament.id == id:
             return tournament
+
+def getTournamentByName(shortName):
+    """
+    Gets a tournament by short name.
+    
+    Returns None if no tournament was found.
+    Returns the tournament found.
+    """
+    return _tournaments.get(shortName, None)
 
 def tournamentNameExists(shortName):
     """

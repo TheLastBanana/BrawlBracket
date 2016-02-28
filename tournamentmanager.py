@@ -14,7 +14,7 @@ def createTournament(shortName, **kwargs):
     if shortName in _tournaments:
         return None
     
-    tournament = bracket.tournament.Tournament(shortName, **kwargs)
+    tournament = bracket.tournament.SingleElimTournament(shortName, **kwargs)
     
     _tournaments.[shortName] = tournament
     

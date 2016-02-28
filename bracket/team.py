@@ -4,7 +4,7 @@ class Team:
     """
     A seeded entry in the tournament. Create these through the Tournament class.
     """
-    def __init__(self, seed, players = [], **kwargs):
+    def __init__(self, seed, players = None, **kwargs):
         """
         Team data:
          id: BrawlBracket id (uuid)
@@ -20,7 +20,11 @@ class Team:
         
         self.seed = seed
         self.name = kwargs.get('name')
-        self.players = players
+        
+        if players is None:
+            self.players = []
+        else:
+            self.players = players
         
         self.eliminated = False
         self.checkedIn = False

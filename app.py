@@ -20,7 +20,7 @@ from flask.ext.openid import OpenID
 from bidict import bidict
 
 import brawlapi
-import usermanager
+import usermanager as um
 import tournamentmanager as tm
 import util
 
@@ -38,7 +38,7 @@ steamIds = [76561198042414835, 76561198078549692, 76561197993702532,
             76561198063265824, 76561198042403860]
 tempUsers = []
 for id in steamIds:
-    user = usermanager.createUser(id)
+    user = um.createUser(id)
     tempUsers.append(user)
 tempTourney = tm.createTournament(
                 'test',
@@ -61,7 +61,7 @@ def page_not_found(e):
 @app.route('/test/')
 @oid.loginhandler
 def login():
-    if session.get('user', None) is not None:
+    if session.get('userId', None) is not None:
         return redirect(oid.get_next_url())
     return oid.try_login('http://steamcommunity.com/openid')
 
@@ -70,15 +70,16 @@ def createOrLogin(resp):
     match = _steam_id_re.search(resp.identity_url)
     match = int(match.group(1))
     
-    user = usermanager.getUserBySteamId(match)
+    user = um.getUserBySteamId(match)
     if user is None:
-        user = usermanager.createUser(match)
+        user = um.createUser(match)
         
         if user is None:
             print('Couldn\'t make user!')
             return
     
-    session['user'] = user.id
+    print(user) # DEBUG
+    session['userId'] = user.id
     return redirect(oid.get_next_url())
     
 @app.route('/')
@@ -92,26 +93,21 @@ def index():
 def user_login(tourneyName):
     if not tm.tournamentNameExists(tourneyName):
         abort(404)
-
-    tourneyId = tourneys[tourneyName]
     
     if request.method == 'GET':
-        prettyName = brawlapi.getTournamentName(tourneyId)
-        tourneyURL = brawlapi.getTournamentURL(tourneyId)
+        pass
+        #prettyName = brawlapi.getTournamentName(tourneyId)
+        #tourneyURL = brawlapi.getTournamentURL(tourneyId)
         
-        userList = brawlapi.getTournamentUsersOverview(tourneyId)
+        #userList = brawlapi.getTournamentUsersOverview(tourneyId)
 
-        return render_template('app/user-login.html',
-                               tourneyName=prettyName,
-                               participants=userList,
-                               challongeURL=tourneyURL)
+        #return render_template('app/user-login.html',
+        #                       tourneyName=prettyName,
+        #                       participants=userList,
+        #                       challongeURL=tourneyURL)
    
     # POST was used
     # TODO: validate user ID
-    userIdStr = request.form['user']
-    session['userId'] = uuid.UUID(userIdStr)
-    session['tourneyId'] = tourneyId
-    
     return redirect(url_for('user_app', tourneyName=tourneyName))
 
 #----- User pages -----#
@@ -120,30 +116,31 @@ def user_login(tourneyName):
 @app.route('/t/<tourneyName>/app/', defaults={'startPage': None})
 @app.route('/t/<tourneyName>/app/<startPage>/')
 def user_app(tourneyName, startPage):
-    tourneyId = session.get('tourneyId', None)
+    if not tm.tournamentNameExists(tourneyName):
+        abort(404)
+    
     userId = session.get('userId', None)
     
-    if None in (tourneyId, userId):
-        print('No tourneyId or userId; returned to login.')
+    if userId is None:
+        print('No userId; returned to login.')
+        # TODO: Redirect to the right login
         return redirect(url_for("user_login", tourneyName=tourneyName))
         
-    user = brawlapi.getUser(tourneyId, userId)
+    user = um.getUserById(userId)
     
     if user is None:
         print('User doesn\'t exist; returned to login.')
+        # TODO: Redirect to the right login
         return redirect(url_for("user_login", tourneyName=tourneyName))
-    
-    # Shouldn't need to check for None, this should come guaranteed with
-    # finding a user
-    pData = brawlapi.getParticipantData(tourneyId, user.participantId)
 
+    tournament = tm.getTournamentByName(tourneyName)
     return render_template('app/user-app.html',
                            startPage=startPage,
-                           userName=pData['display-name'],
-                           userAvatar=brawlapi.getParticipantAvatar(pData),
+                           userName=user.username,
+                           userAvatar=user.avatar,
                            tourneyName=tourneyName,
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           userId=user.userId,
+                           tourneyFullName=tournament.name,
+                           userId=user.id,
                            basePath='/{}/app/'.format(tourneyName))
 
 # Contact admin page

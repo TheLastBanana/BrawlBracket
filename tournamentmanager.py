@@ -1,7 +1,7 @@
 import bracket.tournament
 import bidict
 
-_tournaments = bidict()
+_tournaments = bidict.bidict()
 
 def createTournament(shortName, **kwargs):
     """
@@ -16,7 +16,7 @@ def createTournament(shortName, **kwargs):
     
     tournament = bracket.tournament.SingleElimTournament(shortName, **kwargs)
     
-    _tournaments.[shortName] = tournament
+    _tournaments[shortName] = tournament
     
     return tournament
     

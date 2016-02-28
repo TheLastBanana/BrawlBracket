@@ -18,12 +18,6 @@ participantDatas = {} # Has raw challonge participant data
 userDatas = {} # Has BrawlBracket created user data
 lobbyDatas = {}
 
-# Set of online participant IDs
-onlineUsers = {}
-
-# All chat logs
-chats = {}
-
 # Admin secret keys for each tourney
 adminKeys = {
     '2119181': ['GREATPASSWORDM8']
@@ -49,83 +43,6 @@ def matchIdToNumber(matchId):
         idSum += value
         
     return idSum
-
-# +---------------+
-# | User Managing |
-# +---------------+
-# Much int paranoia
-
-def addOnlineUser(tourneyId, user):
-    """
-    Track user as online.
-    """
-    if tourneyId not in onlineUsers:
-        onlineUsers[tourneyId] = []
-    
-    onlineUsers[tourneyId].append(user)
-
-def removeOnlineUser(tourneyId, user):
-    """
-    Stop tracking user as online.
-    """
-    try:
-        onlineUsers[tourneyId].remove(user)
-    # User not online
-    except ValueError as e:
-        print('Tried to remove online user that wasn\'t online. {}'
-            .format(user))
-
-def isUserOnline(tourneyId, user):
-    """
-    Determine if a user is online.
-    
-    Return False if:
-        - tourneyId is None.
-        - tourney doesn't exist.
-        - user is None.
-        - user is not online.
-    Return True if:
-        - user is online.
-    """
-    # None if either args are None, or if we've had no online users for a
-    # tourney
-    if None in (tourneyId, user) or tourneyId not in onlineUsers:
-        return False
-    
-    for oUser in onlineUsers[tourneyId]:
-        if user == oUser:
-            return True
-    
-    return False
-    
-# +---------------+
-# | Chat Managing |
-# +---------------+
-def createChat(tourneyId):
-    """
-    Add a chat to the tourney. Returns the chat's id.
-    """
-    chatPair = None
-    chatId = None
-    
-    while chatPair is None or ((tourneyId, id) in chats):
-        chatId = str(uuid.uuid4())
-        chatPair = (tourneyId, chatId)
-        
-    chats[chatPair] = util.Chat(chatId)
-        
-    return chatId
-    
-def getChat(tourneyId, chatId):
-    """
-    Get a chat in a tourney.
-    """
-    chatPair = (tourneyId, chatId)
-    
-    if chatPair not in chats:
-        return
-    
-    return chats[chatPair]
 
 # +------------------------+
 # | Refresh data functions |

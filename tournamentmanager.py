@@ -1,7 +1,8 @@
 import bracket.tournament
 import bidict
 
-_tournaments = bidict.bidict()
+_tournamentsByName = bidict.bidict()
+_tournaments = []
 
 def createTournament(shortName, **kwargs):
     """
@@ -11,12 +12,13 @@ def createTournament(shortName, **kwargs):
     Returns the new Tournament.
     Returns None if the shortName wasn't unique.
     """
-    if shortName in _tournaments:
+    if shortName in _tournamentsByName:
         return None
     
     tournament = bracket.tournament.SingleElimTournament(shortName, **kwargs)
     
-    _tournaments[shortName] = tournament
+    _tournamentsByName[shortName] = tournament.id
+    _tournaments.append(tournament)
     
     return tournament
     
@@ -38,7 +40,11 @@ def getTournamentByName(shortName):
     Returns None if no tournament was found.
     Returns the tournament found.
     """
-    return _tournaments.get(shortName, None)
+    id = _tournamentsByName.get(shortName, None)
+    if id is None:
+        return None
+    
+    return getTournamentById(id)
 
 def tournamentNameExists(shortName):
     """
@@ -48,4 +54,4 @@ def tournamentNameExists(shortName):
     
     Returns True if the shortName is in use, False otherwise.
     """
-    return shortName in _tournaments
+    return shortName in _tournamentsByName

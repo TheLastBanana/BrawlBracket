@@ -1,4 +1,4 @@
-from util import KeySingleton
+from brawlbracket.util import KeySingleton
 #import logger
 
 import sqlite3

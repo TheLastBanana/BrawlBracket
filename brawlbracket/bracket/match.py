@@ -1,5 +1,5 @@
 import uuid
-import chatmanager
+from brawlbracket import chatmanager
 
 class Match():
     """

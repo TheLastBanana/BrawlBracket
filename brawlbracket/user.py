@@ -1,5 +1,5 @@
-import util
 import uuid
+from brawlbracket import util
 
 class User:
     """

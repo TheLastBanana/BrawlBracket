@@ -4,9 +4,9 @@ import uuid
 
 import requests
 
-import user
-import db_wrapper
-import util
+from brawlbracket import user
+from brawlbracket import db_wrapper
+from brawlbracket import util
 
 _users = []
 

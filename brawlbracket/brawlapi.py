@@ -5,8 +5,8 @@ from urllib.error import HTTPError
 
 import challonge
 
-import db_wrapper
-import util
+from brawlbracket import db_wrapper
+from brawlbracket import util
 
 # Set up challonge
 challonge.set_credentials(os.environ.get('BB_CHALLONGE_USER'), os.environ.get('BB_CHALLONGE_API_KEY'))

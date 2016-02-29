@@ -1,4 +1,4 @@
-import chat
+from brawlbracket import chat
 
 _chats = []
 

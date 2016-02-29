@@ -1,5 +1,5 @@
-import bracket.tournament
 import bidict
+from brawlbracket.bracket import tournament as trn
 
 _tournamentsByName = bidict.bidict()
 _tournaments = []
@@ -15,7 +15,7 @@ def createTournament(shortName, **kwargs):
     if shortName in _tournamentsByName:
         return None
     
-    tournament = bracket.tournament.SingleElimTournament(shortName, **kwargs)
+    tournament = trn.SingleElimTournament(shortName, **kwargs)
     
     _tournamentsByName[shortName] = tournament.id
     _tournaments.append(tournament)

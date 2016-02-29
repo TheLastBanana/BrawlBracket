@@ -19,10 +19,10 @@ from flask_socketio import emit
 from flask.ext.openid import OpenID
 from bidict import bidict
 
-import brawlapi
-import usermanager as um
-import tournamentmanager as tm
-import util
+from brawlbracket import brawlapi
+from brawlbracket import usermanager as um
+from brawlbracket import tournamentmanager as tm
+from brawlbracket import util
 
 __version__ = '0.1.0'
 
@@ -531,6 +531,9 @@ def chat_request_log(data):
         'chatId': chatId
     }, broadcast=False, include_self=True)
         
-if __name__ == '__main__':
-    app.debug = True
+def runWebServer(debug=False):
+    """
+    Run the web server.
+    """
+    app.debug = debug
     socketio.run(app)

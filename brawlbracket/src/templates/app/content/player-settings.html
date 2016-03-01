@@ -1,4 +1,4 @@
-{% from 'macros.html' import header with context %}
+{% from 'app/content/macros.html' import header with context %}
 {{ header('User Settings') }}
 
 <script src="/static/brawlbracket/js/player-settings.js"></script>
@@ -38,7 +38,7 @@
               </div>
             </div>
             <br />
-            {% include 'app-content/roster.html' %}
+            {% include 'app/content/roster.html' %}
             
             <!-- Save/cancel buttons -->
             <hr>

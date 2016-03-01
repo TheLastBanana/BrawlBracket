@@ -10,7 +10,8 @@ First, you'll want to install Node.js: https://nodejs.org/en/
 Then, in this directory, run `npm install`.
 
 Finally, run `gulp`. It'll stay running in the background and automatically update the files in `dist` (where the
-Flask app gets its files) whenever you make modifications in `src`.
+Flask app gets its files) whenever you make modifications in `src`. Note that even though it says that the 'watch' task
+has finished, this actually just means that the 'watch' task was successfully executed, so it should still be running.
 
 
 ## Testing

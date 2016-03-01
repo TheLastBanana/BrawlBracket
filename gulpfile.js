@@ -85,6 +85,22 @@ gulp.task('useref-clean', function() {
     return del('brawlbracket/dist/templates/static');
 });
 
+// Clear the cache
+gulp.task('clear-cache', function(cb) {
+    return cache.clearAll(cb);
+});
+
+// Watch for file changes. Note that this doesn't minify anything, as this is aimed at dev mode, where we don't want to
+// minify files for debugging reasons
+gulp.task('watch', function() {
+    gulp.watch('brawlbracket/src/**/*.html', ['html']);
+    gulp.watch('brawlbracket/src/**/*.js', ['js']);
+    gulp.watch('brawlbracket/src/**/*.css', ['css']);
+    gulp.watch('brawlbracket/src/**/*.+(png|jpg|gif|svg)', ['img']);
+    gulp.watch('brawlbracket/src/**/*.+(mp3|ogg)', ['sfx']);
+});
+
+
 // Combine all the tasks for deployment
 gulp.task('all-deploy', function(cb) {
     runSequence('clean',
@@ -101,16 +117,7 @@ gulp.task('all-dev', function(cb) {
                 cb);
 });
 
-// Watch for file changes. Note that this doesn't minify anything, as this is aimed at dev mode, where we don't want to
-// minify files for debugging reasons
-gulp.task('watch', function() {
-    gulp.watch('brawlbracket/src/**/*.html', ['html']);
-    gulp.watch('brawlbracket/src/**/*.js', ['js']);
-    gulp.watch('brawlbracket/src/**/*.css', ['css']);
-    gulp.watch('brawlbracket/src/**/*.+(png|jpg|gif|svg)', ['img']);
-    gulp.watch('brawlbracket/src/**/*.+(mp3|ogg)', ['sfx']);
-});
-
+// Do a development run, then start the watcher
 gulp.task('default', function(cb) {
     runSequence('all-dev', 'watch', cb);
 });

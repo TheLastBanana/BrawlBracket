@@ -158,7 +158,7 @@ def user_app(tourneyName, startPage):
                            tourneyName=tourneyName,
                            tourneyFullName=tournament.name,
                            userId=user.id,
-                           basePath='/{}/app/'.format(tourneyName))
+                           basePath='/t/{}/app/'.format(tourneyName))
 
 # Contact admin page
 @app.route('/app-content/contact-admin/<tourneyName>')

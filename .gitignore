@@ -58,3 +58,6 @@ target/
 
 # BrawlBracket Custom
 data/
+
+# NodeJS
+node_modules/

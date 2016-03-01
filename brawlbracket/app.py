@@ -26,7 +26,7 @@ from brawlbracket import util
 
 __version__ = '0.1.0'
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='dist/static', template_folder='dist/templates')
 app.secret_key = os.environ.get('BB_SECRET_KEY')
 socketio = SocketIO(app)
 oid = OpenID(app)

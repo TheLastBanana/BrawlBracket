@@ -9,7 +9,8 @@
     <title>BrawlBracket | {{ tourneyFullName }}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <!-- Bootstrap 3.3.5 -->
+    
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -18,15 +19,15 @@
     <!-- DataTables -->
     <link rel="stylesheet" href="/static/datatables/datatables.min.css"/>
     <!-- Ion Slider -->
-    <link rel="stylesheet" href="/static/ionslider/css/ion.rangeSlider.css">
+    <link rel="stylesheet" href="/static/ionslider/css/ion.rangeSlider.min.css">
     <!-- Ion Slider Nice -->
-    <link rel="stylesheet" href="/static/ionslider/css/ion.rangeSlider.skinFlat.css">
+    <link rel="stylesheet" href="/static/ionslider/css/ion.rangeSlider.skinFlat.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="/static/adminlte/css/AdminLTE.min.css">
     <!-- AdminLTE Skin -->
     <link rel="stylesheet" href="/static/adminlte/css/skins/skin-blue.min.css">
     <!-- BrawlBracket style -->
-    <link rel="stylesheet" href="/static/brawlbracket/css/BrawlBracket.css">
+    <link rel="stylesheet" href="/static/brawlbracket/css/BrawlBracket.min.css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -130,12 +131,16 @@
            immediately after the control sidebar -->
       <div class="control-sidebar-bg"></div>
     </div><!-- ./wrapper -->
+    
+    <!-- SocketIO -->
+    <script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
+    <!-- SoundJS -->
+    <script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
 
-    <!-- REQUIRED JS SCRIPTS -->
-
-    <!-- jQuery 2.1.4 -->
+    <!-- build:js /static/combined/js/app.min.js -->
+    <!-- jQuery -->
     <script src="/static/adminlte/plugins/jQuery/jQuery-2.1.4.min.js"></script>
-    <!-- Bootstrap 3.3.5 -->
+    <!-- Bootstrap -->
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <!-- DataTables -->
     <script src="/static/datatables/datatables.min.js"></script>
@@ -143,12 +148,9 @@
     <script src="/static/ionslider/js/ion.rangeSlider.min.js"></script>
     <!-- AdminLTE App -->
     <script src="/static/adminlte/js/app.min.js"></script>
-    <!-- SocketIO -->
-    <script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
-    <!-- SoundJS -->
-    <script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
     <!-- BrawlBracket app script -->
     <script src="/static/brawlbracket/js/app.js"></script>
+    <!-- endbuild -->
     
     <script>
       {% block script %}

@@ -9,6 +9,7 @@ var useref = require('gulp-useref');
 var imagemin = require('gulp-imagemin');
 var cleanCSS = require('gulp-clean-css');
 var rename = require('gulp-rename');
+var cache = require('gulp-cache');
 var del = require('del');
 var merge = require('merge-stream');
 var runSequence = require('run-sequence');
@@ -63,7 +64,7 @@ gulp.task('useref', function() {
 // Optimize images
 gulp.task('img', function() {
     return gulp.src('brawlbracket/src/static/**/*.+(png|jpg|gif|svg)')
-        .pipe(imagemin())
+        .pipe(cache(imagemin()))
         .pipe(gulp.dest('brawlbracket/dist/static'));
 });
 

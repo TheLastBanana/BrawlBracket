@@ -136,7 +136,7 @@ def _getUserFromDBBySteamId(steamId):
         steamId = userData[1]
         username = userData[2]
         avatar = userData[3]
-        ownedLegends = userData[4].split(',')
+        ownedLegends = json.loads(userData[4])
         preferredServer = userData[5]
         
         u = user.User(steamId, username, avatar, uuid=id)
@@ -165,7 +165,7 @@ def _writeUserToDB(u):
         u.steamId,
         q(u.username),
         q(u.avatar),
-        q(','.join(u.ownedLegends)),
+        q(json.dumps(u.ownedLegends)),
         q(u.preferredServer)
         )
     print('Writing user with: ', userData)

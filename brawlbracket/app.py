@@ -22,6 +22,7 @@ from bidict import bidict
 from brawlbracket import brawlapi
 from brawlbracket import usermanager as um
 from brawlbracket import tournamentmanager as tm
+from brawlbracket import chatmanager as cm
 from brawlbracket import util
 
 __version__ = '0.1.0'
@@ -505,12 +506,11 @@ def chat_send(data):
 # A user is requesting a full chat log
 @socketio.on('request log', namespace='/chat')
 def chat_request_log(data):
-    tourneyId = session['tourneyId']
-    sentTime = datetime.datetime.now().isoformat()
-    
     chatId = data['chatId']
     
-    chat = brawlapi.getChat(tourneyId, chatId)
+    chat = cm.getChat(chatId)
+    
+    # TODO: Maybe handle this a bit more gracefully
     if not chat:
         return
         

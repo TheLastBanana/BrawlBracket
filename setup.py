@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='BrawlBracket',
     version='0.1',
-    description='A web app to simplify running Brawlhalla tournaments through Challonge!',
+    description='A web app to simplify running Brawlhalla tournaments.',
     author='Elliot Colp and Braedy Kuzma',
     install_requires=[
         'python-dateutil==2.2',

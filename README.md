@@ -19,6 +19,13 @@ still be running.
 Alternatively, you can run `gulp all-dev`, which will update the web files without starting the watcher task.
 
 
+## Running
+Run `python wsgi.py` to start the development web server. It will be hosted at `localhost:5000`.
+
+If you ran `gulp`, you can also visit `localhost:3000` to view a version of the site that will automatically reload
+whenever any of the files in `brawlbracket/src` change.
+
+
 ## Testing
 First, install the module by running `pip install -e .` in this directory.
 

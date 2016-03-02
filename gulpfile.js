@@ -13,6 +13,7 @@ var cache = require('gulp-cache');
 var del = require('del');
 var merge = require('merge-stream');
 var runSequence = require('run-sequence');
+var browserSync = require('browser-sync');
 
 // Remove dist
 gulp.task('clean', function() {
@@ -98,13 +99,29 @@ gulp.task('clear-cache', function(cb) {
 });
 
 // Watch for file changes. Note that this doesn't minify anything, as this is aimed at dev mode, where we don't want to
-// minify files for debugging reasons
+// minify files for debugging reasons.
+// This also causes browser-sync to reload when files change.
 gulp.task('watch', function() {
-    gulp.watch('brawlbracket/src/**/*.html', ['html']);
-    gulp.watch('brawlbracket/src/**/*.js', ['js']);
-    gulp.watch('brawlbracket/src/**/*.css', ['css']);
-    gulp.watch('brawlbracket/src/**/*.+(png|jpg|gif|svg)', ['img']);
-    gulp.watch('brawlbracket/src/**/*.+(mp3|ogg)', ['sfx']);
+    gulp.watch('brawlbracket/src/**/*.html', ['html', 'reload']);
+    gulp.watch('brawlbracket/src/**/*.js', ['js', 'reload']);
+    gulp.watch('brawlbracket/src/**/*.css', ['css', 'reload']);
+    gulp.watch('brawlbracket/src/**/*.+(png|jpg|gif|svg)', ['img', 'reload']);
+    gulp.watch('brawlbracket/src/**/*.+(mp3|ogg)', ['sfx', 'reload']);
+});
+
+// Start browser-sync server
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        proxy: 'localhost:5000',
+        open: false
+    });
+});
+
+// Reload browser-sync
+gulp.task('reload', ['html', 'js', 'css', 'img', 'sfx'], function() {
+    console.log('Reloading browser');
+    
+    browserSync.reload();
 });
 
 
@@ -124,7 +141,7 @@ gulp.task('all-dev', function(cb) {
                 cb);
 });
 
-// Do a development run, then start the watcher
+// Do a development run, then start the watcher and browser sync.
 gulp.task('default', function(cb) {
-    runSequence('all-dev', 'watch', cb);
+    runSequence('all-dev', ['watch', 'browser-sync'], cb);
 });

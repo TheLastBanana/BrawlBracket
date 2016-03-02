@@ -19,7 +19,7 @@ gulp.task('clean', function() {
     return del('brawlbracket/dist');
 });
 
-// Combine and minify css
+// Minify CSS
 gulp.task('css', function() {
     // Exclude already minified files
     var minify = gulp.src(['brawlbracket/src/static/**/*.css', '!brawlbracket/src/static/**/*.min.css'])
@@ -27,6 +27,7 @@ gulp.task('css', function() {
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('brawlbracket/dist/static/'));
         
+    // Now copy minified files
     var copy = gulp.src('brawlbracket/src/static/**/*.min.css')
         .pipe(gulp.dest('brawlbracket/dist/static/'));
         
@@ -39,10 +40,16 @@ gulp.task('html', function() {
         .pipe(gulp.dest('brawlbracket/dist/templates/'));
 });
 
-// Just copy JavaScript files
+// Just copy JavaScript files, but treat them as .min files so they can be included easily
 gulp.task('js', function() {
-    return gulp.src('brawlbracket/src/static/**/*.js')
+    var renameJs = gulp.src(['brawlbracket/src/static/**/*.js', '!brawlbracket/src/static/**/*.min.js'])
+        .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('brawlbracket/dist/static/'));
+        
+    var copy = gulp.src('brawlbracket/src/static/**/*.min.js')
+        .pipe(gulp.dest('brawlbracket/dist/static/'));
+        
+    return merge(renameJs, copy);
 });
 
 // Copy HTML files and combine + minify JS files

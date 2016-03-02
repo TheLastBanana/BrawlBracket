@@ -115,7 +115,7 @@ def _getSteamInfo(steamId):
 def _getUserFromDBById(id):
     """
     """
-    pass
+    raise NotImplementedError('Can\'t getUserFromDBById')
 
 def _getUserFromDBBySteamId(steamId):
     """

@@ -88,7 +88,7 @@ def _initDB():
     global _db
     _db = db_wrapper.DBWrapper(util.dbName, filepath=util.dbPath)
     
-    # Make user table
+    # Make chats table
     if not _db.table_exists('chats'):
         fieldNames = [
             'id',

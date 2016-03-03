@@ -1,5 +1,122 @@
 {% extends "layout.html" %}
 
 {%- block content -%}
-  Look at me being an index page!
+  <div class="title"><p>Brawlhalla tournaments made simple.</p></div>
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <div class="carousel-wrapper">
+        <!-- Image carousel -->
+        <div id="index-carousel" class="carousel slide" data-ride="carousel" data-interval="10000">
+          <ol class="carousel-indicators">
+            <li data-target="#index-carousel" data-slide-to="0" class="active"></li>
+            <li data-target="#index-carousel" data-slide-to="1" class=""></li>
+            <li data-target="#index-carousel" data-slide-to="2" class=""></li>
+          </ol>
+          <div class="carousel-inner">
+            <div class="item active">
+              <img src="http://placehold.it/1920x1080/39CCCC/ffffff&text=much+tournament">
+            </div>
+            <div class="item">
+              <img src="http://placehold.it/1920x1080/3c8dbc/ffffff&text=very+bracket">
+            </div>
+            <div class="item">
+              <img src="http://placehold.it/1920x1080/f39c12/ffffff&text=wow">
+            </div>
+          </div>
+          <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+            <span class="fa fa-angle-left"></span>
+          </a>
+          <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+            <span class="fa fa-angle-right"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+  <span class="call-to-action">
+    <h4>
+      Whether you're a player or a tournament operator, BrawlBracket is designed to make your tournament experience smooth and easy.<br />
+    </h4>
+    <h4>
+      <a href="/login"><img src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_large_border.png"></a> or 
+      <button class="btn btn-block btn-primary btn-lg" id="bb-learn-more">Learn More</button>
+    </h4>
+  </span>
+  
+  <div id="bb-extra-info" style="display: none; overflow: hidden;">
+    <hr class="divider">
+    
+    <h4 class="text-center text-muted">BrawlBracket's features make participating in a tournament as simple as possible, even for beginners.</h4>
+
+    <div class="row">
+      <div class="col-md-3">
+        <h4><i class="fa fa-trophy fa-lg"></i> Automatic matchmaking</h4>
+        <span>
+          No more searching for your opponents in group chats. You'll be automatically placed in a chat lobby with your opponent when your match is ready.
+        </span>
+      </div>
+      
+      <div class="col-md-3">
+        <h4><i class="fa fa-forward fa-lg"></i> Built-in tourney rules</h4>
+        <span>
+          Automated legend picks and map bans mean you won't have to memorize rules, making it easier than ever to jump into tournament play.
+        </span>
+      </div>
+      
+      <div class="col-md-3">
+        <h4><i class="fa fa-bell fa-lg"></i> Desktop notifications</h4>
+        <span>
+          Optional notifications and sounds will let you know when your opponent is done their match, so you can do something else while you wait.
+        </span>
+      </div>
+      
+      <div class="col-md-3">
+        <h4><i class="fa fa-steam-square fa-lg"></i> Steam integration</h4>
+        <span>
+          No need for another password &mdash; you already have an account. And you'll always know who the other players are because you can find them on Steam.
+        </span>
+      </div>
+    </div>
+    
+    <hr class="divider">
+    
+    <h4 class="text-center text-muted">It's also designed from the ground up to make tournament management as painless as possible.</h4>
+
+    <div class="row" style="margin-bottom: 40px;">
+      <div class="col-md-3">
+        <h4><i class="fa fa-users fa-lg"></i> Everyone together</h4>
+        <span>
+          You don't have to hunt down and confirm missing players when registration, check-in, and match setup all take place in the same web app.
+        </span>
+      </div>
+      
+      <div class="col-md-3">
+        <h4><i class="fa fa-table fa-lg"></i> Comprehensive data</h4>
+        <span>
+          Know everything about your tournament's matches from who's holding them up, to how far they've progressed, to what room number they're playing in.
+        </span>
+      </div>
+      
+      <div class="col-md-3">
+        <h4><i class="fa fa-list-ol fa-lg"></i> Customizable rulesets</h4>
+        <span>
+          Best of 17 grand finals, Thundergard and Gnash are banned, and winner picks the map every time? You're weird, but we've got you covered.
+        </span>
+      </div>
+      
+      <div class="col-md-3">
+        <h4><i class="fa fa-bullhorn fa-lg"></i> Know who needs your help</h4>
+        <span>
+          Players have an easy button to contact you in times of need. They don't have to search for your contact info, and you don't have to watch them like a hawk.
+        </span>
+      </div>
+    </div>
+  </div>
+  
+{%- endblock -%}
+  
+{%- block extraScripts -%}
+  <script src="/static/brawlbracket/js/index.min.js"></script>
 {%- endblock -%}

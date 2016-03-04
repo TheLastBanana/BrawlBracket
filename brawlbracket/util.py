@@ -100,10 +100,15 @@ orderedRealms = [realmData[id] for id in eslRealms]
 
 # Valid server regions
 serverRegions = {
-    'na':   'North America',
-    'eu':   'Europe',
-    'sea':  'Southeast Asia'
+    'use':  'US East',
+    'usw':  'US West',
+    'eur':  'Europe',
+    'sea':  'SE Asia',
+    'aus':  'Australia',
+    'bra':  'Brazil'
 }
+orderedRegions = list(serverRegions.items())
+orderedRegions.sort(key=lambda region: region[1])
 
 # +--------------+
 # | Util classes |

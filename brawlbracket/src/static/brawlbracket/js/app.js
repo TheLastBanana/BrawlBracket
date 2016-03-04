@@ -556,17 +556,6 @@ function addAllChatMessages(chatBox, log) {
 }
 
 $.fn.extend({
-    toggleDisabled: function() {
-        return $(this).each(function() {
-            if ($(this).hasClass('disabled')) {
-                $(this).removeClass('disabled');
-            }
-            else {
-                $(this).addClass('disabled');
-            }
-        });
-    },
-    
     setUpChatBox: function(chatId) {
         return $(this).each(function() {
             var chatBox = $(this);

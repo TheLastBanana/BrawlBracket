@@ -102,6 +102,36 @@ def index():
                            userName=userName,
                            userAvatar=userAvatar)
     brawlapi.init_example_db()
+    
+# List of tournaments for a user
+@app.route('/tournaments/')
+def user_tournaments():
+    userId = session.get('userId', None)
+    user = um.getUserById(userId)
+    
+# Settings page
+@app.route('/settings/', methods=['GET', 'PUT'])
+def user_settings():
+    userId = session.get('userId', None)
+    
+    if userId is None:
+        print('No userId; returned to login.')
+        return redirect(url_for('user_login', tourneyName=tourneyName))
+        
+    user = um.getUserById(userId)
+        
+    if request.method == 'GET':
+        return render_template('settings.html',
+                               legendData=util.orderedLegends,
+                               serverRegions=util.orderedRegions,
+                               userSettings=user.getSettings())
+                               
+    elif request.method == 'PUT':
+        if user.setSettings(request.json):
+            return json.dumps({'success': True}), 200
+            
+        else:
+            return json.dumps({'success': False}), 500
 
 # Log in a tourney participant
 @app.route('/t/<tourneyName>/', methods=['GET', 'POST'])
@@ -177,21 +207,6 @@ def bracket(tourneyName):
                            tourneyName=tourneyName,
                            tourneyFullName=tournament.name)#,
                            #liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId))
-    
-# Settings page
-@app.route('/app-content/player-settings/<tourneyName>')
-def player_settings(tourneyName):
-    userId = session.get('userId', None)
-    if userId is None:
-        print('No userId; returned to login.')
-        return redirect(url_for("user_login", tourneyName=tourneyName))
-        
-    return render_template('app/content/player-settings.html',
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           tourneyName=tourneyName,
-                           participantId=session['userId'],
-                           legendData=util.orderedLegends,
-                           serverRegions=list(util.serverRegions.items()))
     
 # Lobby content
 @app.route('/app-content/lobby/<tourneyName>')
@@ -431,27 +446,6 @@ def participant_report_win(data):
     lData = brawlapi.getLobbyData(tourneyId, matchId)
     emit('update lobby', lData,
         broadcast=True, include_self=True, room=matchId)
-    
-# A player updated their settings
-@socketio.on('update settings', namespace='/participant')
-def participant_update_settings(settings):
-    userId = session['userId']
-    tourneyId = session['tourneyId']
-    
-    # Weren't passed a userId
-    if userId is None:
-        print('User id missing; connection rejected')
-        emit('error', {'code': 'bad-participant'},
-            broadcast=False, include_self=True)
-        return False
-    
-    user = brawlapi.getUser(tourneyId, userId)
-    
-    if user.setSettings(settings):
-        emit('update settings', settings,
-             broadcast=False, include_self=True)
-    else:
-        emit('invalid settings')
 
 # A chat message was sent by a client
 @socketio.on('send', namespace='/chat')

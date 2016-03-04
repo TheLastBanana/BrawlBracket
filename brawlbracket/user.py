@@ -24,7 +24,7 @@ class User:
         self.username = username
         self.avatar = avatar
         self.ownedLegends = util.ownableLegendIds.copy()
-        self.preferredServer = 'na'
+        self.preferredServer = 'use'
     
     def __eq__(self, other):
         if not isinstance(other, User):
@@ -68,4 +68,5 @@ class User:
                 return False
         
         self.ownedLegends = settings['ownedLegends']
+        self.preferredServer = settings['preferredServer']
         return True

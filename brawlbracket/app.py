@@ -163,18 +163,20 @@ def user_app(tourneyName, startPage):
 # Contact admin page
 @app.route('/app-content/contact-admin/<tourneyName>')
 def contact_admin(tourneyName):
+    tournament = tm.getTournamentByName(tourneyName)
     return render_template('app/content/contact-admin.html',
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
+                           tourneyFullName=tournament.name,
+                           tourneyName=tourneyName)
     
 # Bracket viewer page
 @app.route('/app-content/bracket/<tourneyName>')
 def bracket(tourneyName):
-    tourneyId = tourneys[tourneyName]
+    tournament = tm.getTournamentByName(tourneyName)
 
     return render_template('app/content/bracket.html',
                            tourneyName=tourneyName,
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId))
+                           tourneyFullName=tournament.name)#,
+                           #liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId))
     
 # Settings page
 @app.route('/app-content/player-settings/<tourneyName>')
@@ -196,7 +198,8 @@ def player_settings(tourneyName):
 def lobby(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
     return render_template('app/content/lobby.html',
-                           tourneyFullName=tournament.name)
+                           tourneyFullName=tournament.name,
+                           tourneyName=tourneyName)
 
 #----- Admin pages -----#
                            
@@ -232,7 +235,8 @@ def admin_dashboard(tourneyName):
 
     return render_template('app/content/admin-dashboard.html',
                            liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId),
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName))
+                           tourneyFullName=brawlapi.getTournamentName(tourneyName),
+                           tourneyName=tourneyName)
     
 #----- Page elements -----#
     

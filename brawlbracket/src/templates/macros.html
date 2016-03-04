@@ -1,3 +1,22 @@
+<!-- Content Header (Page header) -->
+{% macro pageHeader(pages) -%}
+  <section class="content-header">
+    <h1 class="bb-page-name">
+      {{ (pages|last)[0] }}
+    </h1>
+    
+    <ol class="breadcrumb">
+      <li><a href="/">BrawlBracket</a></li>
+      {%- for page in pages -%}
+        <li{% if loop.last %} class="active bb-page-name"{% endif %}>
+          <a href="{{ page[1] }}">{{ page[0] }}</a>
+        </li>
+        
+      {%- endfor -%}
+    </ol>
+  </section>
+{%- endmacro %}
+
 <!-- Content that goes in the page footer -->
 {% macro footerContent() -%}
   <div class="pull-right">

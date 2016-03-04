@@ -1,14 +1,9 @@
+{% from 'macros.html' import pageHeader %}
+
 <!-- Content Header (Page header) -->
-{% macro header(pageName) -%}
-  <section class="content-header">
-    <h1 class="bb-page-name">
-      {{ pageName }}
-    </h1>
-    
-    <ol class="breadcrumb">
-      <li><a href="/">BrawlBracket</a></li>
-      <li>{{ tourneyFullName }}</li>
-      <li class="active bb-page-name">{{ pageName }}</li>
-    </ol>
-  </section>
+{% macro appHeader(pageName) -%}
+  {{ pageHeader([
+    [tourneyFullName, '/t/' + tourneyName],
+    [pageName, '.']
+  ]) }}
 {%- endmacro %}

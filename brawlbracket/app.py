@@ -58,7 +58,15 @@ tempTourney.generateMatches()
     
 @app.context_processor
 def default_template_data():
-    return dict(versionNumber = __version__)
+    userId = session.get('userId', None)
+    user = um.getUserById(userId)
+    
+    userName = user.username if user else None
+    userAvatar = user.avatar if user else None
+    
+    return dict(versionNumber = __version__,
+                userName = userName,
+                userAvatar = userAvatar)
     
 #----- Flask routing -----#
 @app.errorhandler(404)
@@ -92,15 +100,7 @@ def createOrLogin(resp):
 @app.route('/')
 @app.route('/index/')
 def index():
-    userId = session.get('userId', None)
-    user = um.getUserById(userId)
-    
-    userName = user.username if user else None
-    userAvatar = user.avatar if user else None
-    
-    return render_template('index.html',
-                           userName=userName,
-                           userAvatar=userAvatar)
+    return render_template('index.html')
     brawlapi.init_example_db()
     
 # List of tournaments for a user
@@ -183,8 +183,6 @@ def user_app(tourneyName, startPage):
     
     return render_template('app/user-app.html',
                            startPage=startPage,
-                           userName=user.username,
-                           userAvatar=user.avatar,
                            tourneyName=tourneyName,
                            tourneyFullName=tournament.name,
                            userId=user.id,

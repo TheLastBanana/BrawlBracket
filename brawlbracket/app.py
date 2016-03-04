@@ -80,6 +80,11 @@ def login():
         return redirect(oid.get_next_url())
     return oid.try_login('http://steamcommunity.com/openid')
 
+@app.route('/logout/')
+def logout():
+    session.pop('userId')
+    return redirect(oid.get_next_url())
+
 @oid.after_login
 def createOrLogin(resp):
     match = _steam_id_re.search(resp.identity_url)

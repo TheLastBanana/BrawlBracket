@@ -10,6 +10,7 @@ var imagemin = require('gulp-imagemin');
 var cleanCSS = require('gulp-clean-css');
 var rename = require('gulp-rename');
 var cache = require('gulp-cache');
+var sass = require('gulp-sass');
 var del = require('del');
 var merge = require('merge-stream');
 var runSequence = require('run-sequence');
@@ -27,12 +28,18 @@ gulp.task('css', function() {
         .pipe(cleanCSS())
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('brawlbracket/dist/static/'));
-        
+
     // Now copy minified files
     var copy = gulp.src('brawlbracket/src/static/**/*.min.css')
         .pipe(gulp.dest('brawlbracket/dist/static/'));
-        
-    return merge(minify, copy);
+
+    var compSass = gulp.src('brawlbracket/src/static/**/*.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(cleanCSS())
+        .pipe(rename({suffix: '.min'}))
+        .pipe(gulp.dest('brawlbracket/dist/static/'));
+
+    return merge(minify, copy, compSass);
 });
 
 // Just copy HTML
@@ -46,26 +53,26 @@ gulp.task('js', function() {
     var renameJs = gulp.src(['brawlbracket/src/static/**/*.js', '!brawlbracket/src/static/**/*.min.js'])
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('brawlbracket/dist/static/'));
-        
+
     var copy = gulp.src('brawlbracket/src/static/**/*.min.js')
         .pipe(gulp.dest('brawlbracket/dist/static/'));
-        
+
     return merge(renameJs, copy);
 });
 
 // Copy HTML files and combine + minify JS files
 gulp.task('useref', function() {
     return gulp.src('brawlbracket/src/templates/**/*.html')
-    
+
         // These files will end up in /templates/static. There's a 'base' option to send them elsewhere,
         // but when used, some files go missing for reasons unknown... so instead, we'll move them manually.
         .pipe(useref({
             searchPath: 'brawlbracket/src'
         }))
-    
+
         // Minify JS files
         .pipe(gulpIf('*.js', uglify()))
-        
+
         .pipe(gulp.dest('brawlbracket/dist/templates/'));
 });
 
@@ -104,7 +111,7 @@ gulp.task('clear-cache', function(cb) {
 gulp.task('watch', function() {
     gulp.watch('brawlbracket/src/**/*.html', ['html', 'reload']);
     gulp.watch('brawlbracket/src/**/*.js', ['js', 'reload']);
-    gulp.watch('brawlbracket/src/**/*.css', ['css', 'reload']);
+    gulp.watch(['brawlbracket/src/**/*.css', 'brawlbracket/src/**/*.scss'], ['css', 'reload']);
     gulp.watch('brawlbracket/src/**/*.+(png|jpg|gif|svg)', ['img', 'reload']);
     gulp.watch('brawlbracket/src/**/*.+(mp3|ogg)', ['sfx', 'reload']);
 });
@@ -120,7 +127,7 @@ gulp.task('browser-sync', function() {
 // Reload browser-sync
 gulp.task('reload', ['html', 'js', 'css', 'img', 'sfx'], function() {
     console.log('Reloading browser');
-    
+
     browserSync.reload();
 });
 

@@ -1,0 +1,89 @@
+/*
+Bracket display
+*/
+$bracket-highlight-light: #00c0ef;
+$bracket-highlight-dark: #00a0cf;
+
+.bracket-match {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: table;
+
+  &:before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    right: -20px;
+    height: 5px;
+    top: calc(50% - 1px);
+    background: #ddd;
+    margin: 0;
+    z-index: -1;
+  }
+}
+
+.bracket-match-inner {
+  border-radius: 3px;
+  background: #ffffff;
+  border-top: 3px solid #d2d6de;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+  display: table;
+  overflow: hidden;
+}
+
+.bracket-match-id {
+  display: table-cell;
+  vertical-align: middle;
+  width: 32px;
+  font-size: 0.85em;
+  border-top: 3px solid rgba(0, 0, 0, 0);
+}
+
+.bracket-match-id-circle {
+  background-color: #ddd;
+  color: #666;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.bracket-team {
+  &:first-of-type {
+    border-right: 0px solid;
+    border-bottom: 1px solid #d2d6de;
+  }
+
+  &.loser {
+    color: #c0c0c0;
+  }
+
+  &:hover {
+    &> .bracket-team-name {
+      background-color: $bracket-highlight-light;
+      color: white;
+    }
+
+    &> .bracket-team-score {
+      background-color: $bracket-highlight-dark;
+      color: white;
+    }
+  }
+}
+
+.bracket-team-name {
+  display: table-cell;
+  padding: 2px 6px;
+  width: 120px;
+}
+
+.bracket-team-score {
+  display: table-cell;
+  padding: 2px 6px;
+  text-align: center;
+  background-color: #f4f4f4;
+  width: 16px;
+}

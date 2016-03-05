@@ -1,4 +1,88 @@
 /*
+Bracket display
+*/
+.bracket-match {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: table;
+}
+
+.bracket-match:before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: -20px;
+  height: 5px;
+  top: calc(50% - 1px);
+  background: #ddd;
+  margin: 0;
+  z-index: -1;
+}
+
+.bracket-match-inner {
+  border-radius: 3px;
+  background: #ffffff;
+  border-top: 3px solid #d2d6de;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+  display: table;
+  overflow: hidden;
+}
+
+.bracket-match-id {
+  display: table-cell;
+  vertical-align: middle;
+  width: 32px;
+  font-size: 0.85em;
+  border-top: 3px solid rgba(0, 0, 0, 0);
+}
+
+.bracket-match-id-circle {
+  background-color: #ddd;
+  color: #666;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.bracket-team:first-of-type {
+  border-right: 0px solid;
+  border-bottom: 1px solid #d2d6de;
+}
+
+.bracket-team.loser {
+  color: #c0c0c0;
+}
+
+.bracket-team-name {
+  display: table-cell;
+  padding: 2px 6px;
+  width: 120px;
+}
+
+.bracket-team:hover > .bracket-team-name {
+  background-color: #00c0ef;
+  color: white;
+}
+
+.bracket-team-score {
+  display: table-cell;
+  padding: 2px 6px;
+  text-align: center;
+  background-color: #f4f4f4;
+  width: 16px;
+}
+
+.bracket-team:hover > .bracket-team-score {
+  background-color: #00a0cf;
+  color: white;
+}
+
+
+/*
 Index page
 */
 .title p {

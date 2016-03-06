@@ -64,9 +64,16 @@ $bracket-match-top: 3px;
   /* Center of the match, accounting for the top border */
   top:calc(50% + #{($bracket-match-top - $bracket-line-thickness) / 2});
 
+
+  $lineStyle: $bracket-line-thickness solid $bracket-connector-color;
   border: {
-    top: $bracket-line-thickness solid $bracket-connector-color;
-    right: $bracket-line-thickness solid $bracket-connector-color;
+    right: $lineStyle;
+    top: $lineStyle;
+  }
+
+  &.up {
+    border-top: 0;
+    border-bottom: $lineStyle;
   }
 }
 

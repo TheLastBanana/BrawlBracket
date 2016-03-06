@@ -1,9 +1,11 @@
 {
   "name": "brawlbracket",
   "devDependencies": {
+    "babel-preset-react": "^6.5.0",
     "browser-sync": "^2.11.1",
     "del": "^2.2.0",
     "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
     "gulp-cache": "^0.4.2",
     "gulp-clean-css": "^2.0.2",
     "gulp-concat": "^2.6.0",

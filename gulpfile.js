@@ -11,6 +11,7 @@ var cleanCSS = require('gulp-clean-css');
 var rename = require('gulp-rename');
 var cache = require('gulp-cache');
 var sass = require('gulp-sass');
+var babel = require('gulp-babel');
 var del = require('del');
 var merge = require('merge-stream');
 var runSequence = require('run-sequence');
@@ -48,16 +49,36 @@ gulp.task('html', function() {
         .pipe(gulp.dest('brawlbracket/dist/templates/'));
 });
 
+// Copy over existing .min.js files
+gulp.task('copy-min-js', function() {
+    return gulp.src('brawlbracket/src/static/**/*.min.js')
+        .pipe(gulp.dest('brawlbracket/dist/static/'));
+});
+
+// Transpile JSX to JS
+gulp.task('jsx', function() {
+    return gulp.src('brawlbracket/src/static/**/*.jsx')
+        .pipe(babel({'presets': ['react']}))
+        .on('error', function(e) {
+          console.log(e);
+          this.emit('end');
+        })
+        .pipe(rename({
+          extname: '.min.js'
+        }))
+        .pipe(gulp.dest('brawlbracket/dist/static/'));
+});
+
 // Just copy JavaScript files, but treat them as .min files so they can be included easily
-gulp.task('js', function() {
-    var renameJs = gulp.src(['brawlbracket/src/static/**/*.js', '!brawlbracket/src/static/**/*.min.js'])
+gulp.task('rename-js', function() {
+    return gulp.src(['brawlbracket/src/static/**/*.js', '!brawlbracket/src/static/**/*.min.js'])
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('brawlbracket/dist/static/'));
+});
 
-    var copy = gulp.src('brawlbracket/src/static/**/*.min.js')
-        .pipe(gulp.dest('brawlbracket/dist/static/'));
-
-    return merge(renameJs, copy);
+// Set up JavaScript for development
+gulp.task('js-dev', function(cb) {
+    runSequence('copy-min-js', ['jsx', 'rename-js'], cb);
 });
 
 // Copy HTML files and combine + minify JS files
@@ -110,7 +131,7 @@ gulp.task('clear-cache', function(cb) {
 // This also causes browser-sync to reload when files change.
 gulp.task('watch', function() {
     gulp.watch('brawlbracket/src/**/*.html', ['html', 'reload']);
-    gulp.watch('brawlbracket/src/**/*.js', ['js', 'reload']);
+    gulp.watch(['brawlbracket/src/**/*.js', 'brawlbracket/src/**/*.jsx'], ['js-dev', 'reload']);
     gulp.watch(['brawlbracket/src/**/*.css', 'brawlbracket/src/**/*.scss'], ['css', 'reload']);
     gulp.watch('brawlbracket/src/**/*.+(png|jpg|gif|svg)', ['img', 'reload']);
     gulp.watch('brawlbracket/src/**/*.+(mp3|ogg)', ['sfx', 'reload']);
@@ -125,7 +146,7 @@ gulp.task('browser-sync', function() {
 });
 
 // Reload browser-sync
-gulp.task('reload', ['html', 'js', 'css', 'img', 'sfx'], function() {
+gulp.task('reload', ['html', 'js-dev', 'css', 'img', 'sfx'], function() {
     console.log('Reloading browser');
 
     browserSync.reload();
@@ -144,7 +165,7 @@ gulp.task('all-deploy', function(cb) {
 // Combine all the tasks for development
 gulp.task('all-dev', function(cb) {
     runSequence('clean',
-                ['css', 'js', 'html', 'img', 'sfx'],
+                ['css', 'js-dev', 'html', 'img', 'sfx'],
                 cb);
 });
 

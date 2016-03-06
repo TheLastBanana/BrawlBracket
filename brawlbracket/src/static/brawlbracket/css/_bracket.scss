@@ -3,26 +3,110 @@ Bracket display
 */
 $bracket-highlight-light: #00c0ef;
 $bracket-highlight-dark: #00a0cf;
+$bracket-connector-color: #ddd;
+$bracket-line-thickness: 5px;
+$bracket-vspace: 15px;
+$bracket-hspace: 10px;
+$bracket-circle-size: 25px;
+$bracket-match-top: 3px;
 
-.bracket-match {
-  position: absolute;
-  top: 20px;
-  left: 20px;
+/* Outer wrapper for a tournament bracket */
+.bracket {
   display: table;
+  padding: $bracket-vspace 0 0 $bracket-hspace;
+}
 
-  &:before {
-    content: '';
-    position: absolute;
-    left: 10px;
-    right: -20px;
-    height: 5px;
-    top: calc(50% - 1px);
-    background: #ddd;
-    margin: 0;
-    z-index: -1;
+/* Holds two bracket-columns or bracket-matches stacked horizontally */
+.bracket-row {
+  display: table-row;
+  vertical-align: middle;
+}
+
+/* Holds two bracket-columns or bracket-matches stacked vertically */
+.bracket-column {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+/* Outer wrapper for a match */
+.bracket-match {
+  display: table;
+  position: relative;
+
+  margin-bottom: $bracket-vspace;
+  margin-right: $bracket-hspace;
+
+  &:hover {
+    & .bracket-match-id-circle {
+      background: $bracket-highlight-light;
+      color: white;
+
+      &:before {
+        background: $bracket-highlight-light;
+      }
+    }
+
+    & .bracket-connector {
+      border-color: $bracket-highlight-light;
+    }
   }
 }
 
+/* Connector between brackets */
+.bracket-connector {
+  position: absolute;
+
+  // Width to stretch across the horiz. padding and to the circle's center (taking line width into account)
+  $width: $bracket-hspace + ($bracket-circle-size + $bracket-line-thickness) / 2;
+  right: -$width;
+  width: $width;
+
+  /* Center of the match, accounting for the top border */
+  top:calc(50% + #{($bracket-match-top - $bracket-line-thickness) / 2});
+
+  border: {
+    top: $bracket-line-thickness solid $bracket-connector-color;
+    right: $bracket-line-thickness solid $bracket-connector-color;
+  }
+}
+
+/* Wrapper for match identifier number */
+.bracket-match-id {
+  display: table-cell;
+  vertical-align: middle;
+  width: $bracket-circle-size + $bracket-hspace;
+  font-size: 0.85em;
+  border-top: $bracket-match-top solid rgba(0, 0, 0, 0);
+}
+
+/* The circle around the match id */
+.bracket-match-id-circle {
+  background-color: $bracket-connector-color;
+  color: #666;
+  border-radius: 50%;
+  width: $bracket-circle-size;
+  height: $bracket-circle-size;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  position: relative;
+
+    /* Background line */
+    &:before {
+      content: '';
+      position: absolute;;
+      left: $bracket-circle-size / 2;
+      right: -$bracket-hspace;
+      height: $bracket-line-thickness;
+      /* Center of the circle */
+      top: calc(50% - #{$bracket-line-thickness / 2});
+      background: $bracket-connector-color;
+      margin: 0;
+      z-index: -1;
+    }
+  }
+
+/* The part of the match display that shows team info */
 .bracket-match-inner {
   border-radius: 3px;
   background: #ffffff;
@@ -32,25 +116,7 @@ $bracket-highlight-dark: #00a0cf;
   overflow: hidden;
 }
 
-.bracket-match-id {
-  display: table-cell;
-  vertical-align: middle;
-  width: 32px;
-  font-size: 0.85em;
-  border-top: 3px solid rgba(0, 0, 0, 0);
-}
-
-.bracket-match-id-circle {
-  background-color: #ddd;
-  color: #666;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
-}
-
+/* A team in the bracket */
 .bracket-team {
   &:first-of-type {
     border-right: 0px solid;
@@ -62,24 +128,26 @@ $bracket-highlight-dark: #00a0cf;
   }
 
   &:hover {
-    &> .bracket-team-name {
+    & > .bracket-team-name {
       background-color: $bracket-highlight-light;
       color: white;
     }
 
-    &> .bracket-team-score {
+    & > .bracket-team-score {
       background-color: $bracket-highlight-dark;
       color: white;
     }
   }
 }
 
+/* Team name */
 .bracket-team-name {
   display: table-cell;
   padding: 2px 6px;
   width: 120px;
 }
 
+/* Team score */
 .bracket-team-score {
   display: table-cell;
   padding: 2px 6px;

@@ -104,7 +104,7 @@ var BracketNode = React.createClass({
                 <div className="bracket-column">
                     <div className={'bracket-match' + (isHighlight ? ' highlight' : '')} ref="match">
                         <div className="bracket-match-id">
-                            <div className="bracket-match-id-circle">{this.props.root + 1}</div>
+                            <div className="bracket-match-id-circle">{this.props.root}</div>
                         </div>
                         <div className="bracket-match-inner">
                             {teamNodes}
@@ -158,6 +158,23 @@ var BracketNode = React.createClass({
     }
 });
 
+var BracketRounds = React.createClass({
+    render: function () {
+        var rounds = [];
+        for (var i = 0; i < this.props.numRounds; ++i) {
+            rounds.push(
+                <div className="bracket-round" key={i}>
+                    <div className="bracket-round-inner">{'Round ' + (i + 1)}</div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="bracket-rounds-container">{rounds}</div>
+        );
+    }
+});
+
 var Bracket = React.createClass({
     getInitialState: function() {
         return {
@@ -169,14 +186,30 @@ var Bracket = React.createClass({
     },
 
     render: function () {
+        var matches = this.state.matches;
+
+        // Get the depth of the tree starting from a match
+        var getDepth = function(matchId) {
+            var match = matches[matchId];
+            if (!match.children) return 1;
+
+            return Math.max.apply(Math, match.children.map(getDepth)) + 1;
+        }
+
+        // Rounds = depth of tree from root match
+        var numRounds = getDepth(this.state.root);
+
         return (
             <div className="bracket">
-                <BracketNode
-                    root={this.state.root}
-                    teams={this.state.teams}
-                    matches={this.state.matches}
-                    highlightTeam={this.state.highlightTeam}
-                    setHighlightTeam={this.setHighlightTeam} />
+                <BracketRounds numRounds={numRounds} />
+                <div className="bracket-inner">
+                    <BracketNode
+                        root={this.state.root}
+                        teams={this.state.teams}
+                        matches={this.state.matches}
+                        highlightTeam={this.state.highlightTeam}
+                        setHighlightTeam={this.setHighlightTeam} />
+                </div>
             </div>
         );
     },

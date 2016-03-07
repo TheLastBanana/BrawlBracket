@@ -16,6 +16,32 @@ $bracket-match-top: 3px;
   padding: $bracket-vspace 0 0 $bracket-hspace;
 }
 
+/* Holds the round names */
+.bracket-rounds-container {
+  display: table;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+/* A single round */
+.bracket-round {
+  display: table-cell;
+  padding-right: $bracket-hspace;
+}
+
+/* Inner div allows us to pad empty space in the background.
+   Note that we don't use border-spacing because we only want padding on one side. */
+.bracket-round-inner {
+  background-color: $bracket-connector-color;
+  text-align: center;
+  border-radius: 5px;
+}
+
+/* Holds the bracket tree */
+.bracket-inner {
+  display: table;
+}
+
 /* Holds two bracket-columns or bracket-matches stacked horizontally */
 .bracket-row {
   display: table-row;

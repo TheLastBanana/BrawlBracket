@@ -85,7 +85,7 @@ $bracket-match-top: 3px;
 .bracket-match-id {
   display: table-cell;
   vertical-align: middle;
-  width: $bracket-circle-size + $bracket-hspace;
+  min-width: $bracket-circle-size + $bracket-hspace;
   font-size: 0.85em;
   border-top: $bracket-match-top solid rgba(0, 0, 0, 0);
 }
@@ -95,7 +95,7 @@ $bracket-match-top: 3px;
   background-color: $bracket-connector-color;
   color: #666;
   border-radius: 50%;
-  width: $bracket-circle-size;
+  min-width: $bracket-circle-size;
   height: $bracket-circle-size;
   display: table-cell;
   vertical-align: middle;
@@ -155,7 +155,7 @@ $bracket-match-top: 3px;
 .bracket-team-name {
   display: table-cell;
   padding: 2px 6px;
-  width: 120px;
+  min-width: 120px;
 }
 
 /* Team score */
@@ -164,5 +164,5 @@ $bracket-match-top: 3px;
   padding: 2px 6px;
   text-align: center;
   background-color: #f4f4f4;
-  width: 16px;
+  min-width: 16px;
 }

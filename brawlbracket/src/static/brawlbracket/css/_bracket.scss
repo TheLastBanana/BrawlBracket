@@ -36,7 +36,7 @@ $bracket-match-top: 3px;
   margin-bottom: $bracket-vspace;
   margin-right: $bracket-hspace;
 
-  &:hover {
+  &.highlight {
     & .bracket-match-id-circle {
       background: $bracket-highlight-light;
       color: white;
@@ -44,10 +44,6 @@ $bracket-match-top: 3px;
       &:before {
         background: $bracket-highlight-light;
       }
-    }
-
-    & .bracket-connector {
-      border-color: $bracket-highlight-light;
     }
   }
 }
@@ -64,16 +60,24 @@ $bracket-match-top: 3px;
   /* Center of the match, accounting for the top border */
   top:calc(50% + #{($bracket-match-top - $bracket-line-thickness) / 2});
 
-
   $lineStyle: $bracket-line-thickness solid $bracket-connector-color;
   border: {
     right: $lineStyle;
-    top: $lineStyle;
+    bottom: $lineStyle;
   }
 
-  &.up {
-    border-top: 0;
-    border-bottom: $lineStyle;
+  /* First match in each row has connector facing down */
+  .bracket-row:first-of-type > .bracket-column > .bracket-match > & {
+    border-bottom: 0;
+    border-top: $lineStyle;
+
+    &.highlight {
+      border-top-color: $bracket-highlight-light;
+    }
+  }
+
+  &.highlight {
+    border-color: $bracket-highlight-light;
   }
 }
 
@@ -134,7 +138,7 @@ $bracket-match-top: 3px;
     color: #c0c0c0;
   }
 
-  &:hover {
+  &.highlight {
     & > .bracket-team-name {
       background-color: $bracket-highlight-light;
       color: white;

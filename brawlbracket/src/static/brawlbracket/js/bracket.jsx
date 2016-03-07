@@ -1,18 +1,50 @@
 'use strict';
 
+var BracketTeam = React.createClass({
+    render: function() {
+        return (
+            <div
+                className=
+                {
+                    'bracket-team'
+                    + (this.props.winner ? '' : ' loser')
+                    + (this.props.highlight ? ' highlight' : '')
+                }
+                onMouseOver={this.onMouseOver}
+                onMouseLeave={this.onMouseLeave}
+            >
+                <div className="bracket-team-name">{this.props.name}</div>
+                <div className="bracket-team-score">{this.props.score}</div>
+            </div>
+        );
+    },
+
+    onMouseOver: function() {
+        this.props.setHighlightTeam(this.props.id);
+    },
+
+    onMouseLeave: function() {
+        this.props.setHighlightTeam(-1, this.props.id);
+    }
+});
+
 var BracketNode = React.createClass({
     render: function () {
         var teamData = this.props.teams;
         var matchData = this.props.matches;
+        var highlightTeam = this.props.highlightTeam;
+        var setHighlightTeam = this.props.setHighlightTeam;
 
         var match = matchData[this.props.root];
+        var matchTeams = match.teams;
         var scores = match.scores;
         var winner = match.winner;
+        var isHighlight = matchTeams.indexOf(highlightTeam) != -1;
 
         // Get names for each team
         var teamNames = [];
         for (var i = 0; i < 2; ++i) {
-            teamNames.push(teamData[match.teams[i]]);
+            teamNames.push(teamData[matchTeams[i]]);
         }
 
         // If there are children, create a column for them
@@ -23,12 +55,15 @@ var BracketNode = React.createClass({
                 <div className="bracket-column">
                     {match.children.map(function(childMatch) {
                         return (
-                            <BracketNode root={childMatch}
-                                         teams={teamData}
-                                         matches={matchData}
-                                         hasParent={true}
-                                         key={childMatch}
-                                         ref={'child'+childMatch} />
+                            <BracketNode
+                                root={childMatch}
+                                teams={teamData}
+                                matches={matchData}
+                                hasParent={true}
+                                highlightTeam={highlightTeam}
+                                setHighlightTeam={setHighlightTeam}
+                                key={childMatch}
+                                ref={'child'+childMatch} />
                         );
                     })}
                 </div>
@@ -38,26 +73,41 @@ var BracketNode = React.createClass({
         // Only add the connector if there's a parent node
         var connector;
         if (this.props.hasParent) {
-            connector = <div className="bracket-connector" ref="connector"></div>;
+            // If the highlight team lost, the connector is irrelevant
+            var highlightConnector = isHighlight && (highlightTeam == matchTeams[winner]);
+            connector = (
+                <div
+                    ref="connector"
+                    className={'bracket-connector' + (highlightConnector ? ' highlight' : '')} >
+                </div>
+            );
+        }
+
+        // Create team DOM nodes
+        var teamNodes = [];
+        for (var i = 0; i < 2; ++i) {
+            teamNodes.push(
+                <BracketTeam
+                    id={matchTeams[i]}
+                    winner={winner == i}
+                    highlight={matchTeams[i] == highlightTeam}
+                    name={teamNames[i]}
+                    score={scores[i]}
+                    setHighlightTeam={setHighlightTeam}
+                    key={i} />
+            );
         }
 
         return (
               <div className="bracket-row">
                 {childColumn}
                 <div className="bracket-column">
-                    <div className="bracket-match" ref="match">
+                    <div className={'bracket-match' + (isHighlight ? ' highlight' : '')} ref="match">
                         <div className="bracket-match-id">
                             <div className="bracket-match-id-circle">{this.props.root + 1}</div>
                         </div>
                         <div className="bracket-match-inner">
-                            {[0, 1].map(function(i) {
-                                return (
-                                    <div className={'bracket-team' + (winner == i ? '' : ' loser')} key={i}>
-                                        <div className="bracket-team-name">{teamNames[i]}</div>
-                                        <div className="bracket-team-score">{scores[i]}</div>
-                                    </div>
-                                );
-                            })}
+                            {teamNodes}
                         </div>
                         {connector}
                     </div>
@@ -97,26 +147,48 @@ var BracketNode = React.createClass({
 
         // Connector goes up, so we need to offset it
         } else if (offset < 0) {
-            var newTop = $(domNode).position().top + offset;
+            // Use right border width, because top/bottom borders may not be set depending
+            // on whether the 'up' class is already being used
+            var lineWidth = parseInt(domNode.css('border-right-width'));
+            var newTop = domNode.position().top + offset + lineWidth;
 
             domNode.css('top', newTop + 'px');
             domNode.css('height', -offset + 'px');
-            domNode.addClass('up');
         }
     }
 });
 
 var Bracket = React.createClass({
-    render: function () {
-        var root = this.props.bracket.root;
-        var teams = this.props.bracket.teams;
-        var matches = this.props.bracket.matches;
+    getInitialState: function() {
+        return {
+            teams: this.props.bracket.teams,
+            matches: this.props.bracket.matches,
+            root: this.props.bracket.root,
+            highlightTeam: -1
+        }
+    },
 
+    render: function () {
         return (
             <div className="bracket">
-                <BracketNode root={root} teams={teams} matches={matches} />
+                <BracketNode
+                    root={this.state.root}
+                    teams={this.state.teams}
+                    matches={this.state.matches}
+                    highlightTeam={this.state.highlightTeam}
+                    setHighlightTeam={this.setHighlightTeam} />
             </div>
         );
+    },
+
+    // Set the highlighted team.
+    // If old is specified, the team will only be changed if the current highlightTeam == old.
+    setHighlightTeam: function(team, old) {
+        if (old && this.state.highlightTeam != old) return;
+
+        this.setState({
+            highlightTeam: team
+        });
     }
 });
 

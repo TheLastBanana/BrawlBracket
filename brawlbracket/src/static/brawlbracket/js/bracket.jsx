@@ -243,6 +243,31 @@ var Bracket = React.createClass({
     }
 });
 
+/*
+    id is the id of the DOM element to fill with the bracket.
+    bracket should be of this format:
+    {
+        teams: {
+            <uuid>: {
+                name: <name>
+            },
+            ...
+        },
+
+        matches: {
+            <uuid>: {
+                id: <display id>,
+                teams: [<team uuid>, ...],
+                scores: [<team score>, ...],
+                winner: <index into teams>,
+                children: [<match uuid>, ...]
+            },
+            ...
+        },
+
+        root: <match uuid>
+    }
+*/
 function createBracket(id, bracket) {
     ReactDOM.render(
         <Bracket bracket={bracket} />,

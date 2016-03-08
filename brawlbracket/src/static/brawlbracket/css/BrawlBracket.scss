@@ -34,14 +34,13 @@ hr.divider {
 /*
 Sign in through Steam button
 */
-.nav > .login-button {
+.navbar-custom-menu .navbar-nav > .login-button {
   height: 50px;
   padding-top: 3px;
-}
-
-.nav > .login-button > a {
-  padding: 0;
-  background: rgba(0, 0, 0, 0) !important;
+  & > a {
+    padding: 0;
+    background: rgba(0, 0, 0, 0) !important;
+  }
 }
 
 /*

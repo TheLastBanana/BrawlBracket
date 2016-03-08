@@ -181,13 +181,21 @@ var BracketRounds = React.createClass({
         }
 
         return (
-            <div className="bracket-rounds-container" ref="container">{rounds}</div>
+            <div className="bracket-rounds-container" ref="rounds">{rounds}</div>
         );
     },
 
+    componentDidMount: function () {
+        this.pinRounds();
+    },
+
+    componentDidUpdate: function () {
+        this.pinRounds();
+    },
+
     // Pin to the bracket's outer div
-    componentDidMount: function() {
-        $(this.refs.container).pin({
+    pinRounds: function () {
+        $(this.refs.rounds).pin({
             containerSelector: '.bracket'
         });
     }

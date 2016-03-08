@@ -12,7 +12,7 @@ $bracket-match-top: 3px;
 $bracket-team-name-width: 160px;
 $bracket-team-score-width: 16px;
 $bracket-match-id-width: $bracket-circle-size + $bracket-hspace;
-$bracket-round-width: $bracket-team-name-width + $bracket-team-score-width + $bracket-match-id-width;
+$bracket-match-width: $bracket-team-name-width + $bracket-team-score-width;
 
 /* Outer wrapper for a tournament bracket */
 .bracket {
@@ -27,29 +27,35 @@ $bracket-round-width: $bracket-team-name-width + $bracket-team-score-width + $br
 .bracket-rounds-container {
   display: table;
   width: 100%;
-  margin-bottom: $bracket-vspace;
+  z-index: 1;
 }
 
 /* A single round */
 .bracket-round {
   display: table-cell;
+  padding-left: $bracket-match-id-width;
   padding-right: $bracket-hspace;
-  max-width: $bracket-round-width;
-  min-width: $bracket-round-width;
+  max-width: $bracket-match-width;
+  min-width: $bracket-match-width;
 }
 
 /* Inner div allows us to pad empty space in the background.
    Note that we don't use border-spacing because we only want padding on one side. */
 .bracket-round-inner {
-  background-color: $bracket-connector-color;
   padding: 2px 0;
+
+  color: #fff;
   text-align: center;
+  font-weight: bold;
+
   border-radius: 5px;
-  font-size: 0.9em;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+  background-color: #3c8dbc;
 }
 
 /* Holds the bracket tree */
 .bracket-inner {
+  margin-top: $bracket-vspace;
   display: table;
 }
 

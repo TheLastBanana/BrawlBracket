@@ -44,7 +44,7 @@ var BracketNode = React.createClass({
         // Get names for each team
         var teamNames = [];
         for (var i = 0; i < 2; ++i) {
-            teamNames.push(teamData[matchTeams[i]]);
+            teamNames.push(teamData[matchTeams[i]].name);
         }
 
         // If there are children, create a column for them

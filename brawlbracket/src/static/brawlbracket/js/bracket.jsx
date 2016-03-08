@@ -104,7 +104,7 @@ var BracketNode = React.createClass({
                 <div className="bracket-column">
                     <div className={'bracket-match' + (isHighlight ? ' highlight' : '')} ref="match">
                         <div className="bracket-match-id">
-                            <div className="bracket-match-id-circle">{this.props.root}</div>
+                            <div className="bracket-match-id-circle">{match.id}</div>
                         </div>
                         <div className="bracket-match-inner">
                             {teamNodes}

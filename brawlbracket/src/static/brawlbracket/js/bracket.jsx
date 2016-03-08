@@ -13,7 +13,7 @@ var BracketTeam = React.createClass({
                 onMouseOver={this.onMouseOver}
                 onMouseLeave={this.onMouseLeave}
             >
-                <div className="bracket-team-name">{this.props.name}</div>
+                <div className="bracket-team-name" title={this.props.name}>{this.props.name}</div>
                 <div className="bracket-team-score">{this.props.score}</div>
             </div>
         );

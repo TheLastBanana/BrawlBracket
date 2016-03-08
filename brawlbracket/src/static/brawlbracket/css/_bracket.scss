@@ -13,7 +13,10 @@ $bracket-match-top: 3px;
 /* Outer wrapper for a tournament bracket */
 .bracket {
   display: table;
-  padding: $bracket-vspace 0 0 $bracket-hspace;
+
+  /* Trim padding from right and bottom brackets/round names */
+  margin-right: -$bracket-hspace;
+  margin-bottom: -$bracket-vspace;
 }
 
 /* Holds the round names */

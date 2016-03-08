@@ -162,9 +162,20 @@ var BracketRounds = React.createClass({
     render: function () {
         var rounds = [];
         for (var i = 0; i < this.props.numRounds; ++i) {
+            var name;
+            if (i == this.props.numRounds - 1) {
+                name = 'Finals';
+
+            } else if (i == this.props.numRounds - 2 && this.props.numRounds >= 2) {
+                name = 'Semifinals';
+
+            } else {
+                name = 'Round ' + (i + 1);
+            }
+
             rounds.push(
                 <div className="bracket-round" key={i}>
-                    <div className="bracket-round-inner">{'Round ' + (i + 1)}</div>
+                    <div className="bracket-round-inner">{name}</div>
                 </div>
             );
         }

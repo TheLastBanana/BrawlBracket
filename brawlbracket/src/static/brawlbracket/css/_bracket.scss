@@ -9,6 +9,10 @@ $bracket-vspace: 15px;
 $bracket-hspace: 10px;
 $bracket-circle-size: 25px;
 $bracket-match-top: 3px;
+$bracket-team-name-width: 120px;
+$bracket-team-score-width: 16px;
+$bracket-match-id-width: $bracket-circle-size + $bracket-hspace;
+$bracket-round-width: $bracket-team-name-width + $bracket-team-score-width + $bracket-match-id-width;
 
 /* Outer wrapper for a tournament bracket */
 .bracket {
@@ -23,21 +27,25 @@ $bracket-match-top: 3px;
 .bracket-rounds-container {
   display: table;
   width: 100%;
-  margin-bottom: 6px;
+  margin-bottom: $bracket-vspace;
 }
 
 /* A single round */
 .bracket-round {
   display: table-cell;
   padding-right: $bracket-hspace;
+  max-width: $bracket-round-width;
+  min-width: $bracket-round-width;
 }
 
 /* Inner div allows us to pad empty space in the background.
    Note that we don't use border-spacing because we only want padding on one side. */
 .bracket-round-inner {
   background-color: $bracket-connector-color;
+  padding: 2px 0;
   text-align: center;
   border-radius: 5px;
+  font-size: 0.9em;
 }
 
 /* Holds the bracket tree */
@@ -114,7 +122,7 @@ $bracket-match-top: 3px;
 .bracket-match-id {
   display: table-cell;
   vertical-align: middle;
-  min-width: $bracket-circle-size + $bracket-hspace;
+  min-width: $bracket-match-id-width;
   font-size: 0.85em;
   border-top: $bracket-match-top solid rgba(0, 0, 0, 0);
 }
@@ -184,7 +192,7 @@ $bracket-match-top: 3px;
 .bracket-team-name {
   display: table-cell;
   padding: 2px 6px;
-  min-width: 120px;
+  min-width: $bracket-team-name-width;
 }
 
 /* Team score */
@@ -193,5 +201,5 @@ $bracket-match-top: 3px;
   padding: 2px 6px;
   text-align: center;
   background-color: #f4f4f4;
-  min-width: 16px;
+  min-width: $bracket-team-score-width;
 }

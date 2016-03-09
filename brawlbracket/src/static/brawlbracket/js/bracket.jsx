@@ -7,7 +7,7 @@ var BracketTeam = React.createClass({
                 className=
                 {
                     'bracket-team'
-                    + (this.props.winner ? '' : ' loser')
+                    + (this.props.loser ? ' loser' : '')
                     + (this.props.highlight ? ' highlight' : '')
                 }
                 onMouseOver={this.onMouseOver}
@@ -44,7 +44,8 @@ var BracketNode = React.createClass({
         // Get names for each team
         var teamNames = [];
         for (var i = 0; i < 2; ++i) {
-            teamNames.push(teamData[matchTeams[i]].name);
+            var team = teamData[matchTeams[i]];
+            teamNames.push(team ? team.name : '');
         }
 
         // If there are children, create a column for them
@@ -54,7 +55,7 @@ var BracketNode = React.createClass({
             childColumn = (
                 <div className="bracket-column">
                     {match.children.map(function(childMatch) {
-                        return (
+                        return childMatch ? (
                             <BracketNode
                                 root={childMatch}
                                 teams={teamData}
@@ -64,7 +65,7 @@ var BracketNode = React.createClass({
                                 setHighlightTeam={setHighlightTeam}
                                 key={childMatch}
                                 ref={'child'+childMatch} />
-                        );
+                        ) : '';
                     })}
                 </div>
             );
@@ -89,7 +90,7 @@ var BracketNode = React.createClass({
             teamNodes.push(
                 <BracketTeam
                     id={matchTeams[i]}
-                    winner={winner == i}
+                    loser={!(winner === null) && winner != i}
                     highlight={matchTeams[i] == highlightTeam}
                     name={teamNames[i]}
                     score={scores[i]}
@@ -217,6 +218,8 @@ var Bracket = React.createClass({
         // Get the depth of the tree starting from a match
         var getDepth = function(matchId) {
             var match = matches[matchId];
+
+            if (!match) return 0;
             if (!match.children) return 1;
 
             return Math.max.apply(Math, match.children.map(getDepth)) + 1;

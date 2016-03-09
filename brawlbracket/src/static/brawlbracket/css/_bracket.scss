@@ -144,21 +144,22 @@ $bracket-match-width: $bracket-team-name-width + $bracket-team-score-width;
   vertical-align: middle;
   text-align: center;
   position: relative;
+  z-index: 1;
 
-    /* Background line */
-    &:before {
-      content: '';
-      position: absolute;;
-      left: $bracket-circle-size / 2;
-      right: -$bracket-hspace;
-      height: $bracket-line-thickness;
-      /* Center of the circle */
-      top: calc(50% - #{$bracket-line-thickness / 2});
-      background: $bracket-connector-color;
-      margin: 0;
-      z-index: -1;
-    }
+  /* Background line */
+  &:before {
+    content: '';
+    position: absolute;
+    left: $bracket-circle-size / 2;
+    right: -$bracket-hspace;
+    height: $bracket-line-thickness;
+    /* Center of the circle */
+    top: calc(50% - #{$bracket-line-thickness / 2});
+    background: $bracket-connector-color;
+    margin: 0;
+    z-index: -1;
   }
+}
 
 /* The part of the match display that shows team info */
 .bracket-match-inner {

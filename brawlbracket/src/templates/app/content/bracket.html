@@ -3,9 +3,41 @@
 
 <!-- Main content -->
 <div class="content">
-  <div class="box box-default">
-    <div class="box-body" style="overflow: auto; max-height: 700px;">
-      <object data="{{ liveImageURL }}"></img>
-    </div><!-- /.box-body -->
-  </div>
+  <div id="bracket" style="overflow-x: auto; padding-bottom: 15px;"></div>
 </div>
+
+<!-- React -->
+<script src="/static/react/react.min.js"></script>
+<script src="/static/react/react-dom.min.js"></script>
+<!-- jquery.pin -->
+<script src="/static/jquery-pin/jquery.pin.min.js"></script>
+<!-- Bracket script -->
+<script src="/static/brawlbracket/js/bracket.min.js"></script>
+
+<script>
+  var bracket = {
+    teams: {
+      {%- for team in tournament.teams -%}
+        '{{ team.id }}': {{ "{" }} name: '{{ team.name }}' {{ "}" }},
+      {%- endfor -%}
+    },
+
+    matches: {
+      {%- for match in tournament.matches -%}
+        '{{ match.id }}': {{ "{" }}
+          id: '{{ match.number }}',
+          teams: [ {% for team in match.teams %} {%- if team -%} '{{ team.id }}' {%- else -%} null {%- endif -%}, {% endfor %} ],
+          children: [ {% for child in match.prereqMatches %} {%- if child -%} '{{ child.id }}' {%- else -%} null {%- endif -%}, {% endfor %} ],
+          scores: {{ match.score }},
+          winner: {{ match.winner or "null" }}
+        {{ "}" }},
+      {%- endfor -%}
+    },
+
+    root: '{{ tournament.root.id }}'
+  };
+
+  console.log(bracket);
+
+  createBracket('bracket', bracket);
+</script>

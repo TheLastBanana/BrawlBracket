@@ -208,8 +208,8 @@ def bracket(tourneyName):
 
     return render_template('app/content/bracket.html',
                            tourneyName=tourneyName,
-                           tourneyFullName=tournament.name)#,
-                           #liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId))
+                           tourneyFullName=tournament.name,
+                           tournament=tournament)
     
 # Lobby content
 @app.route('/app-content/lobby/<tourneyName>')

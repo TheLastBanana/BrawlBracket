@@ -20,10 +20,14 @@ var BracketTeam = React.createClass({
     },
 
     onMouseOver: function() {
+        if (this.props.id === null) return;
+
         this.props.setHighlightTeam(this.props.id);
     },
 
     onMouseLeave: function() {
+        if (this.props.id === null) return;
+        
         this.props.setHighlightTeam(-1, this.props.id);
     }
 });

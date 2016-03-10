@@ -19,3 +19,8 @@ class Player:
         self.user = user
         self.currentLegend = None
         self.online = False
+    
+    def __repr__(self):
+        return 'Player(id: {}, user: {}, currentLegend: {}, online: {}'\
+            .format(self.id, self.user.id, self.currentLegend, self.online)
+            

@@ -47,7 +47,6 @@ class DBWrapper(metaclass=KeySingleton):
                 if x == b'None':
                     rv.append(None)
                 else:
-                    print(x)
                     rv.append(uuid.UUID(x))
             return rv
         sqlite3.register_converter('UUIDLIST', _uuid_list_convert)

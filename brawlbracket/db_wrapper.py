@@ -44,8 +44,8 @@ class DBWrapper(metaclass=KeySingleton):
             l = json.loads(str(l, 'utf-8'))
             rv = []
             for x in l:
-                if x == b'None':
-                    rv.append(None)
+                if x is None:
+                    return None
                 else:
                     rv.append(uuid.UUID(x))
             return rv

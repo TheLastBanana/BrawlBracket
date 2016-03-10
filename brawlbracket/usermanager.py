@@ -132,7 +132,7 @@ def _getUserFromDBBySteamId(steamId):
     if rows:
         userData = rows[0]
         print('Making user from: ', userData)
-        id = uuid.UUID(userData[0])
+        id = userData[0]
         steamId = userData[1]
         username = userData[2]
         avatar = userData[3]
@@ -157,16 +157,13 @@ def _writeUserToDB(u):
     if _db is None:
         _initDB()
     
-    # Quick function that just wraps a string in quotes
-    q = lambda x: '\'{}\''.format(x)
-    
     userData = (
-        q(str(u.id)),
+        u.id,
         u.steamId,
-        q(u.username),
-        q(u.avatar),
-        q(json.dumps(u.ownedLegends)),
-        q(u.preferredServer)
+        u.username,
+        u.avatar,
+        json.dumps(u.ownedLegends),
+        u.preferredServer
         )
     print('Writing user with: ', userData)
     _db.insert_values('users', [userData])
@@ -188,7 +185,7 @@ def _initDB():
             'preferredServer'
             ]
         fieldTypes = [
-            'TEXT',
+            'UUID',
             'INTEGER',
             'TEXT',
             'TEXT',

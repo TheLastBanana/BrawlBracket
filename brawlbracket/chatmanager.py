@@ -55,7 +55,7 @@ def _getChatFromDB(id):
     if rows:
         chatData = rows[0]
         print('Making chat from: ', chatData)
-        id = uuid.UUID(chatData[0])
+        id = chatData[0]
         log = json.loads(chatData[1])
         
         newChat = chat.Chat(id)
@@ -72,12 +72,9 @@ def _writeChatToDB(c):
     if _db is None:
         _initDB()
     
-    # Quick function that just wraps a string in quotes
-    q = lambda x: '\'{}\''.format(x)
-    
     chatData = (
-        q(str(c.id)),
-        q(json.dumps(c.log))
+        c.id,
+        json.dumps(c.log)
         )
     print('Writing chats with: ', chatData)
     _db.insert_values('chats', [chatData])
@@ -95,7 +92,7 @@ def _initDB():
             'log'
             ]
         fieldTypes = [
-            'TEXT',
+            'UUID',
             'TEXT'
             ]
             

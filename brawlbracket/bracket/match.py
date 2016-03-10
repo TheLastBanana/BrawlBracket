@@ -53,7 +53,7 @@ class Match():
             self.teams = teams
         
         # Generate a new chat room
-        self.chat = chatmanager.createChat()
+        self.chat = kwargs.get('chat', chatmanager.createChat())
         
         self.score = [0, 0]
         

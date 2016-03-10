@@ -50,7 +50,10 @@ def _getChatFromDB(id):
     if _db is None:
         _initDB()
     
-    rows = _db.select_values('chat', ['*'], ['id = {}'.format(id)])
+    # Quick function that returns a string surrounded by quotes
+    q = lambda x: '\'{}\''.format(x)
+    
+    rows = _db.select_values('chats', ['*'], [q('id = {}'.format(id))])
     
     if rows:
         chatData = rows[0]

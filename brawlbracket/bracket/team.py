@@ -19,7 +19,7 @@ class Team:
         self.id = kwargs.get('uuid', uuid.uuid1())
         
         self.seed = seed
-        self.name = kwargs.get('name')
+        self.name = kwargs.get('name', '')
         
         if players is None:
             self.players = []

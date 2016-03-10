@@ -45,7 +45,7 @@ class DBWrapper(metaclass=KeySingleton):
             rv = []
             for x in l:
                 if x is None:
-                    return None
+                    rv.append(None)
                 else:
                     rv.append(uuid.UUID(x))
             return rv

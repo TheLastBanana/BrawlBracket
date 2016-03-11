@@ -9,7 +9,11 @@
       <li><a href="/">BrawlBracket</a></li>
       {%- for page in pages -%}
         <li{% if loop.last %} class="active bb-page-name"{% endif %}>
-          <a href="{{ page[1] }}">{{ page[0] }}</a>
+          {%- if page[1] -%}
+            <a href="{{ page[1] }}">{{ page[0] }}</a>
+          {%- else -%}
+            {{ page[0] }}
+          {%- endif -%}
         </li>
         
       {%- endfor -%}

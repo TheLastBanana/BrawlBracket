@@ -41,7 +41,7 @@ var BracketNode = React.createClass({
 
         var match = matchData[this.props.root];
         var matchTeams = match.teams;
-        var scores = match.scores;
+        var score = match.score;
         var winner = match.winner;
         var isHighlight = matchTeams.indexOf(highlightTeam) != -1;
 
@@ -55,10 +55,10 @@ var BracketNode = React.createClass({
         // If there are children, create a column for them
         var childColumn;
         var getTop = this.getTop;
-        if (match.children) {
+        if (match.prereqMatches) {
             childColumn = (
                 <div className="bracket-column">
-                    {match.children.map(function(childMatch) {
+                    {match.prereqMatches.map(function(childMatch) {
                         return childMatch ? (
                             <BracketNode
                                 root={childMatch}
@@ -97,7 +97,7 @@ var BracketNode = React.createClass({
                     loser={!(winner === null) && winner != i}
                     highlight={matchTeams[i] == highlightTeam}
                     name={teamNames[i]}
-                    score={scores[i]}
+                    score={score[i]}
                     setHighlightTeam={setHighlightTeam}
                     key={i} />
             );
@@ -123,11 +123,11 @@ var BracketNode = React.createClass({
 
     // Tell children to update connectors now that DOM has rendered
     componentDidMount: function() {
-        var children = this.props.matches[this.props.root].children;
-        if (!children) return;
+        var prereqMatches = this.props.matches[this.props.root].prereqMatches;
+        if (!prereqMatches) return;
 
-        for (var i = 0; i < children.length; ++i) {
-            var refName = 'child' + children[i];
+        for (var i = 0; i < prereqMatches.length; ++i) {
+            var refName = 'child' + prereqMatches[i];
 
             if (this.refs[refName]) {
                 this.refs[refName].updateConnector(this.getTop());
@@ -224,9 +224,9 @@ var Bracket = React.createClass({
             var match = matches[matchId];
 
             if (!match) return 0;
-            if (!match.children) return 1;
+            if (!match.prereqMatches) return 1;
 
-            return Math.max.apply(Math, match.children.map(getDepth)) + 1;
+            return Math.max.apply(Math, match.prereqMatches.map(getDepth)) + 1;
         }
 
         // Rounds = depth of tree from root match
@@ -273,9 +273,9 @@ var Bracket = React.createClass({
             <uuid>: {
                 id: <display id>,
                 teams: [<team uuid>, ...],
-                scores: [<team score>, ...],
+                score: [<team score>, ...],
                 winner: <index into teams>,
-                children: [<match uuid>, ...]
+                prereqMatches: [<match uuid>, ...]
             },
             ...
         },

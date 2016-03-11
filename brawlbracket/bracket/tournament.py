@@ -147,6 +147,32 @@ class Tournament():
         
         return None
         
+    def getDisplayJSON(self):
+        """
+        Get the JSON data for use in client-side bracket display.
+        """
+        teamsData = {}
+        for team in self.teams:
+            teamsData[str(team.id)] = {
+                'name': team.name or 'Unnamed Team'
+            }
+            
+        matchesData = {}
+        for match in self.matches:
+            matchesData[str(match.id)] = {
+                'id': match.number,
+                'teams': [team.id if team else None for team in match.teams],
+                'prereqMatches': [prereq.id if prereq else None for prereq in match.prereqMatches],
+                'score': match.score,
+                'winner': match.winner or None
+            }
+        
+        return {
+            'teams': teamsData,
+            'matches': matchesData,
+            'root': self.root.id if self.root else None
+        }
+        
 class TreeTournament(Tournament):
     """
     A tournament that follows a tree structure (with each match leading into the next).

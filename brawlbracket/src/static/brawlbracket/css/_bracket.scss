@@ -14,13 +14,18 @@ $bracket-team-score-width: 24px;
 $bracket-match-id-width: $bracket-circle-size + $bracket-hspace;
 $bracket-match-width: $bracket-team-name-width + $bracket-team-score-width;
 
-/* Outer wrapper for a tournament bracket */
+/* A tournament bracket */
 .bracket {
   display: table;
 
   /* Trim padding from right and bottom brackets/round names */
   margin-right: -$bracket-hspace;
   margin-bottom: -$bracket-vspace;
+  
+  /* Centered variant */
+  .centered > & {
+    margin: 0 auto;
+  }
 }
 
 /* Holds the round names */

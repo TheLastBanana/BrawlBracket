@@ -329,6 +329,7 @@ def _buildTournament(tournamentData):
                                     .format(matchData[0]))
             
         
+    tournament.admins = admins
     tournament.players = players
     tournament.teams = teams
     tournament.matches = matches

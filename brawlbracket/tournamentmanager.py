@@ -327,7 +327,9 @@ def _buildTournament(tournamentData):
         else:
             raise AssertionError('Couldn\'t set up match hierarchy. ({})'
                                     .format(matchData[0]))
-            
+    
+    for match in matches:
+        match._updateState()
         
     tournament.admins = admins
     tournament.players = players

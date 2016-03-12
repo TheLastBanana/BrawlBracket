@@ -410,14 +410,6 @@ def user_connect():
         pass
     
     match, team, player = info
-    
-    if player.online:
-        print('User {} rejected (already connected)'
-            .format(user.id))
-        emit('error', {'code': 'already-connected'},
-            broadcast=False, include_self=True)
-        return False
-    
     player.online = True
     
     # Join new room

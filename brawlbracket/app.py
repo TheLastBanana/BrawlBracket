@@ -45,16 +45,19 @@ for id in steamIds:
     if user is None:
         user = um.createUser(id)
     tempUsers.append(user)
-tempTourney = tm.createTournament(
-                'test',
-                name='BrawlBracket Test Tourney'
-                )
-for i, user in enumerate(tempUsers):
-    team = tempTourney.createTeam(i) # i = seed
-    player = tempTourney.createPlayer(user)
-    team.players.append(player)
-print('Temp tournament has {} users!'.format(len(tempTourney.teams)))
-tempTourney.generateMatches()
+tempTourney = tm.getTournamentByName('test')
+if tempTourney is None:
+    tempTourney = tm.createTournament(
+                    'test',
+                    name='BrawlBracket Test Tourney'
+                    )
+    for i, user in enumerate(tempUsers):
+        team = tempTourney.createTeam(i) # i = seed
+        player = tempTourney.createPlayer(user)
+        team.players.append(player)
+    print('Temp tournament has {} users!'.format(len(tempTourney.teams)))
+    tempTourney.generateMatches()
+    tm._writeTournamentToDB(tempTourney) # DEBUG THIS SHOULDN'T BE LIKE THIS
 # End temp tournament generation
     
 @app.context_processor
@@ -408,25 +411,44 @@ def user_connect():
             'playerSettings': user.getSettings()
         },
         broadcast=False, include_self=True)
+        
+    # TODO: update match state and post lobby updates to room 
     
 @socketio.on('disconnect', namespace='/participant')
 def participant_disconnect():
-    tourneyId = session.get('tourneyId', None)
     userId = session.get('userId', None)
+    tournamentId = session.get('tourneyId', None)
     
     # Bad info, but they've disconnected anyways...
-    if None in (tourneyId, userId):
+    if None in (userId, tournamentId):
         return
     
-    user = brawlapi.getUser(tourneyId, userId)
+    user = um.getUserById(userId)
     
     # User doesn't exist
     if user is None:
         return
+        
+    tournament = tm.getTournamentById(tournamentId)
     
-    brawlapi.removeOnlineUser(tourneyId, user)
+    # Tournament doesn't exist
+    if tournament is None:
+        return
+    
+    info = tournament.getUserInfo(user)
+    
+    if info is None:
+        # TODO: Issue error saying we somehow got into a tournament that
+        # we don't live in
+        pass
+    
+    match, team, player = info
+    
+    player.online = False
+    # TODO: update match state and post lobby updates to room 
 
-    print('User {} disconnected'.format(user.userId))
+    print('User {} disconnected'.format(user.id))
+    
 
 # A participant win was reported
 @socketio.on('report win', namespace='/participant')

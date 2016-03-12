@@ -249,7 +249,6 @@ def admin_app(tourneyName, startPage):
     if user is None:
         redirect(url_for('tournament_index'))
     
-    print(user, tournament.admins)
     if user not in tournament.admins:
         abort(403)
 
@@ -273,7 +272,7 @@ def admin_dashboard(tourneyName):
     if user is None:
         redirect(url_for('tournament_index'))
     
-    if user.id not in tournament.admins:
+    if user not in tournament.admins:
         abort(403)
 
     return render_template('app/content/admin-dashboard.html',

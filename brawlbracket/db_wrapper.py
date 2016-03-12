@@ -265,6 +265,9 @@ class DBWrapper(metaclass=KeySingleton):
     def delete_values(self, table, conditions):
         """
         Deletes values from table using conditions
+        
+        This is potentially unsafe. Please consider your conditions and whether
+        or not they could have bad values in them.
         """
         
         if conditions:

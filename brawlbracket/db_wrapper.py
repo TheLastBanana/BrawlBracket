@@ -78,12 +78,12 @@ class DBWrapper(metaclass=KeySingleton):
         
         # Get DB cursor
         conn = self.conn()
-        cursor = conn.cursor()
+        curs = conn.cursor()
         
         # Get results
-        cursor.execute(stmt, symbols)
-        one = cursor.fetchone()
-        cursor.close()
+        curs.execute(stmt, symbols)
+        one = curs.fetchone()
+        curs.close()
         conn.close()
         
         if one is not None:
@@ -102,12 +102,12 @@ class DBWrapper(metaclass=KeySingleton):
         
         # Get DB cursor
         conn = self.conn()
-        cursor = conn.cursor()
+        curs = conn.cursor()
         
         # Get results
-        cursor.execute(stmt, symbols)
-        one = cursor.fetchone()
-        cursor.close()
+        curs.execute(stmt, symbols)
+        one = curs.fetchone()
+        curs.close()
         conn.close()
         
         if one is not None:
@@ -152,7 +152,7 @@ class DBWrapper(metaclass=KeySingleton):
         #self.log.log('Create statement: {}'.format(stmt))
         
         conn = self.conn()
-        cursor = conn.cursor()
+        curs = conn.cursor()
         
         curs.execute(stmt)
         
@@ -211,7 +211,7 @@ class DBWrapper(metaclass=KeySingleton):
         
         # Get cursor and execute the statement
         conn = self.conn()
-        cursor = conn.cursor()
+        curs = conn.cursor()
         curs.execute(stmt, symbol_list)
         
         # Return all results
@@ -256,7 +256,7 @@ class DBWrapper(metaclass=KeySingleton):
         
         # Execute the statement
         conn = self.conn()
-        cursor = conn.cursor()
+        curs = conn.cursor()
         curs.execute(stmt, symbol_list)
         conn.commit()
         curs.close()
@@ -288,7 +288,7 @@ class DBWrapper(metaclass=KeySingleton):
         
         # Get cursor and execute the statement
         conn = self.conn()
-        cursor = conn.cursor()
+        curs = conn.cursor()
         curs.execute(stmt)
         
         # Commit

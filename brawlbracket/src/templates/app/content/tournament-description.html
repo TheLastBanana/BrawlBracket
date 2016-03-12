@@ -8,29 +8,33 @@
       <div class="box-body tourney-info">
         <strong><i class="fa fa-trophy margin-r-5"></i> Style</strong>
         <p class="text-muted">
-          Single Elimination
+          {{ tournament.style }}
         </p>
 
         <hr>
         
         <strong><i class="fa fa-users margin-r-5"></i> Players</strong>
         <p class="text-muted nomargin">
-          11
+          {{ tournament.players|length }}
         </p>
 
-        <hr>
-        
-        <strong><i class="fa fa-calendar margin-r-5"></i> Start</strong>
-        <p class="text-muted nomargin">
-          May 12, 2016 @ 7:00 PM EST
-        </p>
-
-        <hr>
-        
-        <strong><i class="fa fa-clock-o margin-r-5"></i> Check-in</strong>
-        <p class="text-muted nomargin">
-          1 hour before
-        </p>
+        {%- if tournament.startTime -%}
+          <hr>
+          
+          <strong><i class="fa fa-calendar margin-r-5"></i> Start</strong>
+          <p class="text-muted nomargin">
+            {{ tournament.startTime|datetime }}
+          </p>
+          
+          {%- if tournament.checkInTime -%}
+            <hr>
+            
+            <strong><i class="fa fa-clock-o margin-r-5"></i> Check-in</strong>
+            <p class="text-muted nomargin">
+              {{ (tournament.startTime - tournament.checkInTime)|timedelta }} before
+            </p>
+          {%- endif -%}
+        {%- endif -%}
         
         <hr>
         
@@ -93,7 +97,7 @@
       </div>
       
       <div class="box-body">
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus fringilla, dui sit amet rhoncus viverra, massa ex placerat justo, id dapibus lorem ante non elit. Quisque pretium laoreet mauris, ut imperdiet nunc volutpat a. Proin varius vulputate mi eu ornare. Cras non erat vestibulum, dictum lectus at, feugiat lorem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vivamus ornare libero sed sollicitudin hendrerit. Curabitur malesuada vehicula purus. Integer quis nulla rhoncus, vestibulum libero nec, vestibulum nisl. Maecenas id condimentum neque. Nam ultricies tempus ex sit amet egestas. Etiam accumsan dapibus posuere. Nulla facilisi. Sed imperdiet dapibus egestas. Aliquam iaculis venenatis nisl vehicula luctus. Nullam sit amet mollis dui.</p>
+        <p>{{ tournament.description }}</p>
       </div><!-- /.box-body -->
     </div>
   </div>

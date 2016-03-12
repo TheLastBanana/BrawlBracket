@@ -75,6 +75,16 @@ Tournament stuff
   }
 }
 
+.tourney-table {
+  & > tbody > tr > td {
+    vertical-align: middle;
+    
+    &:first-child {
+      text-align: center;
+    }
+  }
+}
+
 /* Add rows between Bootstrap columns.
 See: http://stackoverflow.com/a/34354632 */
 .row.bordered {

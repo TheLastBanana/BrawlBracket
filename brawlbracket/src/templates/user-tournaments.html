@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{%- block header -%}
+  {% from 'macros.html' import pageHeader %}
+  {{ pageHeader([
+    ('Your Tournaments', '.')
+  ]) }}
+{%- endblock -%}
+
+{%- block content -%}
+  <section class="content">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h3 class="box-title">Your Tournaments</h3>
+          </div>
+          <div class="box-body">
+            <table id="bb-user-tourneys-table" class="table table-striped table-bordered tourney-table" cellspacing="0" width="100%">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Title</th>
+                  <th>Time</th>
+                  <th>Players</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><a class="btn btn-primary" href="/t/test/">View</a></td>
+                  <td>BrawlBracket Test Tourney</td>
+                  <td>May 12, 2016 @ 7:00 PM EST</td>
+                  <td>11</td>
+                  <td><span class="text-yellow"><i class="fa fa-clock-o"></i> Checking In</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{%- endblock -%}
+
+{%- block extraScripts -%}
+  <script src="/static/brawlbracket/js/user-tournaments.min.js"></script>
+{%- endblock -%}

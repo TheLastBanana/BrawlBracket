@@ -105,8 +105,12 @@ def createOrLogin(resp):
 @app.route('/')
 @app.route('/index/')
 def index():
-    return render_template('index.html')
-    brawlapi.init_example_db()
+    if 'userId' in session:
+        return render_template('user-tournaments.html')
+        
+    else:
+        return render_template('index.html')
+        brawlapi.init_example_db()
     
 # List of tournaments for a user
 @app.route('/tournaments/')

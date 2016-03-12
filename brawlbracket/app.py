@@ -146,12 +146,6 @@ def index():
         return render_template('index.html')
         brawlapi.init_example_db()
     
-# List of tournaments for a user
-@app.route('/tournaments/')
-def user_tournaments():
-    userId = session.get('userId', None)
-    user = um.getUserById(userId)
-    
 # Settings page
 @app.route('/settings/', methods=['GET', 'PUT'])
 def user_settings():

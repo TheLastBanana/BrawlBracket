@@ -131,7 +131,7 @@ def _getUserFromDBBySteamId(steamId):
     
     if rows:
         userData = rows[0]
-        print('Making user from: ', userData)
+        #print('Making user from: ', userData)
         id = userData[0]
         steamId = userData[1]
         username = userData[2]

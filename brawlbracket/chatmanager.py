@@ -57,7 +57,7 @@ def _getChatFromDB(id):
     
     if rows:
         chatData = rows[0]
-        print('Making chat from: ', chatData)
+        #print('Making chat from: ', chatData)
         id = chatData[0]
         log = json.loads(chatData[1])
         
@@ -79,7 +79,7 @@ def _writeChatToDB(c):
         c.id,
         json.dumps(c.log)
         )
-    print('Writing chats with: ', chatData)
+    #print('Writing chat with: ', chatData)
     _db.insert_values('chats', [chatData])
         
 def _initDB():

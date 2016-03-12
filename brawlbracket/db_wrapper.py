@@ -23,7 +23,8 @@ class DBWrapper(metaclass=KeySingleton):
             os.makedirs(self.filepath)
 
         self.name = name
-        self.conn = sqlite3.connect(self.filepath + os.path.sep + name + '.db',
+        self.conn = \
+            lambda: sqlite3.connect(self.filepath + os.path.sep + name + '.db',
                                     detect_types=sqlite3.PARSE_DECLTYPES)
 
         # Add converter for bool
@@ -60,7 +61,10 @@ class DBWrapper(metaclass=KeySingleton):
         """
         #self.log.log('Closing {} db.'.format(self.name))
 
-        self.conn.close()
+        # Used to have a single instance of connection, now threads generate
+        # their own connections
+        #self.conn.close()
+        pass
         
     def table_exists(self, table_name):
         """
@@ -73,12 +77,14 @@ class DBWrapper(metaclass=KeySingleton):
         symbols = (table_name,)
         
         # Get DB cursor
-        cursor = self.conn.cursor()
+        conn = self.conn()
+        cursor = conn.cursor()
         
         # Get results
         cursor.execute(stmt, symbols)
         one = cursor.fetchone()
         cursor.close()
+        conn.close()
         
         if one is not None:
             return True
@@ -95,12 +101,14 @@ class DBWrapper(metaclass=KeySingleton):
         symbols = (table_name, row_name)
         
         # Get DB cursor
-        cursor = self.conn.cursor()
+        conn = self.conn()
+        cursor = conn.cursor()
         
         # Get results
         cursor.execute(stmt, symbols)
         one = cursor.fetchone()
         cursor.close()
+        conn.close()
         
         if one is not None:
             return True
@@ -143,11 +151,14 @@ class DBWrapper(metaclass=KeySingleton):
 
         #self.log.log('Create statement: {}'.format(stmt))
         
-        curs = self.conn.cursor()
+        conn = self.conn()
+        cursor = conn.cursor()
         
         curs.execute(stmt)
         
+        conn.commit()
         curs.close()
+        conn.close()
     
     def select_values(self, table, col_names, conditions, unsafe = None):
         """
@@ -199,12 +210,14 @@ class DBWrapper(metaclass=KeySingleton):
         #    .format(stmt, stmt.replace('?', '{}').format(*symbol_list)))
         
         # Get cursor and execute the statement
-        curs = self.conn.cursor()
+        conn = self.conn()
+        cursor = conn.cursor()
         curs.execute(stmt, symbol_list)
         
         # Return all results
         rows = curs.fetchall()
         curs.close()
+        conn.close()
         
         return rows
     
@@ -242,10 +255,12 @@ class DBWrapper(metaclass=KeySingleton):
         #    .format(stmt.replace('?', '{}').format(*symbol_list)))
         
         # Execute the statement
-        curs = self.conn.cursor()
+        conn = self.conn()
+        cursor = conn.cursor()
         curs.execute(stmt, symbol_list)
-        self.conn.commit()
+        conn.commit()
         curs.close()
+        conn.close()
 
     def delete_values(self, table, conditions):
         """
@@ -269,8 +284,11 @@ class DBWrapper(metaclass=KeySingleton):
         #self.log.log('Delete statement: {}'.format(stmt))
         
         # Get cursor and execute the statement
-        curs = self.conn.cursor()
+        conn = self.conn()
+        cursor = conn.cursor()
         curs.execute(stmt)
         
         # Commit
-        self.conn.commit()
+        conn.commit()
+        curs.close()
+        conn.close()

@@ -203,6 +203,7 @@ class Match():
         """
         lobbyData = {}
         
+        lobbyData['number'] = self.number
         lobbyData['state'] = self.state
         lobbyData['chatId'] = str(self.chat.id)
         lobbyData['realmBans'] = self.realmBans

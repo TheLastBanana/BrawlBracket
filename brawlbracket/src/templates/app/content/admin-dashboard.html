@@ -3,68 +3,54 @@
 
 <!-- Main content -->
 <div class="content">
-  <div class="row">
-    <div class="col-lg-6">
-      <!-- Bracket -->
-      <div class="box box-default">
-        <div class="box-body" style="overflow: auto; max-height: 700px;">
-          <object data="{{ liveImageURL }}"></object>
-        </div>
-      </div>
-    </div>
-    
-    <div class="col-lg-6">
-      <!-- Tournament data -->
-      <div class="nav-tabs-custom" id="bb-admin-dash-tables">
-        <ul class="nav nav-tabs pull-right">
-          <li class="active">
-            <a data-toggle="tab" href="#tourney-data-lobbies">Lobbies</a>
-          </li>
-          <li>
-            <a data-toggle="tab" href="#tourney-data-users">Users</a>
-          </li>
-          <li class="pull-left header">
-            <i class="fa fa-th"></i>
-            Tournament Data
-          </li>
-        </ul>
-        <div class="tab-content">
-          <!-- Lobby data -->
-          <div id="tourney-data-lobbies" class="tab-pane active">
-            <table id="bb-lobby-table" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Player 1</th>
-                  <th>Player 2</th>
-                  <th>Score</th>
-                  <th>Room</th>
-                  <th>Time</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-            </table>
-          </div> <!-- /Lobby data -->
-          
-          <!-- User data -->
-          <div id="tourney-data-users" class="tab-pane">
-            <table id="bb-user-table" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
-              <thead>
-                <tr>
-                  <th>Seed</th>
-                  <th>Name</th>
-                  <th>Online?</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-            </table>
-          </div> <!-- /User data -->
-          
-        </div>
-      </div>
-    
+  <!-- Tournament data -->
+  <div class="nav-tabs-custom" id="bb-admin-dash-tables">
+    <ul class="nav nav-tabs pull-right">
+      <li class="active">
+        <a data-toggle="tab" href="#tourney-data-lobbies">Lobbies</a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#tourney-data-users">Users</a>
+      </li>
+      <li class="pull-left header">
+        <i class="fa fa-th"></i>
+        Tournament Data
+      </li>
+    </ul>
+    <div class="tab-content">
+      <!-- Lobby data -->
+      <div id="tourney-data-lobbies" class="tab-pane active">
+        <table id="bb-lobby-table" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player 1</th>
+              <th>Player 2</th>
+              <th>Score</th>
+              <th>Room</th>
+              <th>Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+        </table>
+      </div> <!-- /Lobby data -->
+      
+      <!-- User data -->
+      <div id="tourney-data-users" class="tab-pane">
+        <table id="bb-user-table" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
+          <thead>
+            <tr>
+              <th>Seed</th>
+              <th>Name</th>
+              <th>Online?</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+        </table>
+      </div> <!-- /User data -->
+      
     </div>
   </div>
 </div>
 
-<script src="/static/brawlbracket/js/admin-dashboard.js"></script>
+<script src="/static/brawlbracket/js/admin-dashboard.min.js"></script>

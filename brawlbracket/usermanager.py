@@ -69,7 +69,6 @@ def getUserBySteamId(steamId):
     # Check cache first
     for u in _users:
         if u.steamId == steamId:
-            print('return u')
             return u
     
     # Check DB last'

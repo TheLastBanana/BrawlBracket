@@ -144,21 +144,10 @@ def user_login(tourneyName):
     if not tm.tournamentNameExists(tourneyName):
         abort(404)
     
-    if request.method == 'GET':
-        pass
-        #prettyName = brawlapi.getTournamentName(tourneyId)
-        #tourneyURL = brawlapi.getTournamentURL(tourneyId)
-        
-        #userList = brawlapi.getTournamentUsersOverview(tourneyId)
-
-        #return render_template('app/user-login.html',
-        #                       tourneyName=prettyName,
-        #                       participants=userList,
-        #                       challongeURL=tourneyURL)
-   
-    # POST was used
-    # TODO: validate user ID
-    return redirect(url_for('user_app', tourneyName=tourneyName))
+    tournament = tm.getTournamentByName(tourneyName)
+    return render_template('tournament.html',
+                           tourneyName=tourneyName,
+                           tournament=tournament)
 
 #----- User pages -----#
 
@@ -202,11 +191,11 @@ def contact_admin(tourneyName):
                            tourneyName=tourneyName)
     
 # Bracket viewer page
-@app.route('/app-content/bracket/<tourneyName>')
+@app.route('/app-content/index/<tourneyName>')
 def bracket(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
 
-    return render_template('app/content/bracket.html',
+    return render_template('app/content/tournament-index.html',
                            tourneyName=tourneyName,
                            tourneyFullName=tournament.name,
                            tournament=tournament)

@@ -1,0 +1,12 @@
+{% from 'app/content/macros.html' import appHeader with context %}
+{{ appHeader('Home') }}
+
+<section class="content">
+  {% include 'app/content/tournament-description.html' %}
+
+  <hr class="divider">
+
+  <div id="bracket" class="bracket-scroll-wrapper centered"></div>
+
+  {% include 'app/content/tournament-scripts.html' %}
+</section>

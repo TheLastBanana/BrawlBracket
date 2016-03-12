@@ -64,6 +64,8 @@
     <!-- Full Width Column -->
     <div class="content-wrapper">
       <div class="container">
+        {% block header %}
+        {% endblock %}
         <!-- Main content -->
         <section class="content">
           {% block content %}
@@ -71,6 +73,8 @@
         </section>
         <!-- /.content -->
       </div>
+      {% block breakoutContent %}
+      {% endblock %}
       <!-- /.container -->
     </div>
     <!-- /.content-wrapper -->

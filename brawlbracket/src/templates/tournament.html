@@ -1,0 +1,24 @@
+{% from 'macros.html' import pageHeader %}
+{% extends "layout.html" %}
+
+{%- block header -%}
+  {{
+    pageHeader([
+      [tournament.name, '']
+    ])
+  }}
+{%- endblock -%}
+  
+{%- block content -%}
+  {% include 'app/content/tournament-description.html' %}
+  
+  <hr class="divider">
+{%- endblock -%}
+
+{%- block breakoutContent -%}
+  <div id="bracket" class="bracket-scroll-wrapper centered"></div>
+{%- endblock -%}
+
+{%- block extraScripts -%}
+  {% include 'app/content/tournament-scripts.html' %}
+{%- endblock extraScripts -%}

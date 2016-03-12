@@ -109,7 +109,9 @@ def createOrLogin(resp):
 @app.route('/')
 @app.route('/index/')
 def index():
-    if 'userId' in session:
+    userId = session.get('userId', None)
+    user = um.getUserById(userId)
+    if user is not None:
         return render_template('user-tournaments.html')
         
     else:

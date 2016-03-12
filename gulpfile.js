@@ -110,6 +110,12 @@ gulp.task('sfx', function() {
         .pipe(gulp.dest('brawlbracket/dist/static'));
 });
 
+// Copy fonts
+gulp.task('fonts', function() {
+    return gulp.src('brawlbracket/src/static/**/*.+(woff2|woff|ttf)')
+        .pipe(gulp.dest('brawlbracket/dist/static'));
+});
+
 // Copy combined files from useref to the right place
 gulp.task('useref-copy', function() {
     return gulp.src('brawlbracket/dist/templates/static/**/*')
@@ -135,6 +141,7 @@ gulp.task('watch', function() {
     gulp.watch(['brawlbracket/src/**/*.css', 'brawlbracket/src/**/*.scss'], ['css', 'reload']);
     gulp.watch('brawlbracket/src/**/*.+(png|jpg|gif|svg)', ['img', 'reload']);
     gulp.watch('brawlbracket/src/**/*.+(mp3|ogg)', ['sfx', 'reload']);
+    gulp.watch('brawlbracket/src/**/*.+(woff2|woff|ttf)', ['fonts', 'reload']);
 });
 
 // Start browser-sync server
@@ -146,7 +153,7 @@ gulp.task('browser-sync', function() {
 });
 
 // Reload browser-sync
-gulp.task('reload', ['html', 'js-dev', 'css', 'img', 'sfx'], function() {
+gulp.task('reload', ['html', 'js-dev', 'css', 'img', 'sfx', 'fonts'], function() {
     console.log('Reloading browser');
 
     browserSync.reload();
@@ -156,7 +163,7 @@ gulp.task('reload', ['html', 'js-dev', 'css', 'img', 'sfx'], function() {
 // Combine all the tasks for deployment
 gulp.task('all-deploy', function(cb) {
     runSequence('clean',
-                ['css', 'js', 'useref', 'img', 'sfx'],
+                ['css', 'js', 'useref', 'img', 'sfx', 'fonts'],
                 'useref-copy',
                 'useref-clean',
                 cb);
@@ -165,7 +172,7 @@ gulp.task('all-deploy', function(cb) {
 // Combine all the tasks for development
 gulp.task('all-dev', function(cb) {
     runSequence('clean',
-                ['css', 'js-dev', 'html', 'img', 'sfx'],
+                ['css', 'js-dev', 'html', 'img', 'sfx', 'fonts'],
                 cb);
 });
 

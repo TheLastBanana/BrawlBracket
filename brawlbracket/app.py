@@ -154,8 +154,8 @@ def user_settings():
     userId = session.get('userId', None)
     
     if userId is None:
-        print('No userId; returned to login.')
-        return redirect(url_for('user_login', tourneyName=tourneyName))
+        print('No userId; returned to index.')
+        return redirect('/')
         
     user = um.getUserById(userId)
         
@@ -172,9 +172,9 @@ def user_settings():
         else:
             return json.dumps({'success': False}), 500
 
-# Log in a tourney participant
+# Tournament index page
 @app.route('/t/<tourneyName>/', methods=['GET', 'POST'])
-def user_login(tourneyName):
+def tournament_index(tourneyName):
     if not tm.tournamentNameExists(tourneyName):
         abort(404)
     
@@ -193,17 +193,10 @@ def user_app(tourneyName, startPage):
         abort(404)
     
     userId = session.get('userId', None)
-    
-    if userId is None:
-        print('No userId; returned to login.')
-        # TODO: Redirect to the right login
-        return redirect(url_for("user_login", tourneyName=tourneyName))
-        
     user = um.getUserById(userId)
     if user is None:
-        print('User doesn\'t exist; returned to login.')
-        # TODO: Redirect to the right login
-        return redirect(url_for("user_login", tourneyName=tourneyName))
+        print('User doesn\'t exist; returned to index.')
+        return redirect(url_for('tournament_index', tourneyName=tourneyName))
 
     tournament = tm.getTournamentByName(tourneyName)
     session['tourneyId'] = tournament.id
@@ -224,9 +217,9 @@ def contact_admin(tourneyName):
                            tourneyFullName=tournament.name,
                            tourneyName=tourneyName)
     
-# Bracket viewer page
+# App version of tournament index
 @app.route('/app-content/index/<tourneyName>')
-def bracket(tourneyName):
+def app_tournament_index(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
 
     return render_template('app/content/tournament-index.html',

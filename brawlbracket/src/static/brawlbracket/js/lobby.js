@@ -3,41 +3,41 @@ var lobbyTimer;
 
 // Functions to update UI from lobbyData
 var lobbyUIFunctions = {
-    'participants': function () {
-        var participants = lobbyData.participants;
+    'teams': function () {
+        var teams = lobbyData.teams;
         
         if (lobbyData.state.name == 'waitingForMatch') return;
-        if (participants.length != 2) return;
+        if (teams.length != 2) return;
         
         // Add Report Win button functionality
         $('#bb-par1-report-win').on('click', function(event) {
-            reportWin(lobbyData.participants[0].id);
+            reportWin(teams[0].id);
             
             return false;
         });
         
         $('#bb-par2-report-win').on('click', function(event) {
-            reportWin(lobbyData.participants[1].id);
+            reportWin(teams[1].id);
             
             return false;
         });
         
-        // Participant info
-        $('#bb-par1-name').text(participants[0].name + ' ').append('<sup>(' + participants[0].seed + ')</sup>');
-        $('#bb-par2-name').text(participants[1].name + ' ').append('<sup>(' + participants[1].seed + ')</sup>');
-        $('#bb-par1-avatar').attr('src', participants[0].avatar);
-        $('#bb-par2-avatar').attr('src', participants[1].avatar);
-        $('#bb-score').text(participants[0].wins + '-' + participants[1].wins);
+        // Team info
+        $('#bb-par1-name').text(teams[0].name + ' ').append('<sup>(' + teams[0].seed + ')</sup>');
+        $('#bb-par2-name').text(teams[1].name + ' ').append('<sup>(' + teams[1].seed + ')</sup>');
+        $('#bb-par1-avatar').attr('src', teams[0].avatar);
+        $('#bb-par2-avatar').attr('src', teams[1].avatar);
+        $('#bb-score').text(teams[0].wins + '-' + teams[1].wins);
         
         // Show "report win" buttons when game is being played
         if (lobbyData.state.name == 'inGame') {
-            $('#bb-par1-description').append(createReportWinButton(lobbyData.participants[0].id));
-            $('#bb-par2-description').append(createReportWinButton(lobbyData.participants[1].id));
+            $('#bb-par1-description').append(createReportWinButton(teams[0].id));
+            $('#bb-par2-description').append(createReportWinButton(teams[1].id));
         }
-        // Update participant status
+        // Update team status
         else {
-            $('#bb-par1-description').append(createStatus(participants[0].ready));
-            $('#bb-par2-description').append(createStatus(participants[1].ready));
+            $('#bb-par1-description').append(createStatus(teams[0].ready));
+            $('#bb-par2-description').append(createStatus(teams[1].ready));
         }
     },
     
@@ -61,6 +61,17 @@ var lobbyUIFunctions = {
     
     'state': function () {
         switch (lobbyData.state.name) {
+            case 'building':
+                // Disable everything and put spinners on them.
+                $('.bb-wait-for-match').append(
+                    $('<div class="overlay"><i class="fa fa-circle-o-notch fa-spin"></i></div>')
+                );
+                
+                addCallout('state', 'warning',
+                           'Your match is still being prepared!');
+                           
+                break;
+            
             case 'waitingForMatch':
                 // Disable everything and put spinners on them.
                 $('.bb-wait-for-match').append(
@@ -69,8 +80,8 @@ var lobbyUIFunctions = {
                 
                 // Add a notice at the top about the prerequisite match.
                 var msg = 'You\'ll be notified as soon as match <strong>#' + lobbyData.state.matchNumber +
-                          '</strong> (<strong>' + lobbyData.state.participantNames[0] +
-                          '</strong> vs <strong>' + lobbyData.state.participantNames[1] + '</strong>) finishes.';
+                          '</strong> (<strong>' + lobbyData.state.teamNames[0] +
+                          '</strong> vs <strong>' + lobbyData.state.teamNames[1] + '</strong>) finishes.';
                 
                 addCallout('state', 'warning',
                            'Your opponent hasn\'t finished their game yet!',
@@ -87,14 +98,14 @@ var lobbyUIFunctions = {
                 
             case 'inGame':
                 // Replace status with "report win" buttons
-                lobbyUIFunctions.participants();
+                lobbyUIFunctions.teams();
                 break;
         }
         
         switch (lobbyData.prevState.name) {
             case 'inGame':
                 // Replace "report win" buttons with status
-                lobbyUIFunctions.participants();
+                lobbyUIFunctions.teams();
                 break;
         }
     },
@@ -134,7 +145,7 @@ var lobbyUIFunctions = {
     },
     
     'challongeId': function () {
-        var matchName = 'Match #' + lobbyData.challongeId;
+        var matchName = 'Match #' + lobbyData.number;
         $('.bb-page-name').text(matchName);
     }
 };
@@ -155,21 +166,21 @@ function onUpdateLobby(data) {
 
 /**
  * Report a win to the server.
- * @param {string} participantId - The Challonge id of the winner.
+ * @param {string} teamId - The Challonge id of the winner.
  */
-function reportWin(participantId) {
-    pSocket.emit('report win', { 'player-id': participantId });
+function reportWin(teamId) {
+    pSocket.emit('report win', { 'player-id': teamId });
 }
 
 /**
  * Create a "Report Win" button DOM element.
- * @param {string} participantId - The id of the participant we're reporting the win for.
+ * @param {string} teamId - The id of the team we're reporting the win for.
  */
-function createReportWinButton(participantId) {
+function createReportWinButton(teamId) {
     var btn = $('<a class="btn btn-app"><i class="fa fa-trophy"></i> Report Win</a>');
     
     btn.on('click', function(event) {
-        reportWin(participantId);
+        reportWin(teamId);
     
         return false;
     });
@@ -194,7 +205,7 @@ function updateLobbyTimer() {
 }
 
 /**
- * Create a participant status DOM element.
+ * Create a team status DOM element.
  * @param {boolean} ready - If true, the status is "Ready," else "Not Ready."
  */
 function createStatus(ready) {

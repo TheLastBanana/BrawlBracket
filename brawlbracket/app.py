@@ -57,6 +57,10 @@ if tempTourney is None:
         team.players.append(player)
     print('Temp tournament has {} users!'.format(len(tempTourney.teams)))
     tempTourney.generateMatches()
+    
+    tempTourney.admins.add(um.getUserBySteamId(76561198042414835))
+    tempTourney.admins.add(um.getUserBySteamId(76561197993702532))
+    print('Admins: ', [a.username for a in tempTourney.admins])
     tm._writeTournamentToDB(tempTourney) # DEBUG THIS SHOULDN'T BE LIKE THIS
 # End temp tournament generation
     
@@ -238,38 +242,48 @@ def lobby(tourneyName):
 #----- Admin pages -----#
                            
 # Admin app page
-@app.route('/t/<tourneyName>/admin/<adminKey>/', defaults={'startPage': None})
-@app.route('/t/<tourneyName>/admin/<adminKey>/<startPage>/')
-def admin_app(tourneyName, adminKey, startPage):
-    tourneyId = tourneys[tourneyName]
-    tourneyKeys = brawlapi.adminKeys[tourneyId]
+@app.route('/t/<tourneyName>/admin/', defaults={'startPage': None})
+@app.route('/t/<tourneyName>/admin/<startPage>/')
+def admin_app(tourneyName, startPage):
+    tournament = tm.getTournamentByName(tourneyName)
+    userId = session.get('userId')
+    user = um.getUserById(userId)
     
-    session['adminMode'] = True
-    session['participantId'] = -1
-    
-    # If the key is wrong, don't let the user log in
-    if adminKey not in tourneyKeys:
+    if tournament is None:
         abort(404)
+    
+    if user is None:
+        redirect(url_for('tournament_index'))
+    
+    print(user, tournament.admins)
+    if user not in tournament.admins:
+        abort(403)
 
     return render_template('app/admin-app.html',
                            startPage=startPage,
                            tourneyName=tourneyName,
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName),
-                           userId=-1,
-                           basePath='/{}/admin/{}/'.format(tourneyName, adminKey))
+                           tourneyFullName=tournament.name,
+                           userId=user.id,
+                           basePath='/t/{}/admin/'.format(tourneyName))
                            
 # Admin dashboard
 @app.route('/app-content/admin-dashboard/<tourneyName>')
 def admin_dashboard(tourneyName):
-    tourneyId = tourneys[tourneyName]
+    tournament = tm.getTournamentByName(tourneyName)
+    userId = session.get('userId')
+    user = um.getUserById(userId)
     
-    # If not an admin, access is denied
-    if not session['adminMode']:
+    if tournament is None:
+        abort(404)
+    
+    if user is None:
+        redirect(url_for('tournament_index'))
+    
+    if user.id not in tournament.admins:
         abort(403)
 
     return render_template('app/content/admin-dashboard.html',
-                           liveImageURL=brawlapi.getTournamentLiveImageURL(tourneyId),
-                           tourneyFullName=brawlapi.getTournamentName(tourneyName),
+                           tourneyFullName=tournament.name,
                            tourneyName=tourneyName)
     
 #----- Page elements -----#

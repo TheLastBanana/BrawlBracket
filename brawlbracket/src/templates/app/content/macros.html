@@ -2,8 +2,15 @@
 
 <!-- Content Header (Page header) -->
 {% macro appHeader(pageName) -%}
-  {{ pageHeader([
-    [tourneyFullName, '/t/' + tourneyName],
-    [pageName, '']
-  ]) }}
+  {%- if pageName == 'Home' -%}
+    {{ pageHeader([
+      [tourneyFullName, '/t/' + tourneyName],
+      ['Home', '']
+    ], tourneyFullName) }}
+  {%- else -%}
+    {{ pageHeader([
+      [tourneyFullName, '/t/' + tourneyName],
+      [pageName, '']
+    ]) }}
+  {%- endif -%}
 {%- endmacro %}

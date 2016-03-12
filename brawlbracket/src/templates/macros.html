@@ -1,8 +1,12 @@
 <!-- Content Header (Page header) -->
-{% macro pageHeader(pages) -%}
+{% macro pageHeader(pages, pageName) -%}
   <section class="content-header">
     <h1 class="bb-page-name">
-      {{ (pages|last)[0] }}
+      {%- if pageName is defined -%}
+        {{ pageName }}
+      {%- else -%}
+        {{ (pages|last)[0] }}
+      {%- endif -%}
     </h1>
     
     <ol class="breadcrumb">

@@ -53,7 +53,7 @@ def _getChatFromDB(id):
     # Quick function that returns a string surrounded by quotes
     q = lambda x: '\'{}\''.format(x)
     
-    rows = _db.select_values('chats', ['*'], [q('id = {}'.format(id))])
+    rows = _db.select_values('chats', ['*'], ['id = {}'.format(q(id))])
     
     if rows:
         chatData = rows[0]
@@ -61,7 +61,7 @@ def _getChatFromDB(id):
         id = chatData[0]
         log = json.loads(chatData[1])
         
-        newChat = chat.Chat(id)
+        newChat = chat.Chat(uuid = id)
         newChat.log = log
         
         return newChat
@@ -79,7 +79,7 @@ def _writeChatToDB(c):
         c.id,
         json.dumps(c.log)
         )
-    #print('Writing chat with: ', chatData)
+    print('Writing chat with: ', chatData)
     _db.insert_values('chats', [chatData])
         
 def _initDB():

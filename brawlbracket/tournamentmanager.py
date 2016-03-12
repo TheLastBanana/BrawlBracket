@@ -144,12 +144,12 @@ def _buildTournament(tournamentData):
     teamIds = tournamentData[4]
     playerIds = tournamentData[5]
     rootId = tournamentData[6]
-    startTime = dateutil.parser.parse(matchData[7])\
-        if matchData[7] is not None else None
-    checkInTime = dateutil.parser.parse(matchData[8])\
-        if matchData[8] is not None else None
-    description = matchData[9]
-    style = matchData[10]
+    startTime = dateutil.parser.parse(tournamentData[7])\
+        if tournamentData[7] is not None else None
+    checkInTime = dateutil.parser.parse(tournamentData[8])\
+        if tournamentData[8] is not None else None
+    description = tournamentData[9]
+    style = tournamentData[10]
     
     tournament = None
     if style == 'Single Elimination':

@@ -143,13 +143,14 @@ def _buildTournament(tournamentData):
     matchIds = tournamentData[3]
     teamIds = tournamentData[4]
     playerIds = tournamentData[5]
-    rootId = tournamentData[6]
-    startTime = dateutil.parser.parse(tournamentData[7])\
-        if tournamentData[7] is not None else None
-    checkInTime = dateutil.parser.parse(tournamentData[8])\
+    adminIds = tournamentData[6]
+    rootId = tournamentData[7]
+    startTime = dateutil.parser.parse(tournamentData[8])\
         if tournamentData[8] is not None else None
-    description = tournamentData[9]
-    style = tournamentData[10]
+    checkInTime = dateutil.parser.parse(tournamentData[9])\
+        if tournamentData[9] is not None else None
+    description = tournamentData[10]
+    style = tournamentData[11]
     
     tournament = None
     if style == 'Single Elimination':
@@ -166,6 +167,14 @@ def _buildTournament(tournamentData):
     
     # Quick function that returns a string surrounded by quotes
     q = lambda x: '\'{}\''.format(x)
+    
+    # ---- MAKE ADMINS ----
+    admins = set()
+    for adminId in adminIds:
+        user = um.getUserById(adminId)
+        if user is None:
+            raise AssertionError('Admin with bad id. {}'.format(adminId))
+        admins.add(user)
     
     # ---- MAKE PLAYERS ----
     players = set()
@@ -341,6 +350,7 @@ def _writeTournamentToDB(tournament):
         json.dumps([str(m.id) for m in tournament.matches]),
         json.dumps([str(t.id) for t in tournament.teams]),
         json.dumps([str(p.id) for p in tournament.players]),
+        json.dumps([str(a.id) for a in tournament.admins]),
         tournament._root.id if tournament._root is not None else None,
         tournament.startTime.isoformat()\
             if tournament.startTime is not None else None,
@@ -431,6 +441,7 @@ def _initDB():
             'matches',
             'teams',
             'players',
+            'admins',
             'root',
             'startTime',
             'checkInTime',
@@ -441,6 +452,7 @@ def _initDB():
             'UUID',
             'TEXT',
             'TEXT',
+            'UUIDLIST',
             'UUIDLIST',
             'UUIDLIST',
             'UUIDLIST',

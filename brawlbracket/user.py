@@ -26,15 +26,6 @@ class User:
         self.ownedLegends = util.ownableLegendIds.copy()
         self.preferredServer = 'use'
     
-    def __eq__(self, other):
-        if not isinstance(other, User):
-            return False
-        
-        if self.id == other.id:
-            return True
-        
-        return False
-    
     def __repr__(self):
         return 'User(name: {}, id: {}, sid: {}, server: {}, legends:{})' \
             .format(self.username, self.id, self.steamId, self.preferredServer,

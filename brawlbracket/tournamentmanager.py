@@ -100,7 +100,7 @@ def _getTournamentFromDBById(id):
     rows = _db.select_values(
         'tournaments',
         ['*'],
-        ['id = {}'.format(id)])
+        ['id = \'{}\''.format(id)])
     
     # Die early if no results
     if not rows:

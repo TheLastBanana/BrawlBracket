@@ -281,6 +281,7 @@ def _buildTournament(tournamentData):
                     winner = team
                     break
         bestOf = matchData[15]
+        state = json.loads(matchData[16])
         
         # Create the match
         match = mch.Match(teams = matchTeams, uuid = id, chat = chat)
@@ -295,6 +296,7 @@ def _buildTournament(tournamentData):
         match.banRule = banRule
         match.winner = winner
         match.bestOf = bestOf
+        match.state = state
         matches.add(match)
     
     # Link tournament structure together in matches
@@ -327,9 +329,6 @@ def _buildTournament(tournamentData):
         else:
             raise AssertionError('Couldn\'t set up match hierarchy. ({})'
                                     .format(matchData[0]))
-    
-    for match in matches:
-        match._updateState()
         
     tournament.admins = admins
     tournament.players = players
@@ -392,7 +391,8 @@ def _writeTournamentToDB(tournament):
             match.banRule,
             match.winner.id\
                 if match.winner is not None else None,
-            match.bestOf if match.bestOf is not None else None
+            match.bestOf if match.bestOf is not None else None,
+            json.dumps(match.state)
             )
         print('Writing match with: ', matchData)
         matchDatas.append(matchData)
@@ -485,7 +485,8 @@ def _initDB():
             'currentRealm',
             'banRule',
             'winner',
-            'bestOf'
+            'bestOf',
+            'state'
             ]
         fieldTypes = [
             'UUID',
@@ -503,7 +504,8 @@ def _initDB():
             'TEXT',
             'TEXT',
             'UUID',
-            'INTEGER'
+            'INTEGER',
+            'TEXT'
             ]
         _db.create_table('matches', fieldNames, fieldTypes, 'id')
     

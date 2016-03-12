@@ -26,6 +26,7 @@ class Match():
             roomNumber: Brawlhalla custom room number (int)
             currentRealm: Current realm being played (string id)
             banRule: The method of determining bans and picks (BanRule)
+            state: The state of the match
             
         Tournament data:
             winner: The winning team of this match, None if no winner yet (Team)

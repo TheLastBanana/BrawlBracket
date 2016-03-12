@@ -19,6 +19,7 @@ class Tournament():
         matches: All matches in the tournament. Read-only to outside classes. (list of Match)
         teams: All teams in the tournament. Read-only to outside classes. (list of Team)
         players: All players in the tournament. Read-only to outside classes. (list of Player)
+        admins: All users that are admins for this tournament. (list of uuid)
         name: The tournament's name (string)
         shortName: The tournament's short name identifier, this is unique. (string)
         startTime: The tournament's scheduled start time. (datetime)
@@ -42,6 +43,11 @@ class Tournament():
         self.matches = set()
         self.teams = set()
         self.players = set()
+        
+        self.admins = set()
+        admin = kwargs.get('admin')
+        if admin is not None:
+            self.admins.add(admin)
         
         for i in range(teamCount):
             self.createTeam(i + 1)
@@ -152,7 +158,7 @@ class Tournament():
                     continue
                 
                 for p in t.players:
-                    if p.user == user:
+                    if p.user.id == user.id:
                         return (m, t, p)
         
         return None

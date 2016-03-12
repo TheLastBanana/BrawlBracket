@@ -324,7 +324,13 @@ def _writeTournamentToDB(tournament):
         json.dumps([str(m.id) for m in tournament.matches]),
         json.dumps([str(t.id) for t in tournament.teams]),
         json.dumps([str(p.id) for p in tournament.players]),
-        tournament._root.id if tournament._root is not None else None
+        tournament._root.id if tournament._root is not None else None,
+        tournament.startTime.isoformat()\
+            if tournament.startTime is not None else None,
+        tournament.checkInTime.isoformat()\
+            if tournament.checkInTime is not None else None,
+        tournament.description,
+        tournament.style
         )
     print('Writing tournament with: ', tournamentData)
     _db.insert_values('tournaments', [tournamentData])
@@ -408,7 +414,11 @@ def _initDB():
             'matches',
             'teams',
             'players',
-            'root'
+            'root',
+            'startTime',
+            'checkInTime',
+            'description',
+            'style'
             ]
         fieldTypes = [
             'UUID',
@@ -417,7 +427,11 @@ def _initDB():
             'UUIDLIST',
             'UUIDLIST',
             'UUIDLIST',
-            'UUID'
+            'UUID',
+            'TEXT',
+            'TEXT',
+            'TEXT',
+            'TEXT'
             ]
         _db.create_table('tournaments', fieldNames, fieldTypes, 'id')
     

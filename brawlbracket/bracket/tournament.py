@@ -20,7 +20,11 @@ class Tournament():
         teams: All teams in the tournament. Read-only to outside classes. (list of Team)
         players: All players in the tournament. Read-only to outside classes. (list of Player)
         name: The tournament's name (string)
-        shortName: The tournament's short name identifier, this is unique (string)
+        shortName: The tournament's short name identifier, this is unique. (string)
+        startTime: The tournament's scheduled start time. (datetime)
+        checkInTime: The tournament's scheduled check in time. (datetime)
+        description: The tournament's description. (string)
+        style: The tournament style (e.g. single elim) (string)
         """
         self.id = kwargs.get('uuid', uuid.uuid1())
         self.name = kwargs.get('name', '')
@@ -28,6 +32,12 @@ class Tournament():
         if shortName is None:
             raise ValueError('Short name can\'t be None.')
         self.shortName = shortName
+        
+        self.startTime = kwargs.get('startTime', None)
+        self.checkInTime = kwargs.get('checkInTime', None)
+        
+        self.description = kwargs.get('description', '')
+        self.style = 'not-set'
         
         self.matches = set()
         self.teams = set()
@@ -264,6 +274,7 @@ class SingleElimTournament(TreeTournament):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.style = 'Single Elimination'
     
     def generateMatches(self):
         n = len(self.teams)

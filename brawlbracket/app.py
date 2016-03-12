@@ -71,6 +71,30 @@ def default_template_data():
     return dict(versionNumber = __version__,
                 userName = userName,
                 userAvatar = userAvatar)
+                
+@app.template_filter('datetime')
+def filter_datetime(date):
+    """
+    Filter to format a Python datetime.
+    """
+    return date.strftime('%B %d, %Y @ %I:%M %p %Z')
+    
+@app.template_filter('timedelta')
+def filter_timedelta(time):
+    """
+    Filter to format a Python timedelta.
+    """
+    hours, remainder = divmod(time.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    
+    tokens = []
+    if hours > 0:
+        tokens.append('{} hour'.format(hours) + ('s' if hours > 1 else ''))
+        
+    if minutes > 0:
+        tokens.append('{} minute'.format(minutes) + ('s' if minutes > 1 else ''))
+    
+    return ', '.join(tokens)
     
 #----- Flask routing -----#
 @app.errorhandler(404)

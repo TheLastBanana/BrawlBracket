@@ -144,8 +144,25 @@ def _buildTournament(tournamentData):
     teamIds = tournamentData[4]
     playerIds = tournamentData[5]
     rootId = tournamentData[6]
+    startTime = dateutil.parser.parse(matchData[7])\
+        if matchData[7] is not None else None
+    checkInTime = dateutil.parser.parse(matchData[8])\
+        if matchData[8] is not None else None
+    description = matchData[9]
+    style = matchData[10]
     
-    tournament = trn.SingleElimTournament(shortName, id = id, name = name)
+    tournament = None
+    if style == 'Single Elimination':
+        tournament = trn.SingleElimTournament(
+            shortName,
+            id = id,
+            name = name,
+            startTime = startTime,
+            checkInTime = checkInTime,
+            description = description
+            )
+    else:
+        raise ValueError('Bad tournament style: {}'.format(style))
     
     # Quick function that returns a string surrounded by quotes
     q = lambda x: '\'{}\''.format(x)

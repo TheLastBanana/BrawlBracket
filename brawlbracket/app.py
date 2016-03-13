@@ -303,37 +303,33 @@ def realms():
 # Lobby data
 @app.route('/app-data/lobbies/<tourneyName>')
 def data_lobbies(tourneyName):
-    tourneyId = tourneys[tourneyName]
+    tournament = tm.getTournamentByName(tourneyName)
+    
+    if tournament is None:
+        abort(404)
 
     # Get a condensed list of lobby data for display to the admin
     condensedData = []
-    
-    matches = brawlapi.getTournamentMatches(tourneyId)
-    for matchId in matches:
-        lobbyData = brawlapi.getLobbyData(tourneyId, matchId)
-        participants = lobbyData['participants']
-        
+
+    for match in tournament.matches:
         # Assemble score string 
-        if len(participants) == 2:
-            # If there are less than 2 players, this will be either empty or just show one number
-            scoreString = '-'.join([str(pData['wins']) for pData in participants])
-        else:
-            scoreString = '0-0'
+        scoreString = '-'.join([str(s) for s in match.score])
             
         # Add on bestOf value (e.g. best of 3)
-        scoreString += ' (Bo{})'.format(lobbyData['bestOf'])
+        scoreString += ' (Bo{})'.format(match.bestOf)
         
-        status, prettyStatus, statusOrder = brawlapi.getLobbyStatus(tourneyId, matchId)
+        status, prettyStatus, statusOrder = match.lobbyStatus
         
         condensed = {
-            'id': lobbyData['challongeId'],
-            'p1Name': participants[0]['name'] if len(participants) > 0 else '',
-            'p2Name': participants[1]['name'] if len(participants) > 1 else '',
+            'id': str(match.id),
+            't1Name': match.teams[0].name if match.teams[0] is not None else '',
+            't2Name': match.teams[1].name if match.teams[1] is not None else '',
             'score': scoreString,
-            'room': lobbyData['roomNumber'] or '',
-            'startTime': lobbyData['startTime'] or '',
+            'room': match.roomNumber if match.roomNumber is not None else '',
+            'startTime': match.startTime.isoformat()\
+                if match.startTime is not None else '',
             'status': {
-                'state': lobbyData['state']['name'],
+                'stats': status,
                 'display': prettyStatus,
                 'sort': statusOrder
             }
@@ -350,24 +346,25 @@ def data_lobbies(tourneyName):
 # User data
 @app.route('/app-data/users/<tourneyName>')
 def data_users(tourneyName):
-    tourneyId = tourneys[tourneyName]
+    tournament = tm.getTournamentByName(tourneyName)
+    
+    if tournament is None:
+        abort(404)
     
     # Get a condensed list of user data for display to the admin
     condensedData = []
     
-    users = brawlapi.getTournamentUsers(tourneyId)
-    for user in users:
-        status, prettyStatus = brawlapi.getParticipantStatus(tourneyId, user)
-        pData = brawlapi.getParticipantData(tourneyId, user.participantId)
+    for team in tournament.teams:
+        status, prettyStatus = tournament.getTeamStatus(team)
         
         condensed = {
-            'seed': pData['seed'],
-            'name': pData['display-name'],
+            'seed': team.seed,
+            'name': team.name,
             'status': {
                 'status': status,
                 'display': prettyStatus,
             },
-            'online': 'Online' if brawlapi.isUserOnline(tourneyId, user) else 'Offline'
+            'online': 'Online' if all([p.online for p in team.players]) else 'Offline'
         }
         
         condensedData.append(condensed)

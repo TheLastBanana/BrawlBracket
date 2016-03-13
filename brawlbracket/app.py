@@ -322,7 +322,7 @@ def data_lobbies(tourneyName):
         status, prettyStatus, statusOrder = match.lobbyStatus
         
         condensed = {
-            'id': str(match.id),
+            'id': match.number,
             't1Name': match.teams[0].name if match.teams[0] is not None else '',
             't2Name': match.teams[1].name if match.teams[1] is not None else '',
             'score': scoreString,

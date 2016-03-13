@@ -65,10 +65,10 @@ function formatLobbyStatus(data) {
 }
 
 /**
- * Return a formatted display string for a user's status.
+ * Return a formatted display string for a team's status.
  * @param {json} data - The cell data received from the DataTable.
  */
-function formatUserStatus(data) {
+function formatTeamStatus(data) {
     var cell = $(this);
     var color = '';
     var icon = '';
@@ -111,10 +111,10 @@ function formatUserStatus(data) {
 }
 
 /**
- * Return a formatted display string for a user's online/offline status.
+ * Return a formatted display string for a team's online/offline status.
  * @param {json} data - The cell data received from the DataTable.
  */
-function formatUserOnline(data) {
+function formatTeamOnline(data) {
     var labelType;
     
     switch (data) {
@@ -152,13 +152,13 @@ $(function () {
             },
             
             {
-                'data': 'p1Name',
+                'data': 't1Name',
                 'type': 'anti-empty',
                 'responsivePriority': 3
             },
             
             {
-                'data': 'p2Name',
+                'data': 't2Name',
                 'type': 'anti-empty',
                 'responsivePriority': 3
             },
@@ -210,9 +210,9 @@ $(function () {
         ]
     });
     
-    // Set up the user table
-    var userTable = $('#bb-user-table').DataTable({
-        'ajax': '/app-data/users/' + tourneyName,
+    // Set up the team table
+    var teamTable = $('#bb-team-table').DataTable({
+        'ajax': '/app-data/teams/' + tourneyName,
         
         'columns': [
             { 'data': 'seed' },
@@ -224,7 +224,7 @@ $(function () {
                 'render': function(data, type, full, meta) {
                     switch (type) {
                         case 'display':
-                            return formatUserOnline(data);
+                            return formatTeamOnline(data);
                             
                         case 'type':
                             return 'string';
@@ -241,7 +241,7 @@ $(function () {
                 'render': function(data, type, full, meta) {
                     switch (type) {
                         case 'display':
-                            return formatUserStatus(data);
+                            return formatTeamStatus(data);
                             
                         case 'type':
                             return 'string';
@@ -262,7 +262,7 @@ $(function () {
     // Refresh tables periodically
     tableRefresh = setInterval(function() {
         lobbyTable.ajax.reload(null, false); // Don't reset paging
-        userTable.ajax.reload(null, false);
+        teamTable.ajax.reload(null, false);
     }, 5000);
     
     // Called when the inner page content is removed to load a new page.

@@ -8,5 +8,9 @@
 
   <div id="bracket" class="bracket-scroll-wrapper centered"></div>
 
-  {% include 'app/content/tournament-scripts.html' %}
+  {% include 'app/content/bracket-scripts.html' %}
+  
+  <script>
+    createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});
+  </script>
 </section>

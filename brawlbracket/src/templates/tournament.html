@@ -20,5 +20,9 @@
 {%- endblock -%}
 
 {%- block extraScripts -%}
-  {% include 'app/content/tournament-scripts.html' %}
+  {% include 'app/content/bracket-scripts.html' %}
+  
+  <script>
+    createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});
+  </script>
 {%- endblock extraScripts -%}

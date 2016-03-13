@@ -273,14 +273,23 @@ class Match():
         
         Returns (name, pretty name, sort order)
         """
+        stateName = self.state['name']
         if stateName == 'waitingForMatch':
             prereqMatch = None
             for m in self.prereqMatches:
-                if m.winner is None:
+                if m is None:
+                    continue
+                elif m.winner is None:
                     prereqMatch = m
                     break
+            # Didn't find prereqMatch
+            else:
+                raise AssertionError(
+                    'Waiting for match but no prereq match. {}'
+                        .format(self.id)
+                    )
             
-            return (self.state['name'],
+            return (stateName,
                     'Waiting for match #{}'.format(prereqMatch.number),
                     # Higher priority if one team is done, but still lower than
                     # if both are (i.e. waitingForPlayers)
@@ -289,20 +298,21 @@ class Match():
         elif stateName == 'waitingForPlayers':
             # Show team names -- all player names in e.g. 2v2s would make a really long string
             notReady = []
-            for participant in participants:
-                if not participant['ready']:
-                    notReady.append(participant['name'])
+            for team in self.teams:
+                if not all([p.online for p in team.players]):
+                    notReady.append(team.name)
             
             # We assume there are only 2 participants in a lobby
             if len(notReady) == 2:
                 return (stateName,
-                        'Waiting for both participants',
-                        # Both players inactive, so lower priority than if one is online
+                        'Waiting for both teams',
+                        # Both teams inactive, so lower priority than if one is
+                        # team active
                         4)
             
             return (stateName,
                     'Waiting for {}'.format(notReady[0]),
-                    # One player inactive, so lower priority than if both are online
+                    # One team inactive, so lower priority than if both are active
                     3)
                     
         elif stateName == 'complete':

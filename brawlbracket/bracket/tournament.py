@@ -398,8 +398,10 @@ class SingleElimTournament(TreeTournament):
             
         match = None
         for m in self.matches:
-            for t in match.teams:
-                if team.id == t.id:
+            for t in m.teams:
+                if t is None:
+                    continue
+                elif team.id == t.id:
                     match = m
                     break
             if match is not None:

@@ -247,7 +247,7 @@ def admin_app(tourneyName, startPage):
         abort(404)
     
     if user is None:
-        redirect(url_for('tournament_index'))
+        return redirect(url_for('tournament_index'))
     
     if user not in tournament.admins:
         abort(403)
@@ -270,7 +270,7 @@ def admin_dashboard(tourneyName):
         abort(404)
     
     if user is None:
-        redirect(url_for('tournament_index'))
+        return redirect(url_for('tournament_index'))
     
     if user not in tournament.admins:
         abort(403)

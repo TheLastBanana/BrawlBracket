@@ -13,6 +13,7 @@ var BracketTeam = React.createClass({
                 onMouseOver={this.onMouseOver}
                 onMouseLeave={this.onMouseLeave}
             >
+                <div className="bracket-team-seed">{this.props.seed}</div>
                 <div className="bracket-team-name" title={this.props.name}>{this.props.name}</div>
                 <div className="bracket-team-score">{this.props.score}</div>
             </div>
@@ -45,11 +46,22 @@ var BracketNode = React.createClass({
         var winner = match.winner;
         var isHighlight = matchTeams.indexOf(highlightTeam) != -1;
 
-        // Get names for each team
-        var teamNames = [];
+        // Get data for each team
+        var teamProps = [];
         for (var i = 0; i < 2; ++i) {
             var team = teamData[matchTeams[i]];
-            teamNames.push(team ? team.name : '');
+            if (team) {
+                teamProps.push({
+                    name: team.name,
+                    seed: team.seed
+                });
+                
+            } else {
+                teamProps.push({
+                    name: '',
+                    seed: ''
+                })
+            }
         }
 
         // If there are children, create a column for them
@@ -96,7 +108,8 @@ var BracketNode = React.createClass({
                     id={matchTeams[i]}
                     loser={!(winner === null) && winner != i}
                     highlight={matchTeams[i] == highlightTeam}
-                    name={teamNames[i]}
+                    name={teamProps[i].name}
+                    seed={teamProps[i].seed}
                     score={score[i]}
                     setHighlightTeam={setHighlightTeam}
                     key={i} />
@@ -264,7 +277,8 @@ var Bracket = React.createClass({
     {
         teams: {
             <uuid>: {
-                name: <name>
+                name: <name>,
+                seed: <seed>
             },
             ...
         },

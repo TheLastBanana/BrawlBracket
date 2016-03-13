@@ -9,7 +9,8 @@ $bracket-vspace: 15px;
 $bracket-hspace: 10px;
 $bracket-circle-size: 25px;
 $bracket-match-top: 3px;
-$bracket-team-name-width: 180px;
+$bracket-team-name-width: 200px;
+$bracket-team-seed-width: 20px;
 $bracket-team-score-width: 24px;
 $bracket-match-id-width: $bracket-circle-size + $bracket-hspace;
 $bracket-match-width: $bracket-team-name-width + $bracket-team-score-width;
@@ -200,15 +201,33 @@ $bracket-match-width: $bracket-team-name-width + $bracket-team-score-width;
   }
 }
 
+/* Team seed */
+.bracket-team-seed {
+  display: table-cell;
+  min-width: $bracket-team-seed-width;
+  max-width: $bracket-team-seed-width;
+  overflow: hidden;
+  color: #999;
+  font-size: 0.8em;
+  vertical-align: middle;
+  text-align: center;
+}
+
 /* Team name */
 .bracket-team-name {
   display: table-cell;
-  padding: 2px 6px;
+  padding: {
+    top: 2px;
+    bottom: 2px;
+    right: 6px;
+  }
   min-width: $bracket-team-name-width;
   max-width: $bracket-team-name-width;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  vertical-align: middle;
+  text-align: left;
 }
 
 /* Team score */

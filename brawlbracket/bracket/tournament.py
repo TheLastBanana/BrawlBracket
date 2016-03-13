@@ -170,7 +170,8 @@ class Tournament():
         teamsData = {}
         for team in self.teams:
             teamsData[str(team.id)] = {
-                'name': team.name or 'Unnamed Team'
+                'name': team.name or 'Unnamed Team',
+                'seed': team.seed
             }
             
         matchesData = {}

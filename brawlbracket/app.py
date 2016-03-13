@@ -53,6 +53,7 @@ if tempTourney is None:
                     )
     for i, user in enumerate(tempUsers):
         team = tempTourney.createTeam(i) # i = seed
+        team.name = user.username
         player = tempTourney.createPlayer(user)
         team.players.append(player)
     print('Temp tournament has {} users!'.format(len(tempTourney.teams)))

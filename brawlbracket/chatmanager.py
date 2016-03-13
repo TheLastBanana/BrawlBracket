@@ -79,7 +79,7 @@ def _writeChatToDB(c):
         c.id,
         json.dumps(c.log)
         )
-    print('Writing chat with: ', chatData)
+    #print('Writing chat with: ', chatData)
     _db.insert_values('chats', [chatData])
         
 def _initDB():

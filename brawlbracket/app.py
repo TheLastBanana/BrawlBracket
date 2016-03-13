@@ -496,11 +496,11 @@ def chat_send(data):
             .format(tourneyId, userId))
         return
     
-    user = brawlapi.getUser(tourneyId, userId)
+    user = um.getUserById(userId)
     
     # User doesn't exist
     if user is None:
-        print('User doesn\'t exist; connection rejected')
+        print('User doesn\'t exist; message rejected')
         emit('error', {'code': 'bad-participant'},
             broadcast=False, include_self=True)
         return False
@@ -510,7 +510,7 @@ def chat_send(data):
     chatId = data['chatId']
     message = data['message']
     
-    chat = brawlapi.getChat(tourneyId, chatId)
+    chat = cm.getChat(chatId)
     if not chat:
         return
         
@@ -520,23 +520,15 @@ def chat_send(data):
     if room not in rooms():
         return
     
-    pData = brawlapi.getParticipantData(tourneyId, user.participantId)
-    # This should really never happen, it should have been guaranteed by
-    # them connecting
-    if pData is None:
-        print('Couldn\'t find pData while sending chat. tID: {}, pID: {}'
-            .format(tourneyId, user.participantId))
-        return
-    
-    avatarURL = brawlapi.getParticipantAvatar(pData)
-    
-    messageData = {'senderId': str(user.userId),
-                   'avatar': avatarURL,
-                   'name': pData['name'],
+    messageData = {'senderId': str(user.id),
+                   'avatar': user.avatar,
+                   'name': user.username,
                    'message': message,
                    'sentTime': sentTime}
     
     chat.addMessage(messageData)
+    # XXX Move this to a listener
+    cm._writeChatToDB(chat)
     
     emit('receive', {
         'messageData': messageData,

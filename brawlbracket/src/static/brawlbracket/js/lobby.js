@@ -31,13 +31,13 @@ var lobbyUIFunctions = {
         
         // Show "report win" buttons when game is being played
         if (lobbyData.state.name == 'inGame') {
-            $('#bb-par1-description').append(createReportWinButton(teams[0].id));
-            $('#bb-par2-description').append(createReportWinButton(teams[1].id));
+            $('#bb-par1-description').html(createReportWinButton(teams[0].id));
+            $('#bb-par2-description').html(createReportWinButton(teams[1].id));
         }
         // Update team status
         else {
-            $('#bb-par1-description').append(createStatus(teams[0].ready));
-            $('#bb-par2-description').append(createStatus(teams[1].ready));
+            $('#bb-par1-description').html(createStatus(teams[0].ready));
+            $('#bb-par2-description').html(createStatus(teams[1].ready));
         }
     },
     

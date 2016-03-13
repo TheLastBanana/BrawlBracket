@@ -277,6 +277,7 @@ def admin_dashboard(tourneyName):
         abort(403)
 
     return render_template('app/content/admin-dashboard.html',
+                           tournament=tournament,
                            tourneyFullName=tournament.name,
                            tourneyName=tourneyName)
     

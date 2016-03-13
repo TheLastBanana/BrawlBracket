@@ -4,53 +4,67 @@
 <!-- Main content -->
 <div class="content">
   <!-- Tournament data -->
-  <div class="nav-tabs-custom" id="bb-admin-dash-tables">
-    <ul class="nav nav-tabs pull-right">
-      <li class="active">
-        <a data-toggle="tab" href="#tourney-data-lobbies">Lobbies</a>
-      </li>
-      <li>
-        <a data-toggle="tab" href="#tourney-data-teams">Teams</a>
-      </li>
-      <li class="pull-left header">
-        <i class="fa fa-th"></i>
-        Tournament Data
-      </li>
-    </ul>
-    <div class="tab-content">
-      <!-- Lobby data -->
-      <div id="tourney-data-lobbies" class="tab-pane active">
-        <table id="bb-lobby-table" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Player 1</th>
-              <th>Player 2</th>
-              <th>Score</th>
-              <th>Room</th>
-              <th>Time</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-        </table>
-      </div> <!-- /Lobby data -->
-      
-      <!-- Team data -->
-      <div id="tourney-data-teams" class="tab-pane">
-        <table id="bb-team-table" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
-          <thead>
-            <tr>
-              <th>Seed</th>
-              <th>Name</th>
-              <th>Online?</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-        </table>
-      </div> <!-- /Team data -->
-      
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <div class="nav-tabs-custom" id="bb-admin-dash-tables">
+        <ul class="nav nav-tabs pull-right">
+          <li class="active">
+            <a data-toggle="tab" href="#tourney-data-lobbies">Lobbies</a>
+          </li>
+          <li>
+            <a data-toggle="tab" href="#tourney-data-teams">Teams</a>
+          </li>
+          <li class="pull-left header">
+            <i class="fa fa-th"></i>
+            Tournament Data
+          </li>
+        </ul>
+        <div class="tab-content">
+          <!-- Lobby data -->
+          <div id="tourney-data-lobbies" class="tab-pane active">
+            <table id="bb-lobby-table" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Player 1</th>
+                  <th>Player 2</th>
+                  <th>Score</th>
+                  <th>Room</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+            </table>
+          </div> <!-- /Lobby data -->
+          
+          <!-- Team data -->
+          <div id="tourney-data-teams" class="tab-pane">
+            <table id="bb-team-table" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%">
+              <thead>
+                <tr>
+                  <th>Seed</th>
+                  <th>Name</th>
+                  <th>Online?</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+            </table>
+          </div> <!-- /Team data -->
+          
+        </div>
+      </div>
     </div>
   </div>
+
+  <hr class="divider">
+  
+  <div id="bracket" class="bracket-scroll-wrapper centered"></div>
 </div>
 
+{% include 'app/content/bracket-scripts.html' %}
+
+<!-- Dashboard script -->
 <script src="/static/brawlbracket/js/admin-dashboard.min.js"></script>
+<script>
+    createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});
+</script>

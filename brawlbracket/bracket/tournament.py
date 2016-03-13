@@ -385,3 +385,38 @@ class SingleElimTournament(TreeTournament):
         roundTeams = teams[numMatches:numMatches*2]
         
         return (matches, roundTeams)
+
+    def getTeamStatus(self, team):
+        """
+        Gets team status.
+        
+        Returns (status name, pretty name)
+        Returns None if Team couldn't be found.
+        """
+        if team.eliminated:
+            return ('eliminated', 'Eliminated')
+            
+        match = None
+        for m in self.matches:
+            for t in match.teams:
+                if team.id == t.id:
+                    match = m
+                    break
+            if match is not None:
+                break
+                
+        # All of these states have the match appended to them
+        state = ''
+        subPrettyState = ''
+        
+        if match.state['name'] in ['waitingForMatch', 'waitingForPlayers']:
+            state = 'waiting'
+            subPrettyState = 'Waiting'
+        elif match.state['name'] == 'inGame':
+            state = 'playing'
+            subPrettyState = 'Playing'
+        else:
+            state = 'setup'
+            subPrettyState = 'Setting up'
+            
+        return (state, subPrettyState + ' (match #{})'.format(match.number))

@@ -52,7 +52,7 @@ if tempTourney is None:
                     name='BrawlBracket Test Tourney'
                     )
     for i, user in enumerate(tempUsers):
-        team = tempTourney.createTeam(i) # i = seed
+        team = tempTourney.createTeam(i + 1) # i = seed, 1-indexed
         team.name = user.username
         player = tempTourney.createPlayer(user)
         team.players.append(player)

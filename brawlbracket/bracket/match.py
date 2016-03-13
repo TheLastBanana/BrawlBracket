@@ -35,6 +35,7 @@ class Match():
             bestOf: Maximum number of games in this match (int)
         
         Properties (read only accessor):
+            lobbyData: Returns dict of lobby data
             lobbyStatus: Returns tuple of lobby status. (string, string, int)
         """
         self.id = kwargs.get('uuid', uuid.uuid1())
@@ -199,7 +200,8 @@ class Match():
         """
         self._updateState()
     
-    def getLobbyData(self):
+    @property
+    def lobbyData(self):
         """
         Get data relevant to the lobby.
         See https://github.com/TheLastBanana/BrawlBracket/wiki/JSON-objects

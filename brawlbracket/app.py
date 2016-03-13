@@ -344,8 +344,8 @@ def data_lobbies(tourneyName):
     return json.dumps(ajaxData)
     
 # User data
-@app.route('/app-data/users/<tourneyName>')
-def data_users(tourneyName):
+@app.route('/app-data/teams/<tourneyName>')
+def data_teams(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
     
     if tournament is None:

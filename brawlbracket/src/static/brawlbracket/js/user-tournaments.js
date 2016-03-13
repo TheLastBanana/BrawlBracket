@@ -9,13 +9,17 @@ $(function () {
         
         columns: [
             {
-                orderable: false,
-                defaultContent: ''
+                responsivePriority: 1
             },
-            {},
-            {},
-            {},
-            {}
+            {
+                responsivePriority: 3
+            },
+            {
+                responsivePriority: 4
+            },
+            {
+                responsivePriority: 2
+            }
         ]
     });
 });

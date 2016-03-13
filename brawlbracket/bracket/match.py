@@ -33,6 +33,9 @@ class Match():
             round: Round in the tournament (int)
             number: The number of the match in the tournament. Roughly the order they'll be played in. (int)
             bestOf: Maximum number of games in this match (int)
+        
+        Properties (read only accessor):
+            lobbyStatus: Returns tuple of lobby status. (string, string, int)
         """
         self.id = kwargs.get('uuid', uuid.uuid1())
         
@@ -262,3 +265,50 @@ class Match():
                     self.state.clear()
                     self.state['name'] = 'waitingForPlayers'
                     return
+    
+    @property
+    def lobbyStatus(self):
+        """
+        Lobby status.
+        
+        Returns (name, pretty name, sort order)
+        """
+        if stateName == 'waitingForMatch':
+            prereqMatch = None
+            for m in self.prereqMatches:
+                if m.winner is None:
+                    prereqMatch = m
+                    break
+            
+            return (self.state['name'],
+                    'Waiting for match #{}'.format(prereqMatch.number),
+                    # Higher priority if one team is done, but still lower than
+                    # if both are (i.e. waitingForPlayers)
+                    5 if self.teams.count(None) <= 1 else 6)
+            
+        elif stateName == 'waitingForPlayers':
+            # Show team names -- all player names in e.g. 2v2s would make a really long string
+            notReady = []
+            for participant in participants:
+                if not participant['ready']:
+                    notReady.append(participant['name'])
+            
+            # We assume there are only 2 participants in a lobby
+            if len(notReady) == 2:
+                return (stateName,
+                        'Waiting for both participants',
+                        # Both players inactive, so lower priority than if one is online
+                        4)
+            
+            return (stateName,
+                    'Waiting for {}'.format(notReady[0]),
+                    # One player inactive, so lower priority than if both are online
+                    3)
+                    
+        elif stateName == 'complete':
+            return (stateName,
+                    'Complete',
+                    # Completed matches have low priority
+                    7)
+                
+        return ('unknown', 'Unknown', 98)

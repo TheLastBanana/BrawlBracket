@@ -199,7 +199,7 @@ def _buildTournament(tournamentData):
         user = um.getUserById(playerData[1])
         if user is None:
             raise AssertionError('Player user was none.'
-                                 '{}'.format(userId))
+                                 '{}'.format(playerData[1]))
         player = plr.Player(user, uuid = id)
         player.currentLegend = playerData[2]
         player.online = False

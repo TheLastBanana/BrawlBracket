@@ -56,6 +56,7 @@ if tempTourney is None:
         team.name = user.username
         player = tempTourney.createPlayer(user)
         team.players.append(player)
+        print(team)
     print('Temp tournament has {} users!'.format(len(tempTourney.teams)))
     tempTourney.generateMatches()
     
@@ -382,17 +383,9 @@ def data_teams(tourneyName):
 @socketio.on('connect', namespace='/participant')
 def user_connect():
     userId = session.get('userId', None)
+    user = um.getUserById(userId)
     tourneyId = session.get('tourneyId', None)
     tournament = tm.getTournamentById(tourneyId)
-    
-    # Weren't passed a userId
-    if userId is None:
-        print('User id missing; connection rejected')
-        emit('error', {'code': 'bad-participant'},
-            broadcast=False, include_self=True)
-        return False
-    
-    user = um.getUserById(userId)
     
     # User doesn't exist
     if user is None:
@@ -400,6 +393,10 @@ def user_connect():
         emit('error', {'code': 'bad-participant'},
             broadcast=False, include_self=True)
         return False
+    
+    #Tournament doesn't exist
+    if tournament is None:
+        abort(404)
     
     info = tournament.getUserInfo(user)
     
@@ -422,14 +419,21 @@ def user_connect():
     request.namespace = '/chat'
     join_room(match.chat.getRoom())
     request.namespace = '/participant'
-        
+    
+    lobbyData = match.lobbyData
     emit('join lobby', {
-            'lobbyData': match.getLobbyData(),
+            'lobbyData': lobbyData,
             'playerSettings': user.getSettings()
         },
         broadcast=False, include_self=True)
         
     # TODO: update match state and post lobby updates to room 
+    updatedLobbyData = {}
+    updatedLobbyData['teams'] = lobbyData['teams'] # Maybe only push teams ready
+    updatedLobbyData['players'] = lobbyData['players']
+    
+    emit('update lobby', updatedLobbyData, broadcast=True, include_self=False,
+            room = match.id, namespace='/participant')
     
 @socketio.on('disconnect', namespace='/participant')
 def participant_disconnect():
@@ -561,4 +565,4 @@ def runWebServer(debug=False):
     Run the web server.
     """
     app.debug = debug
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0')

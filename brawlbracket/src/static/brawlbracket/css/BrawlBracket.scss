@@ -139,8 +139,8 @@ Player versus player widget
     transform: translate(-50%, 0%);
   }
 
-  h3.widget-user-username-versus-1,
-  h3.widget-user-username-versus-2 {
+  & h3.widget-user-username-versus-1,
+  & h3.widget-user-username-versus-2 {
     text-align: center;
 
     /* Deal with large names by cutting them off with an ellipsis */
@@ -150,47 +150,47 @@ Player versus player widget
     overflow: hidden;
   }
 
-  .widget-user-username-versus-center {
+  & .widget-user-username-versus-center {
     left: 50%;
   }
 
-  .widget-user-image-versus-1,
-  .widget-user-image-versus-2 {
+  & .widget-user-image-versus-1,
+  & .widget-user-image-versus-2 {
     position: absolute;
     top: 65px;
     left: 50%;
     margin-left: -45px;
   }
 
-  .widget-user-username-versus-1,
-  .widget-user-image-versus-1 {
+  & .widget-user-username-versus-1,
+  & .widget-user-image-versus-1 {
     left: 20.5%;
   }
 
-  .widget-user-username-versus-2,
-  .widget-user-image-versus-2 {
+  & .widget-user-username-versus-2,
+  & .widget-user-image-versus-2 {
     left: 79.5%;
   }
 
-  .widget-user-image-versus-1 > img,
-  .widget-user-image-versus-2 > img {
+  & .widget-user-image-versus-1 > img,
+  & .widget-user-image-versus-2 > img {
     width: 90px;
     height: auto;
     border: 3px solid #fff;
   }
 
-  .description-score {
+  & .description-score {
     margin: {
       top: 0px;
       bottom: 0px;
     }
   }
 
-  .description-block .btn-app {
+  & .description-block .btn-app {
     margin: 5px 0px 0px 0px;
   }
 
-  .description-status {
+  & .description-status {
     display: inline-block;
     border-radius: 3px;
     padding: 6px 14px;

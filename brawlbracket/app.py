@@ -35,10 +35,10 @@ oid = OpenID(app)
 _steam_id_re = re.compile('steamcommunity.com/openid/id/(.*?)$')
 
 # Start temp tournament generation
-steamIds = [76561198042414835, 76561198078549692, 76561197993702532,
-            76561198069178478, 76561198065399638, 76561197995127703,
-            76561198068388037, 76561198050490587, 76561198072175457,
-            76561198063265824, 76561198042403860]
+steamIds = [76561198050490587, 76561198065399638, 76561198072175457,
+            76561198069178478, 76561198078549692, 76561197995127703,
+            76561198068388037, 76561198042414835, 76561197993702532,
+            76561198063265824, 76561198042403860, 76561198045082103]
 tempUsers = []
 for id in steamIds:
     user = um.getUserBySteamId(id)
@@ -110,9 +110,16 @@ def page_not_found(e):
 @app.route('/login/')
 @oid.loginhandler
 def login():
-    if session.get('userId', None) is not None:
+    userId = session.get('userId', None)
+    user = um.getUserById(userId)
+    
+    if user is None:
+        if userId is not None:
+            session.pop('userId')
+        
+        return oid.try_login('http://steamcommunity.com/openid')
+    else:
         return redirect(oid.get_next_url())
-    return oid.try_login('http://steamcommunity.com/openid')
 
 @app.route('/logout/')
 def logout():
@@ -436,21 +443,19 @@ def user_connect():
             room = match.id, namespace='/participant')
     
 @socketio.on('disconnect', namespace='/participant')
-def participant_disconnect():
+def user_disconnect():
     userId = session.get('userId', None)
     tournamentId = session.get('tourneyId', None)
     
-    # Bad info, but they've disconnected anyways...
-    if None in (userId, tournamentId):
-        return
-    
     user = um.getUserById(userId)
     
-    # User doesn't exist
+    # User doesn't exist, this shouldn't happen ever
     if user is None:
-        return
+        raise AssertionError('User disconnected, but didn\'t exist')
         
     tournament = tm.getTournamentById(tournamentId)
+    if tournament is None:
+        abort(404)
     
     # Tournament doesn't exist
     if tournament is None:
@@ -466,8 +471,15 @@ def participant_disconnect():
     match, team, player = info
     
     player.online = False
-    # TODO: update match state and post lobby updates to room 
 
+    lobbyData = match.lobbyData
+    updatedLobbyData = {}
+    updatedLobbyData['teams'] = lobbyData['teams'] # Maybe only push teams ready
+    updatedLobbyData['players'] = lobbyData['players']
+    
+    emit('update lobby', updatedLobbyData, broadcast=True, include_self=False,
+            room = match.id, namespace='/participant')
+    
     print('User {} disconnected'.format(user.id))
     
 

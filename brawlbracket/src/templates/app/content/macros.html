@@ -4,12 +4,12 @@
 {% macro appHeader(pageName) -%}
   {%- if pageName == 'Home' -%}
     {{ pageHeader([
-      [tourneyFullName, '/t/' + tourneyName],
+      [tournament.name, '/t/' + tourneyName],
       ['Home', '']
-    ], tourneyFullName) }}
+    ], tournament.name) }}
   {%- else -%}
     {{ pageHeader([
-      [tourneyFullName, '/t/' + tourneyName],
+      [tournament.name, '/t/' + tourneyName],
       [pageName, '']
     ]) }}
   {%- endif -%}

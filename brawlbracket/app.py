@@ -71,12 +71,8 @@ def default_template_data():
     userId = session.get('userId', None)
     user = um.getUserById(userId)
     
-    userName = user.username if user else None
-    userAvatar = user.avatar if user else None
-    
     return dict(versionNumber = __version__,
-                userName = userName,
-                userAvatar = userAvatar)
+                user = user)
                 
 @app.template_filter('datetime')
 def filter_datetime(date):
@@ -212,8 +208,7 @@ def user_app(tourneyName, startPage):
     return render_template('app/user-app.html',
                            startPage=startPage,
                            tourneyName=tourneyName,
-                           tourneyFullName=tournament.name,
-                           userId=user.id,
+                           tournament=tournament,
                            basePath='/t/{}/app/'.format(tourneyName))
 
 # Contact admin page
@@ -221,7 +216,7 @@ def user_app(tourneyName, startPage):
 def contact_admin(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
     return render_template('app/content/contact-admin.html',
-                           tourneyFullName=tournament.name,
+                           tournament=tournament,
                            tourneyName=tourneyName)
     
 # App version of tournament index
@@ -231,7 +226,6 @@ def app_tournament_index(tourneyName):
 
     return render_template('app/content/tournament-index.html',
                            tourneyName=tourneyName,
-                           tourneyFullName=tournament.name,
                            tournament=tournament)
     
 # Lobby content
@@ -239,7 +233,7 @@ def app_tournament_index(tourneyName):
 def lobby(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
     return render_template('app/content/lobby.html',
-                           tourneyFullName=tournament.name,
+                           tournament=tournament,
                            tourneyName=tourneyName)
 
 #----- Admin pages -----#
@@ -264,8 +258,7 @@ def admin_app(tourneyName, startPage):
     return render_template('app/admin-app.html',
                            startPage=startPage,
                            tourneyName=tourneyName,
-                           tourneyFullName=tournament.name,
-                           userId=user.id,
+                           tournament=tournament,
                            basePath='/t/{}/admin/'.format(tourneyName))
                            
 # Admin dashboard
@@ -286,7 +279,6 @@ def admin_dashboard(tourneyName):
 
     return render_template('app/content/admin-dashboard.html',
                            tournament=tournament,
-                           tourneyFullName=tournament.name,
                            tourneyName=tourneyName)
     
 #----- Page elements -----#

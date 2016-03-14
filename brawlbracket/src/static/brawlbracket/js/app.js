@@ -258,10 +258,10 @@ function brawlBracketAdminInit() {
 /**
  * Get a content page's URL including tourney and participant data.
  * @param {string} pageName - The name of the page to load. Should exist at
- *   /app-content/<pageName>/<tourneyName>
+ *   /app-pages/<pageName>/<tourneyName>
  */
 function getContentURL(pageName) {
-    return '/app-content/' + pageName + '/' + tourneyName;
+    return '/app-pages/' + pageName + '/' + tourneyName;
 }
 
 /**

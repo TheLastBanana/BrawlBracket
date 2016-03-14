@@ -1,14 +1,14 @@
-{% from 'app/content/macros.html' import appHeader with context %}
+{% from 'app/elements/macros.html' import appHeader with context %}
 {{ appHeader('Home') }}
 
 <section class="content">
-  {% include 'app/content/tournament-info.html' %}
+  {% include 'app/elements/tournament-info.html' %}
 
   <hr class="divider">
 
   <div id="bracket" class="bracket-scroll-wrapper centered"></div>
 
-  {% include 'app/content/bracket-scripts.html' %}
+  {% include 'app/elements/bracket-scripts.html' %}
   
   <script>
     createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});

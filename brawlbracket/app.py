@@ -212,27 +212,27 @@ def user_app(tourneyName, startPage):
                            basePath='/t/{}/app/'.format(tourneyName))
 
 # Contact admin page
-@app.route('/app-content/contact-admin/<tourneyName>')
+@app.route('/app-pages/contact-admin/<tourneyName>')
 def contact_admin(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
-    return render_template('app/content/contact-admin.html',
+    return render_template('app/pages/contact-admin.html',
                            tournament=tournament,
                            tourneyName=tourneyName)
     
 # App version of tournament index
-@app.route('/app-content/index/<tourneyName>')
+@app.route('/app-pages/index/<tourneyName>')
 def app_tournament_index(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
 
-    return render_template('app/content/tournament-index.html',
+    return render_template('app/pages/tournament-index.html',
                            tourneyName=tourneyName,
                            tournament=tournament)
     
 # Lobby content
-@app.route('/app-content/lobby/<tourneyName>')
+@app.route('/app-pages/lobby/<tourneyName>')
 def lobby(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
-    return render_template('app/content/lobby.html',
+    return render_template('app/pages/lobby.html',
                            tournament=tournament,
                            tourneyName=tourneyName)
 
@@ -262,7 +262,7 @@ def admin_app(tourneyName, startPage):
                            basePath='/t/{}/admin/'.format(tourneyName))
                            
 # Admin dashboard
-@app.route('/app-content/admin-dashboard/<tourneyName>')
+@app.route('/app-pages/admin-dashboard/<tourneyName>')
 def admin_dashboard(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
     userId = session.get('userId')
@@ -277,27 +277,27 @@ def admin_dashboard(tourneyName):
     if user not in tournament.admins:
         abort(403)
 
-    return render_template('app/content/admin-dashboard.html',
+    return render_template('app/pages/admin-dashboard.html',
                            tournament=tournament,
                            tourneyName=tourneyName)
     
 #----- Page elements -----#
     
 # Connect error
-@app.route('/app-content/lobby-error/<tourneyName>')
+@app.route('/app-elements/lobby-error/<tourneyName>')
 def lobby_error(tourneyName):
-    return render_template('app/content/lobby-error.html')
+    return render_template('app/elements/lobby-error.html')
     
 # Legend roster
-@app.route('/app-content/roster')
+@app.route('/app-elements/roster')
 def roster():
-    return render_template('app/content/lobby-roster.html',
+    return render_template('app/elements/lobby-roster.html',
     legendData=util.orderedLegends)
     
 # Map picker
-@app.route('/app-content/realms')
+@app.route('/app-elements/realms')
 def realms():
-    return render_template('app/content/lobby-realms.html',
+    return render_template('app/elements/lobby-realms.html',
                            realmData=util.orderedRealms)
 
 #----- Raw data -----#

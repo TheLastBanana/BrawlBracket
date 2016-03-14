@@ -10,7 +10,7 @@
 {%- endblock -%}
   
 {%- block content -%}
-  {% include 'app/content/tournament-info.html' %}
+  {% include 'app/elements/tournament-info.html' %}
   
   <hr class="divider">
 {%- endblock -%}
@@ -20,7 +20,7 @@
 {%- endblock -%}
 
 {%- block extraScripts -%}
-  {% include 'app/content/bracket-scripts.html' %}
+  {% include 'app/elements/bracket-scripts.html' %}
   
   <script>
     createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});

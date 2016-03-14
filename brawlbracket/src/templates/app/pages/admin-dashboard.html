@@ -1,4 +1,4 @@
-{% from 'app/content/macros.html' import appHeader with context %}
+{% from 'app/elements/macros.html' import appHeader with context %}
 {{ appHeader('Admin Dashboard') }}
 
 <!-- Main content -->
@@ -61,7 +61,7 @@
   <div id="bracket" class="bracket-scroll-wrapper centered"></div>
 </div>
 
-{% include 'app/content/bracket-scripts.html' %}
+{% include 'app/elements/bracket-scripts.html' %}
 
 <!-- Dashboard script -->
 <script src="/static/brawlbracket/js/admin-dashboard.min.js"></script>

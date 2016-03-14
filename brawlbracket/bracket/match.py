@@ -1,4 +1,5 @@
 import uuid
+import datetime
 from brawlbracket import chatmanager
 from brawlbracket import banrule
 
@@ -215,7 +216,8 @@ class Match():
         lobbyData['chatId'] = str(self.chat.id)
         lobbyData['realmBans'] = self.realmBans
         lobbyData['bestOf'] = self.bestOf
-        lobbyData['startTime'] = self.startTime
+        lobbyData['startTime'] = self.startTime.isoformat()\
+            if self.startTime is not None else None
         lobbyData['roomNumber'] = self.roomNumber
         lobbyData['currentRealm'] = self.currentRealm
         
@@ -284,9 +286,12 @@ class Match():
             self.state.clear()
             self.state['name'] = 'pickLegends'
             
-            rules = banrule.rulesets[self.banRule] 
+            print(banrule.rulesets)
+            rules = banrule.rulesets['basic'] 
             data = rules.getNextLegendStep(self)
+            print('-----------------------------------')
             print('GOT DATA: ', data)
+            print('-----------------------------------')
             
             for key in data:
                 self.state[key] = data[key]

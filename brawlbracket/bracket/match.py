@@ -1,5 +1,6 @@
 import uuid
 from brawlbracket import chatmanager
+from brawlbracket import banrule
 
 class Match():
     """
@@ -76,7 +77,7 @@ class Match():
         self.startTime = None
         self.roomNumber = None
         self.currentRealm = None
-        self.banRule = None
+        self.banRule = 'basic'
                         
     @property
     def prereqMatches(self):
@@ -246,27 +247,49 @@ class Match():
         """
         Updates this Match's state.
         """
-        for m in self.prereqMatches:
-            # No prereq
-            if m is None:
-                continue
-                
-            # Match isn't done
-            if m.winner is None:
-                self.state.clear()
-                self.state['name'] = 'waitingForMatch'
-                self.state['teamNames'] = [x.name for x in m.teams
-                                            if x is not None]
-                self.state['matchNumber'] = m.number
-                return
+        stateName = self.state['name']
         
-        for team in self.teams:
-            # No team yet
-            for player in team.players:
-                if not player.online:
+        # States we don't want to regress from
+        cycleStates = [
+            'pickLegends',
+            'chooseMap',
+            'createRoom',
+            'inGame',
+            ]
+        if stateName not in cycleStates:
+            for m in self.prereqMatches:
+                # No prereq
+                if m is None:
+                    continue
+                    
+                # Match isn't done
+                if m.winner is None:
                     self.state.clear()
-                    self.state['name'] = 'waitingForPlayers'
+                    self.state['name'] = 'waitingForMatch'
+                    self.state['teamNames'] = [x.name for x in m.teams
+                                                if x is not None]
+                    self.state['matchNumber'] = m.number
                     return
+            
+            for team in self.teams:
+                # No team yet
+                for player in team.players:
+                    if not player.online:
+                        self.state.clear()
+                        self.state['name'] = 'waitingForPlayers'
+                        return
+        
+        if stateName == 'waitingForPlayers':
+            self.startTime = datetime.datetime.now()
+            self.state.clear()
+            self.state['name'] = 'pickLegends'
+            
+            rules = banrule.rulesets[self.banRule] 
+            data = rules.getNextLegendStep(self)
+            print('GOT DATA: ', data)
+            
+            for key in data:
+                self.state[key] = data[key]
     
     @property
     def lobbyStatus(self):

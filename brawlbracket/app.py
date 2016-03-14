@@ -405,7 +405,12 @@ def user_connect():
         pass
     
     match, team, player = info
+    
+    # Affect match state
     player.online = True
+    
+    # XXX update state, put in listener
+    match._updateState()
     
     # Join new room
     session['matchId'] = match.id
@@ -430,6 +435,7 @@ def user_connect():
     updatedLobbyData = {}
     updatedLobbyData['teams'] = lobbyData['teams'] # Maybe only push teams ready
     updatedLobbyData['players'] = lobbyData['players']
+    updatedLobbyData['state'] = lobbyData['state']
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=False,
             room = match.id, namespace='/participant')
@@ -462,15 +468,20 @@ def user_disconnect():
     
     match, team, player = info
     
+    # Affect state
     player.online = False
-
+    
+    # XXX update state, put in listener
+    match._updateState()
+    
     lobbyData = match.lobbyData
     updatedLobbyData = {}
     updatedLobbyData['teams'] = lobbyData['teams'] # Maybe only push teams ready
     updatedLobbyData['players'] = lobbyData['players']
+    updatedLobbyData['state'] = lobbyData['state']
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=False,
-            room = match.id, namespace='/participant')
+            room = match.id)
     
     print('User {} disconnected'.format(user.id))
     

@@ -103,6 +103,12 @@ var lobbyUIFunctions = {
         }
         
         switch (lobbyData.prevState.name) {
+            case 'building':
+            case 'waitingForPlayers':
+            case 'waitingForMatch':
+                removeCallout('state');
+                break;
+            
             case 'inGame':
                 // Replace "report win" buttons with status
                 lobbyUIFunctions.teams();

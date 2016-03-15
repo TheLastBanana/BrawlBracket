@@ -117,7 +117,7 @@ var lobbyUIFunctions = {
     },
     
     'chatId': function () {
-        $('.direct-chat').setUpChatBox(lobbyData.chatId);
+        createChat($('#bb-lobby-chat').get(0), chatSocket, lobbyData.chatId, chatCache, '450px');
     },
     
     'realmBans': function () {
@@ -228,7 +228,7 @@ $(function() {
     // Called when the inner page content is removed to load a new page.
     // Clean up socketIO handlers.
     $('.content').on('destroy', function() {
-        chatSocket.off('update lobby', onUpdateLobby);
+        pSocket.off('update lobby', onUpdateLobby);
         clearInterval(lobbyTimer);
         lobbyTimer = null;
     });

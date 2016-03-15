@@ -79,11 +79,6 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
         if (data.chatId in chatCache) {
             chatCache[data.chatId].push(data.messageData);
         }
-        
-        // If this page includes the chat box, update it
-        var chatBox = $('.direct-chat[chatId=' + data.chatId + ']');
-        if (chatBox.length == 0) return;
-        addChatMessage(chatBox, data.messageData, false);
     });
     
     chatSocket.on('receive log', function(data) {
@@ -92,12 +87,6 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
         
         // Add notifications
         chatNotifyLog(data.chatId, data.log);
-        
-        // If this page includes the chat box, update it
-        var chatBox = $('.direct-chat[chatId=' + data.chatId + ']');
-        if (chatBox.length == 0) return;
-        
-        addAllChatMessages(chatBox, data.log);
     });
 
     var menuOptions = $('.bb-menu-option');
@@ -265,47 +254,6 @@ function getContentURL(pageName) {
 }
 
 /**
- * Create a chat message DOM element.
- * @param {string} name - The name of the sender.
- * @param {string} time - Date string representing the time the message was sent.
- * @param {string} avatar - The sender's avatar.
- * @param {string} text - The text of the message.
- * @param {boolean} right - Should be true for the current user's messages and false for others.
- */
-function createChatMessage(name, time, avatar, text, right) {
-    var messageRoot = $('<div class="direct-chat-msg"></div>');
-    
-    if (right) messageRoot.addClass('right');
-    
-    var info = $('<div class="direct-chat-info clearfix"></div>');
-    
-    var timeDate = new Date(time);
-    var formattedTime = timeDate.toLocaleTimeString();
-    var msgTime = $('<span class="direct-chat-timestamp"></span>').text(formattedTime);
-    
-    var msgName = $('<span class="direct-chat-name"></span>').text(name);
-    
-    // Align name with avatar and put timestamp on the other side
-    if (right) {
-        msgName.addClass('pull-right');
-        msgTime.addClass('pull-left');
-    }
-    else {
-        msgName.addClass('pull-left');
-        msgTime.addClass('pull-right');
-    }
-    
-    info.append(msgName);
-    info.append(msgTime);
-    messageRoot.append(info);
-    
-    messageRoot.append($('<img class="direct-chat-img">').attr('src', avatar));
-    messageRoot.append($('<div class="direct-chat-text"></div>').text(text));
-    
-    return messageRoot;
-}
-
-/**
  * Left-pad a string with a given character.
  * @param {string} str - The string.
  * @param {number} count - The number of characters to pad to.
@@ -370,55 +318,6 @@ function showPage(pageName, replace) {
     }
     
     clearPageNotifications(pageName);
-}
-
-/**
- * Receive a chat message.
- * @param {jQuery object} chatBox - The outermost element of the chat box.
- * @param {json} msgData - Message JSON data.
- *     @param {string} msgData.name - The name of the sender.
- *     @param {string} msgData.sentTime - Date string representing the time the message was sent.
- *     @param {string} msgData.avatar - The sender's avatar.
- *     @param {string} msgData.message - The text of the message.
- *     @param {string} msgData.senderId - The Challonge participant id of the sender.
- * @param {string} msgData - The string.
- */
-function addChatMessage(chatBox, msgData, instant) {
-    var msg = createChatMessage(msgData.name, msgData.sentTime, msgData.avatar,
-                                msgData.message, msgData.senderId == userId);
-                                
-    var msgBox = chatBox.find('.direct-chat-messages');
-    
-    // Only scroll down if user is already at bottom
-    var atBottom = msgBox.scrollTop() + msgBox.innerHeight() >= msgBox[0].scrollHeight;
-    
-    msg.appendTo(msgBox);
-    
-    // Do this after append so we can get the actual height
-    if (atBottom && !instant) {
-        msgBox.animate({ scrollTop: msgBox[0].scrollHeight }, "slow");
-    }
-    
-    localStorage.setItem('lastTime-' + chatBox.attr('chatId'), msgData.sentTime);
-}
-
-/**
- * Send a message from a chat box and empty the chat box.
- * Does nothing if the box is empty.
- * @param {jQuery object} chatBox - The outermost element of the chat box.
- */
-function sendChat(chatBox) {
-    var input = chatBox.find('.direct-chat-input');
-    
-    var message = input.val();
-    if (message == '') return;
-    
-    chatSocket.emit('send', {
-        'chatId': chatBox.attr('chatId'),
-        'message': message
-    });
-    
-    input.val('');
 }
 
 /**
@@ -492,64 +391,7 @@ function desktopNotify(title, body, icon) {
     setTimeout(notification.close.bind(notification), desktopNotifyLength);
 }
 
-/**
- * Add all the messages in a chat log to a chat box.
- * @param {jQuery object} chatBox - The chatbox to populate.
- * @param {array} log - The chat log to use.
- */
-function addAllChatMessages(chatBox, log) {
-    var msgBox = chatBox.find('.direct-chat-messages');
-        
-    msgBox.empty();
-    
-    for (id in log) {
-        addChatMessage(chatBox, log[id], true);
-    }
-    
-    // Skip to bottom
-    msgBox.scrollTop(msgBox[0].scrollHeight);
-}
-
 $.fn.extend({
-    setUpChatBox: function(chatId) {
-        return $(this).each(function() {
-            var chatBox = $(this);
-            
-            // Set chat id so we know which chat this links to
-            chatBox.attr('chatId', chatId);
-            
-            // Make send button send
-            chatBox.find('.direct-chat-send').on('click', function(event) {
-                sendChat(chatBox);
-                
-                return false;
-            });
-            
-            // Make enter button send
-            chatBox.find('.direct-chat-input').keypress(function(e) {
-                if (e.which == 13) {
-                    sendChat(chatBox);
-                }
-            });
-            
-            if (chatId in chatCache) {
-                var cache = chatCache[chatId];
-                
-                // Fill chat from cache
-                addAllChatMessages(chatBox, cache);
-        
-                // Add notifications
-                chatNotifyLog(chatId, cache);
-                
-            } else {
-                // Request chat history to populate box
-                chatSocket.emit('request log', {
-                    'chatId': chatId
-                });
-            }
-        });
-    },
-    
     clearNotifications: function() {
         return $(this).each(function() {
             var $this = $(this);

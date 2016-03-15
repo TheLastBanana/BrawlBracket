@@ -7,8 +7,11 @@
   <hr class="divider">
 
   <div id="bracket" class="bracket-scroll-wrapper centered"></div>
-
-  {% include 'app/elements/bracket-scripts.html' %}
+  
+  <!-- jquery.pin -->
+  <script src="/static/jquery-pin/jquery.pin.min.js"></script>
+  <!-- Bracket script -->
+  <script src="/static/brawlbracket/js/bracket.min.js"></script>
   
   <script>
     createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});

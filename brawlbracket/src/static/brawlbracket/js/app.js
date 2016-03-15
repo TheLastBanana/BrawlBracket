@@ -266,10 +266,9 @@ function padString(str, count, padChar) {
 
 /**
  * Get a string representing the time since a timer began.
- * @param {string} isoTime - Time in ISO 8601 format.
+ * @param {string} timeDiff - Time difference in ISO 8601 format.
  */
-function getTimerString(isoTime) {
-    var timeDiff = new Date(new Date() - new Date(isoTime));
+function getTimerString(timeDiff) {
     var minStr = "" + timeDiff.getMinutes();
     var secStr = "" + timeDiff.getSeconds();
     

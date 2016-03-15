@@ -337,14 +337,11 @@ def _buildTournament(tournamentData):
     
     return tournament
     
-def _writeTournamentToDB(tournament):
+def _constructTournamentDataForDB(tournament):
     """
-    Serializes a tournament, its matches, teams, and palyers and then inserts 
-    them into their own tables in the database.
+    Builds a tuple of data from a tournament in the format expected for the
+    database.
     """
-    if _db is None:
-        _initDB()
-    
     tournamentData = (
         tournament.id,
         tournament.name,
@@ -360,40 +357,136 @@ def _writeTournamentToDB(tournament):
             if tournament.checkInTime is not None else None,
         tournament.description,
         tournament.style
-        )
+    )
+    return tournamentData
+
+def _constructMatchDataForDB(match):
+    """
+    Builds a tuple of data from a match in the format expected for the database.
+    """
+    matchData = (
+        match.id,
+        # nextMatch could be None
+        match.nextMatch.id\
+            if match.nextMatch is not None else None,
+        match.nextMatchSide\
+            if match.nextMatchSide is not None else None,
+        match.round,
+        match.number,
+        # m could be None
+        json.dumps([str(m.id) if m is not None else None
+                      for m in match.prereqMatches]),
+        match.chat.id,
+        json.dumps(match.score),
+        # t could be None
+        json.dumps([str(t.id) if t is not None else None
+                      for t in match.teams]),
+        json.dumps(match.realmBans),
+        match.startTime.isoformat()\
+            if match.startTime is not None else None,
+        match.roomNumber if match.bestOf is not None else None,
+        match.currentRealm,
+        match.banRule,
+        match.winner.id\
+            if match.winner is not None else None,
+        match.bestOf if match.bestOf is not None else None,
+        json.dumps(match.state)
+    )
+    return matchData
+    
+def _constructTeamDataForDB(team):
+    """
+    Builds a tuple of data from a team in the format expected for the database.
+    """
+    teamData = (
+        team.id,
+        team.seed,
+        team.name,
+        json.dumps([str(p.id) for p in team.players]),
+        team.eliminated,
+        team.checkedIn
+    )
+    return teamData
+
+def _constructPlayerDataForDB(player):
+    """
+    Builds a tuple of data from a player in the format expected for the database.
+    """
+    playerData = (
+        player.id,
+        player.user.id,
+        player.currentLegend
+    )
+    return playerData
+
+def _tournamentDBCallback(tournament):
+    """
+    Write a single tournament to the database.
+    Intended as a call back for when a tournament changes internally and needs to 
+    write out.
+    """
+    if _db is None:
+        _initDB()
+    
+    print('-------TOURNAMENT DB CALLBACK!')
+    tournamentData = _constructTournamentDataForDB(tournament)
+    _db.insert_values('tournaments', [tournamentData])
+
+def _matchDBCallback(match):
+    """
+    Write a single match to the database.
+    Intended as a call back for when a match changes internally and needs to 
+    write out.
+    """
+    if _db is None:
+        _initDB()
+    
+    print('-------MATCH DB CALLBACK!')
+    matchData = _constructMatchDataForDB(match)
+    _db.insert_values('matches', [matchData])
+    
+def _teamDBCallback(team):
+    """
+    Write a single team to the database.
+    Intended as a call back for when a team changes internally and needs to 
+    write out.
+    """
+    if _db is None:
+        _initDB()
+    
+    print('-------TEAM DB CALLBACK!')
+    teamData = _constructTeamDataForDB(team)
+    _db.insert_values('teams', [teamData])
+
+def _playerDBCallback(player):
+    """
+    Write a single player to the database.
+    Intended as a call back for when a player changes internally and needs to 
+    write out.
+    """
+    if _db is None:
+        _initDB()
+    
+    print('-------PLAYER DB CALLBACK!')
+    playerData = _constructPlayerDataForDB(player)
+    _db.insert_values('players', [playerData])
+
+    
+def _writeTournamentToDB(tournament):
+    """
+    Serializes a tournament, its matches, teams, and players and then inserts 
+    them into their own tables in the database.
+    """
+    if _db is None:
+        _initDB()
+        
+    tournamentData = _constructTournamentDataForDB(tournament)
     print('Writing tournament with: ', tournamentData)
     _db.insert_values('tournaments', [tournamentData])
     
     matchDatas = []
     for match in tournament.matches:
-        matchData = (
-            match.id,
-            # nextMatch could be None
-            match.nextMatch.id\
-                if match.nextMatch is not None else None,
-            match.nextMatchSide\
-                if match.nextMatchSide is not None else None,
-            match.round,
-            match.number,
-            # m could be None
-            json.dumps([str(m.id) if m is not None else None
-                          for m in match.prereqMatches]),
-            match.chat.id,
-            json.dumps(match.score),
-            # t could be None
-            json.dumps([str(t.id) if t is not None else None
-                          for t in match.teams]),
-            json.dumps(match.realmBans),
-            match.startTime.isoformat()\
-                if match.startTime is not None else None,
-            match.roomNumber if match.bestOf is not None else None,
-            match.currentRealm,
-            match.banRule,
-            match.winner.id\
-                if match.winner is not None else None,
-            match.bestOf if match.bestOf is not None else None,
-            json.dumps(match.state)
-            )
+        matchData = _constructMatchDataForDB(match)
         print('Writing match with: ', matchData)
         matchDatas.append(matchData)
     # Only write if there's something to write
@@ -402,14 +495,7 @@ def _writeTournamentToDB(tournament):
     
     teamDatas = []
     for team in tournament.teams:
-        teamData = (
-            team.id,
-            team.seed,
-            team.name,
-            json.dumps([str(p.id) for p in team.players]),
-            team.eliminated,
-            team.checkedIn
-            )
+        teamData = _constructTeamDataForDB(team)
         print('Writing team with: ', teamData)
         teamDatas.append(teamData)
     # Only write if there's something to write
@@ -418,11 +504,7 @@ def _writeTournamentToDB(tournament):
     
     playerDatas = []
     for player in tournament.players:
-        playerData = (
-            player.id,
-            player.user.id,
-            player.currentLegend
-            )
+        playerData = _constructPlayerDataForDB(player)
         print('Writing player with: ', playerData)
         playerDatas.append(playerData)
     # Only write if there's something to write
@@ -450,7 +532,7 @@ def _initDB():
             'checkInTime',
             'description',
             'style'
-            ]
+        ]
         fieldTypes = [
             'UUID',
             'TEXT',
@@ -464,7 +546,7 @@ def _initDB():
             'TEXT',
             'TEXT',
             'TEXT'
-            ]
+        ]
         _db.create_table('tournaments', fieldNames, fieldTypes, 'id')
     
     # Make matches table
@@ -487,7 +569,7 @@ def _initDB():
             'winner',
             'bestOf',
             'state'
-            ]
+        ]
         fieldTypes = [
             'UUID',
             'UUID',
@@ -506,7 +588,7 @@ def _initDB():
             'UUID',
             'INTEGER',
             'TEXT'
-            ]
+        ]
         _db.create_table('matches', fieldNames, fieldTypes, 'id')
     
     # Make teams table
@@ -518,7 +600,7 @@ def _initDB():
             'players',
             'eliminated',
             'checkedIn'
-            ]
+        ]
         fieldTypes = [
             'UUID',
             'INTEGER',
@@ -526,7 +608,7 @@ def _initDB():
             'UUIDLIST',
             'BOOLEAN',
             'BOOLEAN'
-            ]
+        ]
         _db.create_table('teams', fieldNames, fieldTypes, 'id')
         
     # Make players table
@@ -535,11 +617,11 @@ def _initDB():
             'id',
             'user',
             'currentLegend'
-            ]
+        ]
         fieldTypes = [
             'UUID',
             'UUID',
             'TEXT'
-            ]
+        ]
         _db.create_table('players', fieldNames, fieldTypes, 'id')
     

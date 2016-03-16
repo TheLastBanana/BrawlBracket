@@ -384,6 +384,11 @@ AdminLTE tweaks
   white-space: normal;
 }
 
+.sidebar-mini.sidebar-collapse .main-sidebar .user-panel {
+  display: none !important;
+  -webkit-transform: translateZ(0);
+}
+
 .direct-chat-text {
   word-wrap: break-word;
 }

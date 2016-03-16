@@ -142,7 +142,7 @@ var MatchupDisplay = React.createClass({
 /* The whole lobby structure */
 var Lobby = React.createClass({
     getInitialState: function() {
-        return jQuery.extend(true, {}, this.props.lobbyData);
+        return $.extend(true, {}, this.props.lobbyData);
     },
     
     render: function() {
@@ -181,42 +181,86 @@ var Lobby = React.createClass({
             );
         }
         
-        return (
-            <div className="row">
-                <div className="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
-                    <PlayerTable>
-                        {this.state.players.map(function(player, i) {
-                            return (
-                                <PlayerInfo player={player} key={i} />
-                            );
-                        })}
-                    </PlayerTable>
-                </div>
+        // Create callout if necessary
+        var calloutData;
+        switch (this.state.state.name) {
+            case 'building':
+                calloutData = {
+                    title: 'Your match is still being prepared!',
+                    body: 'You shouldn\'t be seeing this message.',
+                    color: 'danger'
+                }
+                break;
+            
+            case 'waitingForPlayers':
+                calloutData = {
+                    title: 'Your opponent hasn\'t joined the lobby yet!',
+                    body: 'You\'ll be notified as soon as they\'re ready.',
+                    color: 'warning'
+                }
+                break;
                 
-                <div className="col-xs-12 col-lg-9 pull-right">
-                    <div className="row">
-                        <div className="col-lg-8">
-                            <MatchupDisplay teams={this.state.teams} bestOf={this.state.bestOf} />
-                        </div>
-              
-                        <div className="col-lg-4">
-                            <div className="row">
-                                {infoWidgets}
+            case 'waitingForMatch':
+                calloutData = {
+                    title: 'Your opponent hasn\'t joined the lobby yet!',
+                    body: 'You\'ll be notified as soon as match <strong>#' + this.state.state.matchNumber +
+                          '</strong> (<strong>' + this.state.state.teamNames[0] +
+                          '</strong> vs <strong>' + this.state.state.teamNames[1] + '</strong>) finishes.',
+                    color: 'warning'
+                }
+                break;
+        }
+        
+        var callout;
+        if (calloutData) {
+            callout = (
+                <div className={'callout callout-' + calloutData.color}>
+                    <h4>{calloutData.title}</h4>
+                    <p>{calloutData.body}</p>
+                </div>
+            );
+        }
+        
+        return (
+            <div>
+                {callout}
+                
+                <div className="row">
+                    <div className="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
+                        <PlayerTable>
+                            {this.state.players.map(function(player, i) {
+                                return (
+                                    <PlayerInfo player={player} key={i} />
+                                );
+                            })}
+                        </PlayerTable>
+                    </div>
+                    
+                    <div className="col-xs-12 col-lg-9 pull-right">
+                        <div className="row">
+                            <div className="col-lg-8">
+                                <MatchupDisplay teams={this.state.teams} bestOf={this.state.bestOf} />
+                            </div>
+                  
+                            <div className="col-lg-4">
+                                <div className="row">
+                                    {infoWidgets}
+                                </div>
                             </div>
                         </div>
+                  
+                        <div id="bb-picker-content">
+                        </div>
                     </div>
-              
-                    <div id="bb-picker-content">
+                
+                    <div className="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
+                        <Chat
+                            height="450px"
+                            socket={this.props.chatSocket}
+                            chatId={this.state.chatId}
+                            chatCache={this.props.chatCache}
+                        />
                     </div>
-                </div>
-            
-                <div className="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
-                    <Chat
-                        height="450px"
-                        socket={this.props.chatSocket}
-                        chatId={this.state.chatId}
-                        chatCache={this.props.chatCache}
-                    />
                 </div>
             </div>
         );
@@ -224,19 +268,33 @@ var Lobby = React.createClass({
     
     componentDidMount: function() {
         this._updateLobbyNumber();
+        
+        this.props.mainSocket.on('update lobby', this._updateLobby);
+    },
+    
+    componentWillUnmount: function() {
+        this.props.mainSocket.off('update lobby', this._updateLobby);
+    },
+    
+    _updateLobby: function(data) {
+        var newData = $.extend(true, this.state.lobbyData, data);
+        this.setState(newData);
+        
+        this._updateLobbyNumber();
     },
     
     // Kind of a hack, but oh well. Updates the lobby number in elements outside the lobby.
     _updateLobbyNumber: function() {
-        var matchName = 'Match #' + lobbyData.number;
+        var matchName = 'Match #' + this.state.number;
         $('.bb-page-name').text(matchName);
     }
 });
 
-function createLobby(container, lobbyData, chatSocket, chatCache) {
+function createLobby(container, lobbyData, mainSocket, chatSocket, chatCache) {
     ReactDOM.render(
         <Lobby
             lobbyData={lobbyData}
+            mainSocket={mainSocket}
             chatSocket={chatSocket}
             chatCache={chatCache}
         />,

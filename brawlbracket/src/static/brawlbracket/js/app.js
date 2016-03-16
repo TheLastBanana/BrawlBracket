@@ -120,7 +120,8 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     createjs.Sound.registerSound('/static/brawlbracket/sfx/state.ogg', 'state');
     
     // Request notification permission
-    desktopNotifyEnabled = localStorage.getItem('desktopNotifyEnabled') || true;
+    desktopNotifyEnabled = localStorage.getItem('desktopNotifyEnabled');
+    if (desktopNotifyEnabled === null) desktopNotifyEnabled = true;
     if (desktopNotifyEnabled && "Notification" in window && Notification.permission != "granted") {
         Notification.requestPermission();
     }
@@ -154,13 +155,11 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     });
     
     // Desktop notifications
-    
     var notifyCheckbox = $('#bb-allow-notify');
     notifyCheckbox.checked = desktopNotifyEnabled;
     
     notifyCheckbox.change(function() {
         desktopNotifyEnabled = notifyCheckbox.is(':checked');
-        console.log(desktopNotifyEnabled);
         localStorage.setItem('desktopNotifyEnabled', desktopNotifyEnabled);
     });
 }

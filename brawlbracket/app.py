@@ -234,7 +234,8 @@ def lobby(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
     return render_template('app/pages/lobby.html',
                            tournament=tournament,
-                           tourneyName=tourneyName)
+                           tourneyName=tourneyName,
+                           legendData=util.orderedLegends)
 
 #----- Admin pages -----#
                            

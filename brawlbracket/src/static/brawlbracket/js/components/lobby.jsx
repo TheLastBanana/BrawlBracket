@@ -183,7 +183,7 @@ var Lobby = React.createClass({
         
         // Create elements based on lobby state
         var calloutData;
-        var interactiveStateData;
+        var stateBoxData;
         switch (this.state.state.name) {
             case 'building':
                 calloutData = {

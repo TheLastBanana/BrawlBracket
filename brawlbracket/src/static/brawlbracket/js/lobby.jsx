@@ -2,7 +2,7 @@
 var Timer = React.createClass({
     getInitialState: function() {
         return {
-            elapsed: this.props.startTime ? (new Date() - new Date(this.props.startTime)) : 0
+            elapsed: this.props.startTime ? Math.floor((new Date() - new Date(this.props.startTime)) / 1000) : 0
         }
     },
     

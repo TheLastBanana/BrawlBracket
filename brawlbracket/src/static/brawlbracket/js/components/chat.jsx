@@ -2,19 +2,29 @@
 
 var ChatMessage = React.createClass({
     render: function() {
-        var isMe = this.props.data.senderId == this.props.userId;
-        var timeDate = new Date(this.props.data.sentTime);
-        var formattedTime = timeDate.toLocaleTimeString();
+        var firstMsg = this.props.group[0];
+        
+        var isMe = firstMsg.senderId == this.props.userId;
+        var timeDate = new Date(firstMsg.sentTime);
+        // Format with only hour and minute
+        var formattedTime = timeDate.toLocaleTimeString(navigator.language, {hour: '2-digit', minute: '2-digit'});
         
         return (
             <div className={'direct-chat-msg' + (isMe ? ' right' : '')}>
                 <div className="direct-chat-info clearfix">
-                    <span className={'direct-chat-name pull-' + (isMe ? 'right' : 'left')}>{this.props.data.name}</span>
+                    <span className={'direct-chat-name pull-' + (isMe ? 'right' : 'left')}>{firstMsg.name}</span>
                     <span className={'direct-chat-timestamp pull-' + (isMe ? 'left' : 'right')}>{formattedTime}</span>
                 </div>
                 
-                <img className="direct-chat-img" src={this.props.data.avatar} alt="message user image"></img>
-                <div className="direct-chat-text">{this.props.data.message}</div>
+                <img className="direct-chat-img" src={firstMsg.avatar} alt="message user image"></img>
+                <div className="direct-chat-text">
+                    {this.props.group.map(function(msgData, i) {
+                        // Create a paragraph for each message in the group
+                        return (
+                            <p key={i}>{msgData.message}</p>
+                        );
+                    })}
+                </div>
             </div>
         );
     }
@@ -29,11 +39,39 @@ var Chat = React.createClass({
     
     render: function() {
         var messages = [];
-        for (var i = 0; i < this.state.log.length; ++i) {
-            var msgData = this.state.log[i];
-            messages.push(
-                <ChatMessage data={msgData} userId={this.props.userId} key={i} />
-            );
+        
+        if (this.state.log.length > 0) {
+            var group = [this.state.log[0]];
+            var i = 1;
+            
+            for (; i < this.state.log.length; ++i) {
+                var msgData = this.state.log[i];
+                var prevMsgData = group[group.length - 1];
+                
+                var newTime = new Date(msgData.sentTime);
+                var prevTime = new Date(prevMsgData.sentTime);
+                
+                // If the message came soon after a previous one from the same sender, group them together
+                if (newTime - prevTime < 60000 && msgData.senderId == prevMsgData.senderId) {
+                    group.push(msgData);
+                    
+                // These will be two separate groups
+                } else {
+                    messages.push(
+                        <ChatMessage group={group} userId={this.props.userId} key={i} />
+                    );
+                    
+                    // Start a new group
+                    group = [msgData];
+                }
+            }
+            
+            // Push the final group
+            if (group.length > 0) {
+                messages.push(
+                    <ChatMessage group={group} userId={this.props.userId} key={i} />
+                );
+            }
         }
         
         return (

@@ -391,4 +391,12 @@ AdminLTE tweaks
 
 .direct-chat-text {
   word-wrap: break-word;
+  
+  p {
+    margin-bottom: 6px;
+    
+    &:last-child {
+      margin-bottom: 0px;
+    }
+  }
 }

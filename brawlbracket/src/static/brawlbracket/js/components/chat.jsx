@@ -2,7 +2,7 @@
 
 var ChatMessage = React.createClass({
     render: function() {
-        var isMe = this.props.data.senderId == userId;
+        var isMe = this.props.data.senderId == this.props.userId;
         var timeDate = new Date(this.props.data.sentTime);
         var formattedTime = timeDate.toLocaleTimeString();
         
@@ -32,7 +32,7 @@ var Chat = React.createClass({
         for (var i = 0; i < this.state.log.length; ++i) {
             var msgData = this.state.log[i];
             messages.push(
-                <ChatMessage data={msgData} key={i} />
+                <ChatMessage data={msgData} userId={this.props.userId} key={i} />
             );
         }
         

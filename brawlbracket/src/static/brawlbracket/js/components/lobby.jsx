@@ -306,6 +306,7 @@ var Lobby = React.createClass({
                             socket={this.props.chatSocket}
                             chatId={this.state.chatId}
                             chatCache={this.props.chatCache}
+                            userId={this.props.userId}
                         />
                     </div>
                 </div>

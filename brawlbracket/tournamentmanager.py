@@ -29,7 +29,12 @@ def createTournament(shortName, **kwargs):
     if shortName in _tournamentsByName:
         return None
     
-    tournament = trn.SingleElimTournament(shortName, **kwargs)
+    tournament = trn.SingleElimTournament(
+        shortName,
+        callbacks = (_matchDBCallback, _teamDBCallback, _playerDBCallback),
+        fullCallback = _writeTournamentToDB,
+        **kwargs)
+    tournament._dbCallback = _tournamentDBCallback
     
     _writeTournamentToDB(tournament)
     
@@ -203,6 +208,7 @@ def _buildTournament(tournamentData):
         player = plr.Player(user, uuid = id)
         player.currentLegend = playerData[2]
         player.online = False
+        player._dbCallback = _playerDBCallback # Give db callback
         players.add(player)
     
     # ---- MAKE TEAMS ----
@@ -238,6 +244,7 @@ def _buildTournament(tournamentData):
         team = tem.Team(seed, players = teamPlayers, name = name, uuid = id)
         team.eliminated = eliminated
         team.checkedIn = checkedIn
+        team._dbCallback = _teamDBCallback # Give db callback
         teams.add(team)
     
     # ---- MAKE MATCHES ----
@@ -329,11 +336,18 @@ def _buildTournament(tournamentData):
         else:
             raise AssertionError('Couldn\'t set up match hierarchy. ({})'
                                     .format(matchData[0]))
+                                    
+    # Now that we're done setting up matches we can give them their callback
+    for match in matches:
+        match._dbCallback = _matchDBCallback
         
     tournament.admins = admins
     tournament.players = players
     tournament.teams = teams
     tournament.matches = matches
+    
+    # Now that we're done setting up tournament we can give it its callback
+    tournament._dbCallback = _tournamentDBCallback
     
     return tournament
     
@@ -428,7 +442,6 @@ def _tournamentDBCallback(tournament):
     if _db is None:
         _initDB()
     
-    print('-------TOURNAMENT DB CALLBACK!')
     tournamentData = _constructTournamentDataForDB(tournament)
     _db.insert_values('tournaments', [tournamentData])
 
@@ -441,7 +454,6 @@ def _matchDBCallback(match):
     if _db is None:
         _initDB()
     
-    print('-------MATCH DB CALLBACK!')
     matchData = _constructMatchDataForDB(match)
     _db.insert_values('matches', [matchData])
     
@@ -454,7 +466,6 @@ def _teamDBCallback(team):
     if _db is None:
         _initDB()
     
-    print('-------TEAM DB CALLBACK!')
     teamData = _constructTeamDataForDB(team)
     _db.insert_values('teams', [teamData])
 
@@ -467,11 +478,9 @@ def _playerDBCallback(player):
     if _db is None:
         _initDB()
     
-    print('-------PLAYER DB CALLBACK!')
     playerData = _constructPlayerDataForDB(player)
     _db.insert_values('players', [playerData])
 
-    
 def _writeTournamentToDB(tournament):
     """
     Serializes a tournament, its matches, teams, and players and then inserts 

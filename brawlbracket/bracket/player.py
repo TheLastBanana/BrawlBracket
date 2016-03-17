@@ -19,6 +19,21 @@ class Player:
         self.user = user
         self.currentLegend = None
         self.online = False
+
+    def __setattr__(self, name, value):
+        """
+        Override default setting value functionality to let us send things to
+        the database on updates.
+        """
+        super().__setattr__(name, value)
+        
+        # Could be picky about names of vars changing where we don't want to 
+        # write out to the database
+        if name in ['_dbCallback', 'online']:
+            return
+        
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
     
     def __repr__(self):
         return 'Player(id: {}, user: {}, currentLegend: {}, online: {}'\

@@ -4,7 +4,14 @@
 <section id="lobby" class="content callout-container">
 </section>
 
+<script src="/static/brawlbracket/js/picker.min.js"></script>
 <script src="/static/brawlbracket/js/lobby.min.js"></script>
 <script>
-  createLobby($('#lobby').get(0), lobbyData, pSocket, chatSocket, chatCache);
+  createLobby($('#lobby').get(0),
+              lobbyData,
+              pSocket,
+              chatSocket,
+              chatCache,
+              {{ legendData|tojson }},
+              userId);
 </script>

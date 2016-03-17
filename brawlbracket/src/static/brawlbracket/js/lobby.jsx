@@ -181,8 +181,9 @@ var Lobby = React.createClass({
             );
         }
         
-        // Create callout if necessary
+        // Create elements based on lobby state
         var calloutData;
+        var interactiveStateData;
         switch (this.state.state.name) {
             case 'building':
                 calloutData = {
@@ -209,6 +210,32 @@ var Lobby = React.createClass({
                     color: 'warning'
                 }
                 break;
+                
+            case 'pickLegends':
+                // Not currently picking
+                if (this.state.state.canPick.indexOf(this.props.userId) == -1) {
+                    stateBoxData = {
+                        title: 'Please wait',
+                        icon: 'hourglass-half',
+                        contents: (
+                            <p>Your opponent is currently picking their legend!</p>
+                        )
+                    }
+                    
+                // Currently picking
+                } else {
+                    stateBoxData = {
+                        title: 'Pick your legend',
+                        icon: 'user',
+                        contents: (
+                            <LegendPicker
+                                legendData={this.props.legendData}
+                                callback={this._pickLegend}
+                            />
+                        )
+                    }
+                }
+                break;
         }
         
         var callout;
@@ -217,6 +244,23 @@ var Lobby = React.createClass({
                 <div className={'callout callout-' + calloutData.color}>
                     <h4>{calloutData.title}</h4>
                     <p>{calloutData.body}</p>
+                </div>
+            );
+        }
+        
+        var stateBox;
+        if (stateBoxData) {
+            stateBox = (
+                <div className="box box-primary">
+                    <div className="box-header with-border">
+                        <h3 className="box-title">
+                            <i className={'fa fa-' + stateBoxData.icon}></i> {stateBoxData.title}
+                        </h3>
+                    </div>
+                    
+                    <div className="box-body">
+                        {stateBoxData.contents}
+                    </div>
                 </div>
             );
         }
@@ -248,8 +292,11 @@ var Lobby = React.createClass({
                                 </div>
                             </div>
                         </div>
-                  
-                        <div id="bb-picker-content">
+                        
+                        <div className="row">
+                            <div className="col-lg-8">
+                                {stateBox}
+                            </div>
                         </div>
                     </div>
                 
@@ -287,16 +334,25 @@ var Lobby = React.createClass({
     _updateLobbyNumber: function() {
         var matchName = 'Match #' + this.state.number;
         $('.bb-page-name').text(matchName);
+    },
+    
+    // Tell the server a legend has been picked
+    _pickLegend: function(legendId) {
+        this.props.mainSocket.emit('pick legend', {
+            legendId: legendId
+        });
     }
 });
 
-function createLobby(container, lobbyData, mainSocket, chatSocket, chatCache) {
+function createLobby(container, lobbyData, mainSocket, chatSocket, chatCache, legendData, userId) {
     ReactDOM.render(
         <Lobby
             lobbyData={lobbyData}
             mainSocket={mainSocket}
             chatSocket={chatSocket}
             chatCache={chatCache}
+            legendData={legendData}
+            userId={userId}
         />,
         container
     );

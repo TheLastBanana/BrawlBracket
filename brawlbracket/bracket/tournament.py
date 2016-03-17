@@ -40,24 +40,50 @@ class Tournament():
         self.description = kwargs.get('description', '')
         self.style = 'not-set'
         
+        # These four sets should only be iterated over and not changed
+        # Changing them directly requires extra calls to sync database
+        # and state
         self.matches = set()
         self.teams = set()
         self.players = set()
         
-        self.admins = set()
+        self.admins = set() # addAdmins, isAdmin
         admin = kwargs.get('admin')
         if admin is not None:
             self.admins.add(admin)
         
         for i in range(teamCount):
             self.createTeam(i + 1)
+            
+        # Save callbacks to apply to sub objects
+        # These are (Match, Team, Player)
+        self._callbacks = kwargs.get('callbacks', (None, None, None))
+        self._fullCallback = kwargs.get('fullCallback', None)
+    
+    def __setattr__(self, name, value):
+        """
+        Override default setting value functionality to let us send things to
+        the database on updates.
+        """
+        super().__setattr__(name, value)
         
+        # Could be picky about names of vars changing where we don't want to 
+        # write out to the database
+        if name in ['_dbCallback', '_callbacks', '_fullCallback']:
+            return
+        
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
+    
     def createTeam(self, *args, **kwargs):
         """
         Create a team and add it to the tournament.
         """
         team = Team(*args, **kwargs)
+        team._dbCallback = self._callbacks[1]
         self.teams.add(team)
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
         
         return team
         
@@ -78,7 +104,10 @@ class Tournament():
                     raise ValueError('Team not in tournament')
         
         match = Match(*args, **kwargs)
+        match._dbCallback = self._callbacks[0]
         self.matches.add(match)
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
         
         return match
         
@@ -87,9 +116,26 @@ class Tournament():
         Create a player and add it to the tournament.
         """
         player = Player(*args, **kwargs)
+        player._dbCallback = self._callbacks[2]
         self.players.add(player)
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
         
         return player
+    
+    def addAdmins(self, *admins):
+        """
+        Add admins to the tournament.
+        """
+        self.admins.update(admins)
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
+    
+    def isAdmin(self, admin):
+        """
+        Returns if a user is an admin for this tournament.
+        """
+        return admin in self.admins
         
     def reset(self):
         """
@@ -107,10 +153,18 @@ class Tournament():
         """
         Call this when finished creating matches. This will run any graph analysis that needs
         to be done on the matches before the tournament can be used.
+        
+        This also attempts to write out the full tournament to the database.
+        Note that overriders should either call this super function last or
+        write to the database themself.
         """
         # Finalize matches
         for m in self.matches:
             m.finalize()
+        
+        # Finally, write the tournament out.
+        if self._fullCallback is not None:
+            self._fullCallback(self)
         
         return
             

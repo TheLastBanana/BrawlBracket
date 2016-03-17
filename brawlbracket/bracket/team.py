@@ -21,6 +21,7 @@ class Team:
         self.seed = seed
         self.name = kwargs.get('name', '')
         
+        # addPlayer, removePlayer
         if players is None:
             self.players = []
         else:
@@ -28,6 +29,44 @@ class Team:
         
         self.eliminated = False
         self.checkedIn = False
+
+    def __setattr__(self, name, value):
+        """
+        Override default setting value functionality to let us send things to
+        the database on updates.
+        """
+        super().__setattr__(name, value)
+        
+        # Could be picky about names of vars changing where we don't want to 
+        # write out to the database
+        if name in ['_dbCallback']:
+            return
+        
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
         
     def __repr__(self):
         return '{} ({})'.format(self.name, self.seed)
+
+    def addPlayer(self, player):
+        """
+        Add player to this team.
+        """
+        if player in self.players:
+            return
+        
+        self.players.append(player)
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
+    
+    def removePlayer(self, player):
+        """
+        Remove player from this team.
+        """
+        if player not in self.players:
+            return
+        
+        self.players.remove(player)
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
+        

@@ -65,11 +65,10 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     chatSocket = io.connect(location.protocol + "//" + location.host + '/chat');
     
     chatSocket.on('receive', function(data) {
-        chatNotify(data.chatId, data.messageData.senderId);
+        chatNotify(data.chatId, data.messageData.senderId, false);
         
-        // Play sound/desktop notify for other users' messages
-        if (data.messageData.senderId != userId) {
-            createjs.Sound.play('message');
+        // Desktop notify for other users' messages
+        if (data.messageData.senderId != userId && !isActive) {
             desktopNotify('Message from ' + data.messageData.name,
                           data.messageData.message,
                           data.messageData.avatar);
@@ -209,19 +208,22 @@ function brawlBracketParticipantInit() {
             // Update specified property
             lobbyData[property] = data[property];
             
-            // Add notifications when state changes
-            if (currentPage != 'lobby' && property == 'state') {
-                // Lobby was previously waiting, but we're now ready to do stuff
-                if ((lobbyData.prevState.name == 'waitingForPlayers' ||
-                    lobbyData.prevState.name == 'waitingForMatch') &&
-                    lobbyData.state.name != 'waitingForPlayers' &&
-                    lobbyData.state.name != 'waitingForMatch') {
+            // Lobby was previously waiting, but we're now ready to do stuff
+            if (property == 'state' &&
+                (lobbyData.prevState.name == 'waitingForPlayers' ||
+                lobbyData.prevState.name == 'waitingForMatch') &&
+                lobbyData.state.name != 'waitingForPlayers' &&
+                lobbyData.state.name != 'waitingForMatch') {
                     
+                // Add notifications
+                if (!isActive || currentPage != 'lobby') {
                     addPageNotification('lobby');
                     createjs.Sound.play('state');
                     
-                    desktopNotify('BrawlBracket update',
-                                  'Your next match is ready!');
+                    if (!isActive) {
+                        desktopNotify('BrawlBracket update',
+                                      'Your next match is ready!');
+                    }
                 }
                 
                 // TODO: Add notifications for room chosen and score changed
@@ -338,13 +340,16 @@ function clearPageNotifications(pageName) {
  * Notify about a chat message if necessary.
  * @param {string} chatId - The chat's id.
  * @param {string} senderId - The sender's user id.
+ * @param {boolean} silent - If true, don't play sounds.
  */
-function chatNotify(chatId, senderId) {
+function chatNotify(chatId, senderId, silent) {
     var notifyPage = chatNotifies[chatId];
     
     // Chat message from another page, so add a notification
     if (notifyPage && currentPage != notifyPage && senderId != userId) {
         addPageNotification(notifyPage);
+        
+        if (!silent) createjs.Sound.play('message');
     }
 }
 
@@ -362,7 +367,7 @@ function chatNotifyLog(chatId, log) {
         var messageDate = new Date(log[id].sentTime);
         if (messageDate <= lastDate) continue;
         
-        chatNotify(chatId, log[id].senderId);
+        chatNotify(chatId, log[id].senderId, true);
     }
 }
 

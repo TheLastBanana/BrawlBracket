@@ -343,17 +343,3 @@ var Lobby = React.createClass({
         });
     }
 });
-
-function createLobby(container, lobbyData, mainSocket, chatSocket, chatCache, legendData, userId) {
-    ReactDOM.render(
-        <Lobby
-            lobbyData={lobbyData}
-            mainSocket={mainSocket}
-            chatSocket={chatSocket}
-            chatCache={chatCache}
-            legendData={legendData}
-            userId={userId}
-        />,
-        container
-    );
-}

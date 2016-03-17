@@ -154,10 +154,3 @@ var Chat = React.createClass({
         this.refs.msgInput.value = '';
     }
 });
-
-function createChat(container, socket, chatId, chatCache, height) {
-    ReactDOM.render(
-        <Chat height={height} socket={socket} chatId={chatId} chatCache={chatCache} />,
-        container
-    );
-}

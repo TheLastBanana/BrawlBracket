@@ -277,7 +277,6 @@ class Match():
             
             team = {}
             team['name'] = t.name
-            team['id'] = str(t.id)
             team['seed'] = t.seed
             team['ready'] = all([p.online > 0 for p in t.players])
             team['wins'] = wins
@@ -287,6 +286,7 @@ class Match():
             for p in t.players:
                 player = {}
                 player['name'] = p.user.username
+                player['id'] = p.user.id
                 player['status'] = 'Online' if p.online > 0 else 'Offline'
                 player['legend'] = 'none'
                 player['team'] = i

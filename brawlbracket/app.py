@@ -533,14 +533,12 @@ def pick_legend(data):
     match, team, player = info
     
     player.currentLegend = data['legendId']
-    print(player)
     match._updateState()
     
     lobbyData = match.lobbyData
     updatedLobbyData = {}
     updatedLobbyData['state'] = lobbyData['state']
     updatedLobbyData['players'] = lobbyData['players']
-    print(updatedLobbyData)
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
             room = match.id)

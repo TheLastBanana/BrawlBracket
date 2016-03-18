@@ -389,18 +389,9 @@ class Match():
         
         if stateName == 'waitingForPlayers':
             self.startTime = datetime.datetime.now()
-            self.state.clear()
-            self.state['name'] = 'pickLegends'
-            
-            print(banrule.rulesets)
-            rules = banrule.rulesets['basic'] 
-            data = rules.getNextLegendStep(self)
-            print('-----------------------------------')
-            print('GOT DATA: ', data)
-            print('-----------------------------------')
-            
-            for key in data:
-                self.state[key] = data[key]
+        
+        rules = banrule.rulesets['basic'] 
+        rules.advanceState(self)
         
         if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
             self._dbCallback(self)

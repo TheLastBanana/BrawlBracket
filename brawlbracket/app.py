@@ -60,8 +60,8 @@ if tempTourney is None:
     print('Temp tournament has {} users!'.format(len(tempTourney.teams)))
     tempTourney.generateMatches()
     
-    tempTourney.addAdmins((um.getUserBySteamId(76561198042414835),
-                           um.getUserBySteamId(76561197993702532)))
+    tempTourney.addAdmins(um.getUserBySteamId(76561198042414835),
+                           um.getUserBySteamId(76561197993702532))
     
     print('Admins: ', [a.username for a in tempTourney.admins])
 # End temp tournament generation

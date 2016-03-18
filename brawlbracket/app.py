@@ -545,6 +545,16 @@ def pick_legend(data):
             room = match.id)
     
     print('User {} selected {}'.format(user.id, data['legendId']))
+    
+# Someone banned a realm
+@socketio.on('ban realm', namespace='/participant')
+def ban_realm(data):
+    print('Banned {}'.format(data['realmId']))
+    
+# Someone picked a realm
+@socketio.on('pick realm', namespace='/participant')
+def pick_realm(data):
+    print('Picked {}'.format(data['realmId']))
 
 # A chat message was sent by a client
 @socketio.on('send', namespace='/chat')

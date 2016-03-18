@@ -1,4 +1,4 @@
-import util
+from brawlbracket import util
 
 class BanRule:
     """
@@ -53,7 +53,7 @@ class BasicRules:
         """
         Basic picking order. Higher seed
         """
-        match.state.clear()
+        state = match.state
         
         teams = list(match.teams)
         teams.sort(key = lambda t: t.seed, reverse = True)
@@ -67,9 +67,12 @@ class BasicRules:
                             if p.currentLegend is None]
         # We're done picking, advance.
         else:
+            state.clear()
             match.state['name'] = 'chooseMap'
             return
         
+        state.clear()
+        state['name'] = 'pickLegends'
         match.state['canPick'] = userIds
     
     def _getNextMapStep(self, match):
@@ -84,16 +87,16 @@ class BasicRules:
             state['name'] = 'chooseMap'
             
             # Player 0 == captain
-            state['turn'] = match.teams[len(currentBans)%2]\
-                                .players[0].user.id
+            state['turn'] = str(match.teams[len(currentBans)%2]\
+                                .players[0].user.id)
             state['action'] = 'ban'
         elif match.currentRealm is None:
             state.clear()
             state['name'] = 'chooseMap'
             
             # Player 0 == captain
-            state['turn'] = match.teams[len(currentBans)%2]\
-                                .players[0].user.id
+            state['turn'] = str(match.teams[len(currentBans)%2]\
+                                .players[0].user.id)
             state['action'] = 'pick'
         else:
             state.clear()

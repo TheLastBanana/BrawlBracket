@@ -71,17 +71,37 @@ class Match():
         
         self.winner = None
         
+        # Read me but don't write me unless you use the db callback
         self.state = {}
         self.state['name'] = 'building'
         
-        self.realmBans = []
+        self._realmBans = [] # addRealmBan, getRealmBans, clearRealmBans
         self.startTime = None
         self.roomNumber = None
         self.currentRealm = None
         self.banRule = 'basic'
-                        
+    
+    def __setattr__(self, name, value):
+        """
+        Override default setting value functionality to let us send things to
+        the database on updates.
+        """
+        super().__setattr__(name, value)
+        
+        # Could be picky about names of vars changing where we don't want to 
+        # write out to the database
+        if name in ['_dbCallback']:
+            return
+        
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
+    
     @property
     def prereqMatches(self):
+        """
+        Access the prereq matches. Please note that if you modify this in
+        calling code that you likely need to call the dbCallback as well.
+        """
         return self._prereqMatches
             
     @prereqMatches.setter
@@ -101,12 +121,40 @@ class Match():
             match.nextMatch = self
             match.nextMatchSide = side
         
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
+    
+    def addRealmBan(self, realm):
+        """
+        Adds a realm ban and writes to db.
+        """
+        if realm in self._realmBans:
+            return
+        
+        self._realmBans.append(realm)
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
+    
+    def getRealmBans(self):
+        """
+        Returns a copy of the realm bans.
+        """
+        return self._realmBans.copy()
+    
+    def clearRealmBans(self):
+        """
+        Clears the realm bans.
+        """
+        self._realmBans.clear()
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
+    
     def _getTreeDepth(self):
         """
         Get the maximum depth of the match tree.
         """
         return max([(match._getTreeDepth() if match else 0) for match in self.prereqMatches]) + 1
-
+    
     def _getDisplayLines(self):
         """
         Get the lines which, if printed in sequence, make up the graphical representation
@@ -214,7 +262,7 @@ class Match():
         lobbyData['number'] = self.number
         lobbyData['state'] = self.state
         lobbyData['chatId'] = str(self.chat.id)
-        lobbyData['realmBans'] = self.realmBans
+        lobbyData['realmBans'] = self._realmBans.copy()
         lobbyData['bestOf'] = self.bestOf
         lobbyData['startTime'] = self.startTime.isoformat()\
             if self.startTime is not None else None
@@ -244,57 +292,6 @@ class Match():
                 lobbyData['players'].append(player)
         
         return lobbyData
-    
-    def _updateState(self):
-        """
-        Updates this Match's state.
-        """
-        stateName = self.state['name']
-        
-        # States we don't want to regress from
-        cycleStates = [
-            'pickLegends',
-            'chooseMap',
-            'createRoom',
-            'inGame',
-            ]
-        if stateName not in cycleStates:
-            for m in self.prereqMatches:
-                # No prereq
-                if m is None:
-                    continue
-                    
-                # Match isn't done
-                if m.winner is None:
-                    self.state.clear()
-                    self.state['name'] = 'waitingForMatch'
-                    self.state['teamNames'] = [x.name for x in m.teams
-                                                if x is not None]
-                    self.state['matchNumber'] = m.number
-                    return
-            
-            for team in self.teams:
-                # No team yet
-                for player in team.players:
-                    if not player.online:
-                        self.state.clear()
-                        self.state['name'] = 'waitingForPlayers'
-                        return
-        
-        if stateName == 'waitingForPlayers':
-            self.startTime = datetime.datetime.now()
-            self.state.clear()
-            self.state['name'] = 'pickLegends'
-            
-            print(banrule.rulesets)
-            rules = banrule.rulesets['basic'] 
-            data = rules.getNextLegendStep(self)
-            print('-----------------------------------')
-            print('GOT DATA: ', data)
-            print('-----------------------------------')
-            
-            for key in data:
-                self.state[key] = data[key]
     
     @property
     def lobbyStatus(self):
@@ -352,3 +349,57 @@ class Match():
                     7)
                 
         return ('unknown', 'Unknown', 98)
+    
+    def _updateState(self):
+        """
+        Updates this Match's state.
+        """
+        stateName = self.state['name']
+        
+        # States we don't want to regress from
+        cycleStates = [
+            'pickLegends',
+            'chooseMap',
+            'createRoom',
+            'inGame',
+            ]
+        if stateName not in cycleStates:
+            for m in self.prereqMatches:
+                # No prereq
+                if m is None:
+                    continue
+                    
+                # Match isn't done
+                if m.winner is None:
+                    self.state.clear()
+                    self.state['name'] = 'waitingForMatch'
+                    self.state['teamNames'] = [x.name for x in m.teams
+                                                if x is not None]
+                    self.state['matchNumber'] = m.number
+                    return
+            
+            for team in self.teams:
+                # No team yet
+                for player in team.players:
+                    if not player.online:
+                        self.state.clear()
+                        self.state['name'] = 'waitingForPlayers'
+                        return
+        
+        if stateName == 'waitingForPlayers':
+            self.startTime = datetime.datetime.now()
+            self.state.clear()
+            self.state['name'] = 'pickLegends'
+            
+            print(banrule.rulesets)
+            rules = banrule.rulesets['basic'] 
+            data = rules.getNextLegendStep(self)
+            print('-----------------------------------')
+            print('GOT DATA: ', data)
+            print('-----------------------------------')
+            
+            for key in data:
+                self.state[key] = data[key]
+        
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)

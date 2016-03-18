@@ -249,6 +249,55 @@ var Lobby = React.createClass({
                     }
                 }
                 break;
+                
+            case 'chooseMap':
+                var myPlayer = this._getPlayerByUserId(this.props.userId);
+                var choosePlayer = this._getPlayerByUserId(this.state.state.turn);
+                
+                if (this.state.state.turn == this.props.userId) {
+                    switch (this.state.state.action) {
+                        case 'ban':
+                            stateBoxData = {
+                                title: 'Ban a realm',
+                                icon: 'ban',
+                                contents: (
+                                    <RealmPicker
+                                        realmData={this.props.realmData}
+                                        bans={this.state.realmBans}
+                                        callback={this._banRealm}
+                                    />
+                                )
+                            }
+                            break;
+                            
+                        case 'pick':
+                            stateBoxData = {
+                                title: 'Pick a realm',
+                                icon: 'check-circle-o',
+                                contents: (
+                                    <RealmPicker
+                                        realmData={this.props.realmData}
+                                        bans={this.state.realmBans}
+                                        callback={this._pickRealm}
+                                    />
+                                )
+                            }
+                            break;
+                    }
+                    break;
+                } else {
+                    // Another user is picking maps
+                    stateBoxData = {
+                        title: 'Realm banning in progress (' + choosePlayer.name + '\'s turn)',
+                        icon: 'hourglass-half',
+                        contents: (
+                            <RealmPicker
+                                realmData={this.props.realmData}
+                                bans={this.state.realmBans}
+                            />
+                        )
+                    }
+                }
         }
         
         var callout;
@@ -347,10 +396,35 @@ var Lobby = React.createClass({
         $('.bb-page-name').text(matchName);
     },
     
+    // Get the player corresponding to a user id
+    _getPlayerByUserId: function(userId) {
+        var players = this.state.players;
+        
+        for (var i = 0; i < players.length; ++i) {
+            if (players[i].id == userId) return players[i];
+        }
+        
+        return null;
+    },
+    
     // Tell the server a legend has been picked
     _pickLegend: function(legendId) {
         this.props.mainSocket.emit('pick legend', {
             legendId: legendId
+        });
+    },
+    
+    // Tell the server a realm has been banned
+    _banRealm: function(realmId) {
+        this.props.mainSocket.emit('ban realm', {
+            realmId: realmId
+        });
+    },
+    
+    // Tell the server a realm has been picked
+    _pickRealm: function(realmId) {
+        this.props.mainSocket.emit('pick realm', {
+            realmId: realmId
         });
     }
 });

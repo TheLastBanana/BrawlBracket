@@ -235,7 +235,8 @@ def lobby(tourneyName):
     return render_template('app/pages/lobby.html',
                            tournament=tournament,
                            tourneyName=tourneyName,
-                           legendData=util.orderedLegends)
+                           legendData=util.orderedLegends,
+                           realmData=[(id, util.realmData[id]) for id in util.eslRealms])
 
 #----- Admin pages -----#
                            

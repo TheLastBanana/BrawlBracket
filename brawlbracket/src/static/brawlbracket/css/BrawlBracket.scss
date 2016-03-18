@@ -335,7 +335,7 @@ Realm picker
   text-align: center;
 }
 
-.realm-picker > li {
+.realm-option {
   display: inline-block;
   text-align: left;
 
@@ -344,35 +344,48 @@ Realm picker
     right: 10px;
     bottom: 10px;
   }
-}
 
-.realm-picker > li img {
-  border-radius: 5px;
-  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
-}
-
-.realm-picker > li p {
-  font: {
-    weight: bold;
-    size: 14px;
+  img {
+    border-radius: 5px;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
   }
-  text: {
-    align: center;
-    transform: uppercase;
+
+  p {
+    color: #333;
+    font: {
+      weight: bold;
+      size: 14px;
+    }
+    text: {
+      align: center;
+      transform: uppercase;
+    }
+    
+    margin: 0px;
   }
-  margin: 0px;
-}
 
-.realm-picker > li a p {
-  color: #333;
-}
-
-.realm-picker > li a:hover img {
-  filter: opacity(75%);
-}
-
-.realm-picker > li a:hover p {
-  color: #555;
+  a:hover {
+    img {
+      filter: opacity(75%);
+      -webkit-filter: opacity(75%);
+    }
+    
+    p {
+      color: #555;
+    }
+  }
+  
+  &.disabled {
+    img {
+      filter: grayscale(1);
+      -webkit-filter: grayscale(1);
+      opacity: 0.4;
+    }
+    
+    p {
+      text-decoration: line-through;
+    }
+  }
 }
 
 /*

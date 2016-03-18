@@ -82,7 +82,7 @@ class BasicRules:
         currentBans = match.getRealmBans()
         state = match.state
         # Ban up until 2 maps left
-        if len(currentBans) < (len(util.realmData) - 2):
+        if len(currentBans) < (len(util.eslRealms) - 2):
             state.clear()
             state['name'] = 'chooseMap'
             

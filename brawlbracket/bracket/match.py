@@ -279,7 +279,7 @@ class Match():
             team['name'] = t.name
             team['id'] = str(t.id)
             team['seed'] = t.seed
-            team['ready'] = False not in [p.online for p in t.players]
+            team['ready'] = all([p.online > 0 for p in t.players])
             team['wins'] = wins
             team['avatar'] = t.players[0].user.avatar
             lobbyData['teams'].append(team)
@@ -287,7 +287,7 @@ class Match():
             for p in t.players:
                 player = {}
                 player['name'] = p.user.username
-                player['status'] = 'Online' if p.online else 'Offline'
+                player['status'] = 'Online' if p.online > 0 else 'Offline'
                 player['legend'] = 'none'
                 player['team'] = i
                 lobbyData['players'].append(player)
@@ -382,7 +382,7 @@ class Match():
             for team in self.teams:
                 # No team yet
                 for player in team.players:
-                    if not player.online:
+                    if not player.online > 0:
                         self.state.clear()
                         self.state['name'] = 'waitingForPlayers'
                         return

@@ -207,7 +207,7 @@ def _buildTournament(tournamentData):
                                  '{}'.format(playerData[1]))
         player = plr.Player(user, uuid = id)
         player.currentLegend = playerData[2]
-        player.online = False
+        player.online = 0
         player._dbCallback = _playerDBCallback # Give db callback
         players.add(player)
     

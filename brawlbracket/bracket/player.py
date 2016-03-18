@@ -13,12 +13,12 @@ class Player:
         
         Tournament data:
          currentLegend: currently selected legend (string id)
-         online: indicates logged into tournament (boolean)
+         online: number of live connections (int)
         """
         self.id = kwargs.get('uuid', uuid.uuid1())
         self.user = user
         self.currentLegend = None
-        self.online = False
+        self.online = 0 # Change my name probably
 
     def __setattr__(self, name, value):
         """

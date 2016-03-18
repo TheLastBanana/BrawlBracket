@@ -367,7 +367,8 @@ def data_teams(tourneyName):
                 'status': status,
                 'display': prettyStatus,
             },
-            'online': 'Online' if all([p.online for p in team.players]) else 'Offline'
+            'online': 'Online' if all([p.online > 0 for p in team.players])\
+                      else 'Offline'
         }
         
         condensedData.append(condensed)
@@ -408,7 +409,7 @@ def user_connect():
     match, team, player = info
     
     # Affect match state
-    player.online = True
+    player.online += 1
     
     # XXX update state, put in listener
     match._updateState()
@@ -470,7 +471,7 @@ def user_disconnect():
     match, team, player = info
     
     # Affect state
-    player.online = False
+    player.online -= 1
     
     # XXX update state, put in listener
     match._updateState()

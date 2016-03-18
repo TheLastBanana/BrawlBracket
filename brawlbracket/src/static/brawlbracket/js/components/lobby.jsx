@@ -177,7 +177,7 @@ var Lobby = React.createClass({
             infoWidgets.push(
                 <div className="col-sm-12 col-lg-12" key="roomNumber">
                     <InfoWidget icon="users" title="Room Number">
-                        this.state.roomNumber
+                        {this.state.roomNumber}
                     </InfoWidget>
                 </div>
             );
@@ -188,7 +188,7 @@ var Lobby = React.createClass({
             infoWidgets.push(
                 <div className="col-sm-12 col-lg-12" key="currentRealm">
                     <InfoWidget icon="map" title="Current Map">
-                        this.state.currentRealm
+                        {this.state.currentRealm}
                     </InfoWidget>
                 </div>
             );

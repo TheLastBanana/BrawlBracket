@@ -296,7 +296,7 @@ def _buildTournament(tournamentData):
         match.round = round
         match.number = number
         match.score = score
-        match.realmBans = realmBans
+        match._realmBans = realmBans
         match.startTime = startTime
         match.roomNumber = roomNumber
         match.currentRealm = currentRealm
@@ -395,7 +395,7 @@ def _constructMatchDataForDB(match):
         # t could be None
         json.dumps([str(t.id) if t is not None else None
                       for t in match.teams]),
-        json.dumps(match.realmBans),
+        json.dumps(match._realmBans),
         match.startTime.isoformat()\
             if match.startTime is not None else None,
         match.roomNumber if match.bestOf is not None else None,

@@ -60,10 +60,10 @@ if tempTourney is None:
     print('Temp tournament has {} users!'.format(len(tempTourney.teams)))
     tempTourney.generateMatches()
     
-    tempTourney.admins.add(um.getUserBySteamId(76561198042414835))
-    tempTourney.admins.add(um.getUserBySteamId(76561197993702532))
+    tempTourney.addAdmins((um.getUserBySteamId(76561198042414835),
+                           um.getUserBySteamId(76561197993702532)))
+    
     print('Admins: ', [a.username for a in tempTourney.admins])
-    tm._writeTournamentToDB(tempTourney) # DEBUG THIS SHOULDN'T BE LIKE THIS
 # End temp tournament generation
     
 @app.context_processor
@@ -251,9 +251,9 @@ def admin_app(tourneyName, startPage):
         abort(404)
     
     if user is None:
-        return redirect(url_for('tournament_index'))
+        return redirect(url_for('tournament_index', tourneyName = tourneyName))
     
-    if user not in tournament.admins:
+    if not tournament.isAdmin(user):
         abort(403)
 
     return render_template('app/admin-app.html',
@@ -273,9 +273,9 @@ def admin_dashboard(tourneyName):
         abort(404)
     
     if user is None:
-        return redirect(url_for('tournament_index'))
+        return redirect(url_for('tournament_index', tourneyName = tourneyName))
     
-    if user not in tournament.admins:
+    if not tournament.isAdmin(user):
         abort(403)
 
     return render_template('app/pages/admin-dashboard.html',

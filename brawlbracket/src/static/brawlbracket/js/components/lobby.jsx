@@ -185,10 +185,15 @@ var Lobby = React.createClass({
         
         // Current map widget
         if (this.state.currentRealm) {
+            var currentRealm = this.state.currentRealm;
+            var currentRealmData = this.props.realmData.find(function (realm) {
+                return realm[0] == currentRealm;
+            });
+            
             infoWidgets.push(
                 <div className="col-sm-12 col-lg-12" key="currentRealm">
                     <InfoWidget icon="map" title="Current Map">
-                        {this.state.currentRealm}
+                        {currentRealmData ? currentRealmData[1] : 'Unsupported Realm'}
                     </InfoWidget>
                 </div>
             );

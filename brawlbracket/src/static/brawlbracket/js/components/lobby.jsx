@@ -57,6 +57,7 @@ var PlayerInfo = React.createClass({
                 <td><div className="player-status" data-toggle="tooltip" data-original-title={player.status}></div></td>
                 <td><img src={'/static/brawlbracket/img/legends-small/' + player.legend + '.png'}></img></td>
                 <td>{player.name}</td>
+                <td><span className="label label-primary" data-toggle="tooltip" data-original-title="Seed">{this.props.seed}</span></td>
             </tr>
         );
     }
@@ -65,6 +66,8 @@ var PlayerInfo = React.createClass({
 /* The player info table */
 var PlayerTable = React.createClass({
     render: function() {
+        var teams = this.props.teams;
+        
         return (
             <div className="box box-solid bb-wait-for-match">
                 <div className="box-header with-border">
@@ -73,7 +76,15 @@ var PlayerTable = React.createClass({
                 <div className="box-body no-padding">
                     <table className="table table-striped table-players">
                         <tbody>
-                            {this.props.children}
+                            {this.props.players.map(function(player, i) {
+                                return (
+                                    <PlayerInfo
+                                        player={player}
+                                        seed={teams[player.team].seed}
+                                        key={i}
+                                    />
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -106,9 +117,9 @@ var MatchupDisplay = React.createClass({
         return (
             <div className="box box-widget widget-user bb-wait-for-match">
                 <div className="widget-user-header bg-green-active">
-                    <h3 className="widget-user-username-versus-1">{teams[0].name} <sup>({teams[0].seed})</sup></h3>
+                    <h3 className="widget-user-username-versus-1">{teams[0].name}</h3>
                     <h3 className="widget-user-username-versus-center">vs</h3>
-                    <h3 className="widget-user-username-versus-2">{teams[1].name} <sup>({teams[1].seed})</sup></h3>
+                    <h3 className="widget-user-username-versus-2">{teams[1].name}</h3>
                 </div>
                 <div className="widget-user-image-versus-1">
                     <img className="img-circle" src={teams[0].avatar} alt="User Avatar"></img>
@@ -273,13 +284,10 @@ var Lobby = React.createClass({
                 
                 <div className="row">
                     <div className="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
-                        <PlayerTable>
-                            {this.state.players.map(function(player, i) {
-                                return (
-                                    <PlayerInfo player={player} key={i} />
-                                );
-                            })}
-                        </PlayerTable>
+                        <PlayerTable
+                            players={this.state.players}
+                            teams={this.state.teams}
+                        />
                     </div>
                     
                     <div className="col-xs-12 col-lg-9 pull-right">

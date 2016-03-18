@@ -198,44 +198,58 @@ Player versus player widget
 /*
 Player info
 */
-/* First column holds seed */
-.table-players > tbody > tr > td:nth-child(1) {
-  width: 12px;
+.table-players {
+  & > tbody > tr > td {
+    vertical-align: middle;
+    
+    /* First column holds seed */
+    &:nth-child(1) {
+      width: 12px;
+    }
+  
+    /* Second column holds icon */
+    &:nth-child(2) {
+      width: 38px;
+      padding-left: 0px;
+      padding-right: 0px;
+      
+      & > img {
+        background-color: #406080;
+        border-radius: 5px;
+      }
+    }
+    
+    /* Fill remaining space with name */
+    &:nth-child(3) {
+      width: 100%;
+    }
+    
+    /* Fourth column, if there is one, holds seed */
+    &:nth-child(4) {
+      text-align: center;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+  }
 }
 
-/* Second column holds icon */
-.table-players > tbody > tr > td:nth-child(2) {
-  width: 38px;
-  padding-left: 0px;
-  padding-right: 0px;
-}
-
-.table-players > tbody > tr > td:nth-child(2) > img {
-  background-color: #406080;
-  border-radius: 5px;
-}
-
-.table-players > tbody > tr > td {
-  vertical-align: middle;
-}
-
-.table-players .player-status {
+.player-status {
   width: 12px;
   height: 12px;
   margin: auto;
   border-radius: 50%;
-}
 
-.table-players .player-status[data-original-title="Online"] {
-  background-color: green;
-}
+  &[data-original-title="Online"] {
+    background-color: green;
+  }
 
-.table-players .player-status[data-original-title="In another match"] {
-  background-color: goldenrod;
-}
+  &[data-original-title="In another match"] {
+    background-color: goldenrod;
+  }
 
-.table-players .player-status[data-original-title="Offline"] {
-  background-color: lightgrey;
+  &[data-original-title="Offline"] {
+    background-color: lightgrey;
+  }
 }
 
 /*

@@ -1,3 +1,5 @@
+'use strict';
+
 /* Text for a timer */
 var Timer = React.createClass({
     getInitialState: function() {

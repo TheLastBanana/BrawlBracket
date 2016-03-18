@@ -1,3 +1,5 @@
+'use strict';
+
 /* Icon for a legend in the picker */
 var LegendIcon = React.createClass({
     render: function() {

@@ -286,7 +286,7 @@ class Match():
             for p in t.players:
                 player = {}
                 player['name'] = p.user.username
-                player['id'] = p.user.id
+                player['id'] = str(p.user.id)
                 player['status'] = 'Online' if p.online > 0 else 'Offline'
                 player['legend'] = 'none'
                 player['team'] = i

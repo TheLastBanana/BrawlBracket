@@ -271,7 +271,7 @@ class Match():
         
         lobbyData['teams'] = []
         lobbyData['players'] = []
-        for t, wins in zip(self.teams, self.score):
+        for i, (t, wins) in enumerate(zip(self.teams, self.score)):
             if t is None:
                 continue
             
@@ -289,6 +289,7 @@ class Match():
                 player['name'] = p.user.username
                 player['status'] = 'Online' if p.online else 'Offline'
                 player['legend'] = 'none'
+                player['team'] = i
                 lobbyData['players'].append(player)
         
         return lobbyData

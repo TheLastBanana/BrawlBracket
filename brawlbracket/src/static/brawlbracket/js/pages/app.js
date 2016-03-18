@@ -337,7 +337,7 @@ function clearPageNotifications(pageName) {
 }
 
 /**
- * Notify about a chat message if necessary.
+ * Notify about/play sound for a chat message if necessary.
  * @param {string} chatId - The chat's id.
  * @param {string} senderId - The sender's user id.
  * @param {boolean} silent - If true, don't play sounds.
@@ -345,11 +345,16 @@ function clearPageNotifications(pageName) {
 function chatNotify(chatId, senderId, silent) {
     var notifyPage = chatNotifies[chatId];
     
-    // Chat message from another page, so add a notification
-    if (notifyPage && currentPage != notifyPage && senderId != userId) {
-        addPageNotification(notifyPage);
+    if (senderId != userId) {
+        // Chat message from another page, so add a notification
+        if (notifyPage && currentPage != notifyPage) {
+            addPageNotification(notifyPage);
+        }
         
-        if (!silent) createjs.Sound.play('message');
+        // Play sound if not active or if on another page
+        if (!silent && (!isActive || currentPage != notifyPage)) {
+            createjs.Sound.play('message');
+        }
     }
 }
 

@@ -327,7 +327,7 @@ function showPage(pageName, replace) {
  */
 function addPageNotification(pageName) {
     // Don't notify if we're already on the page
-    if (pageName != currentPage) return;
+    if (pageName == currentPage) return;
     
     $('.bb-menu-option[page="' + pageName + '"] .notify-label').addNotification();
 }

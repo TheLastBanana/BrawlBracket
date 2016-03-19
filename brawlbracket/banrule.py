@@ -91,7 +91,7 @@ class BanRule:
                 # TODO: Make this move people to next match and eliminate others
                 return False
             else:
-                self._resetForNewGame()
+                self._resetForNewGame(match)
                 
                 return True
     
@@ -271,7 +271,7 @@ class ESLRules(BanRule):
         # Reset things to pregame state
         match.clearRealmBans()
         match.currentRealm = None
-        match.oldScore = score.copy()
+        match.oldScore = currentScore.copy()
         
         # Reset loser player legends to None so they can repick
         for player in match.teams[loserIndex].players:

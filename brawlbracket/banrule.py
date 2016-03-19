@@ -74,34 +74,33 @@ class BanRule:
         Returns True if the state update process should be restarted.
         """
         state = match.state
-        realGameNumber = sum(match.score)
-        currentGameNumber = match.currentGameNumber
+        currentScore = match.score
+        oldScore = match.oldScore
         
         # Error
-        if currentGameNumber > realGameNumber:
-            raise AssertionError('currentGameNumber ahead of realGameNumber.')
+        if currentScore < oldScore:
+            raise AssertionError('Current score was less than old score: '
+                                 '{}, {}'.format(currentScore, oldScore))
         # Nothing to do
-        elif currentGameNumber == realGameNumber:
+        elif currentScore == oldScore:
             return
         # Game done, update
         else:
             # Match done move forwards
-            if max(match.score) > (match.bestOf // 2):
+            if max(currentScore) > (match.bestOf // 2):
                 # TODO: Make this move people to next match and eliminate others
                 return False
             else:
-                # Reset things to pregame state
-                match.clearRealmBans()
-                match.currentRealm = None
-                match.currentGameNumber = realGameNumber
-                for team in match.teams:
-                    for player in team.players:
-                        player.currentLegend = None
-                
-                state.clear()
-                state['name'] = 'pickLegends'
+                self._resetForNewGame()
                 
                 return True
+    
+    def _resetForNewGame(self, match):
+        """
+        Intended to reset a match's state such that it is ready to start a new
+        game.
+        """
+        raise NotImplementedError('No generic resetForNewGame')
 
 class BasicRules(BanRule):
     """
@@ -255,6 +254,29 @@ class ESLRules(BanRule):
             else:
                 state.clear()
                 state['name'] = 'createRoom'
+    
+    def _resetForNewGame(self, match):
+        """
+        Intended to reset a match's state such that it is ready to start a new
+        game.
+        """
+        state = match.state
+        currentScore = match.score
+        oldScore = match.oldScore
+        
+        loserIndex = 1 if oldScore[0] < currentScore[0] else 0
+    
+        # Reset things to pregame state
+        match.clearRealmBans()
+        match.currentRealm = None
+        match.oldScore = score.copy()
+        
+        # Reset loser player legends to None so they can repick
+        for player in match.teams[loserIndex].players:
+            player.currentLegend = None
+        
+        state.clear()
+        state['name'] = 'pickLegends'
                 
 # List of rulesets
 rulesets = {

@@ -296,6 +296,7 @@ def _buildTournament(tournamentData):
         match.round = round
         match.number = number
         match.score = score
+        match.currentGameNumber = sum(score)
         match._realmBans = realmBans
         match.startTime = startTime
         match.roomNumber = roomNumber

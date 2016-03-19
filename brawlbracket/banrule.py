@@ -208,12 +208,15 @@ class ESLRules(BanRule):
         if gameNumber == 0:
             # Ban up until one realm left
             if len(currentBans) < (len(util.eslRealms) - 1):
+                sortedTeams = sorted(match.teams,
+                                     key = lambda t: t.seed,
+                                     reverse = True)
                 state.clear()
                 state['name'] = 'chooseMap'
                 state['action'] = 'ban'
                 
                 # Player 0 == captain
-                state['turn'] = str(match.teams[len(currentBans)%2]\
+                state['turn'] = str(sortedTeams[len(currentBans)%2]\
                                     .players[0].user.id)
                                     
             # Auto pick the last realm

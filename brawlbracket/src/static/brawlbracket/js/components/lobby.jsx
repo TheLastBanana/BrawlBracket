@@ -410,7 +410,7 @@ var Lobby = React.createClass({
                 break;
                 
             case 'inGame':
-                if (leader.id != myPlayer.id) {
+                if (leader.id == myPlayer.id) {
                     var selectWinner = this._selectWinner;
                     
                     stateBoxData = {

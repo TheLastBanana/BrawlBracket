@@ -286,7 +286,29 @@ class ESLRules(BanRule):
         
         state.clear()
         state['name'] = 'pickLegends'
-                
+    
+    def _advanceToNewMatch(self, match):
+        """
+        Handles single elim advancement.
+        """
+        state = match.state
+        currentScore = match.score
+        oldScore = match.oldScore
+        teams = match.teams
+        nextMatch = match.nextMatch
+        
+        winners = teams[0] if oldScore[0] < currentScore[0] else teams[1]
+        winnerIndex = 0 if oldScore[0] < currentScore[0] else 1
+        losers = teams[1] if oldScore[0] > currentScore[0] else teams[0]
+        
+        match.winner = winners
+        nextMatch.setTeam(winners, match.nextMatchSide)
+        losers.eliminated = True
+        
+        state.clear()
+        state['name'] = complete
+        state['winnerIndex'] = winnerIndex
+
 # List of rulesets
 rulesets = {
     'basic': BasicRules(),

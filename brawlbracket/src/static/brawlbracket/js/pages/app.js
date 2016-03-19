@@ -217,13 +217,14 @@ function brawlBracketParticipantInit() {
                     
                 // Add notifications
                 if (!isActive || currentPage != 'lobby') {
-                    addPageNotification('lobby');
                     createjs.Sound.play('state');
                     
                     if (!isActive) {
                         desktopNotify('BrawlBracket update',
                                       'Your next match is ready!');
                     }
+                    
+                    addPageNotification('lobby');
                 }
                 
                 // TODO: Add notifications for room chosen and score changed
@@ -325,6 +326,9 @@ function showPage(pageName, replace) {
  * @param {string} pageName - The name of the page.
  */
 function addPageNotification(pageName) {
+    // Don't notify if we're already on the page
+    if (pageName != currentPage) return;
+    
     $('.bb-menu-option[page="' + pageName + '"] .notify-label').addNotification();
 }
 
@@ -346,8 +350,8 @@ function chatNotify(chatId, senderId, silent) {
     var notifyPage = chatNotifies[chatId];
     
     if (senderId != userId) {
-        // Chat message from another page, so add a notification
-        if (notifyPage && currentPage != notifyPage) {
+        // Add a notification to the notify page if there is one
+        if (notifyPage) {
             addPageNotification(notifyPage);
         }
         

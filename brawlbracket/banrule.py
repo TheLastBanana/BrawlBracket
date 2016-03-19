@@ -27,15 +27,20 @@ class BanRule:
             state.clear()
             state['name'] = 'pickLegends'
         
-        if state['name'] == 'pickLegends':
-            self._getNextLegendStep(match)
-        
-        if state['name'] == 'chooseMap':
-            self._getNextMapStep(match)
-        
-        if state['name'] == 'createRoom':
-            self._getNextRoomStep(match)
-        
+        while True:
+            if state['name'] == 'pickLegends':
+                self._getNextLegendStep(match)
+            
+            if state['name'] == 'chooseMap':
+                self._getNextMapStep(match)
+            
+            if state['name'] == 'createRoom':
+                self._getNextRoomStep(match)
+            
+            if state['name'] == 'inGame':
+                if self._getNextGameStep(match):
+                    continue
+            break
     
     def _getNextLegendStep(self, match):
         """
@@ -61,8 +66,43 @@ class BanRule:
             state = match.state
             state.clear()
             state['name'] = 'inGame'
-            
-class BasicRules:
+    
+    def _getNextGameStep(self, match):
+        """
+        Intended to determine the next step in the in game process.
+        
+        Returns True if the state update process should be restarted.
+        """
+        state = match.state
+        realGameNumber = sum(match.score)
+        currentGameNumber = match.currentGameNumber
+        
+        # Error
+        if currentGameNumber > realGameNumber:
+            raise AssertionError('currentGameNumber ahead of realGameNumber.')
+        # Nothing to do
+        elif currentGameNumber == realGameNumber:
+            return
+        # Game done, update
+        else:
+            # Match done move forwards
+            if max(match.score) > (match.bestOf // 2):
+                # TODO: Make this move people to next match and eliminate others
+                return false
+            else:
+                # Reset things to pregame state
+                match.clearRealmsBans()
+                match.currentRealm = None
+                for team in match.teams:
+                    for player in team.players:
+                        player.currentLegend = None
+                
+                state.clear()
+                state['name'] = 'pickLegend'
+                
+                return True
+
+class BasicRules(BanRule):
     """
     A basic implementation of rules.
     """     
@@ -120,7 +160,7 @@ class BasicRules:
             state.clear()
             state['name'] = 'createRoom'
 
-class ESLRules:
+class ESLRules(BanRule):
     """
     Rules for ESL style tournaments
     """

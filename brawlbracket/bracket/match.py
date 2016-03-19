@@ -403,7 +403,7 @@ class Match():
         if stateName == 'waitingForPlayers':
             self.startTime = datetime.datetime.now()
         
-        rules = banrule.rulesets['basic'] 
+        rules = banrule.rulesets[self.banRule] 
         rules.advanceState(self)
         
         if '_dbCallback' in self.__dict__ and self._dbCallback is not None:

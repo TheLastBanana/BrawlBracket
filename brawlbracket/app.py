@@ -178,8 +178,18 @@ def user_settings():
 # Tournament index page
 @app.route('/t/<tourneyName>/', methods=['GET', 'POST'])
 def tournament_index(tourneyName):
-    if not tm.tournamentNameExists(tourneyName):
+    tournament = tm.getTournamentByName(tourneyName)
+    
+    if tournament is None:
         abort(404)
+        
+    if request.method == 'POST':
+        userId = session.get('userId')
+        user = um.getUserById(userId)
+        
+        # Not logged in and trying to register
+        if user is None:
+            return
     
     tournament = tm.getTournamentByName(tourneyName)
     return render_template('tournament.html',
@@ -408,6 +418,10 @@ def user_connect():
     
     match, team, player = info
     
+    if team.eliminated:
+        # This can be handled more gracefully
+        abort(404)
+    
     # Affect match state
     player.online += 1
     
@@ -472,8 +486,9 @@ def user_disconnect():
     # Affect state
     player.online -= 1
     
-    # XXX update state, put in listener
-    match._updateState()
+    if match is not None:
+        # XXX update state, put in listener
+        match._updateState()
     
     lobbyData = match.lobbyData
     updatedLobbyData = {}

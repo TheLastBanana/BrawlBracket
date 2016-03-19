@@ -563,6 +563,7 @@ def ban_realm(data):
     updatedLobbyData = {}
     updatedLobbyData['state'] = lobbyData['state']
     updatedLobbyData['realmBans'] = lobbyData['realmBans']
+    updatedLobbyData['currentRealm'] = lobbyData['currentRealm']
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
             room = match.id)

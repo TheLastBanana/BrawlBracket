@@ -306,7 +306,7 @@ class ESLRules(BanRule):
         losers.eliminated = True
         
         state.clear()
-        state['name'] = complete
+        state['name'] = 'complete'
         state['winnerIndex'] = winnerIndex
 
 # List of rulesets

@@ -10,10 +10,32 @@ class BanRule:
     def advanceState(self, match):
         """
         Handles all of the logic of what the next state should be.
+        Generic implementation naively checks state name and hands off to a
+        sub function.
+        
+        State order:
+            - waitingForPlayers
+            - pickLegends
+            - chooseMap
+            - createRoom
         
         Directly modifies match.state.
         """
-        raise NotImplementedError('No generic getNextState')
+        state = match.state
+        # Entry point into the cyclic states, straight to pickLegends
+        if state['name'] == 'waitingForPlayers':
+            state.clear()
+            state['name'] = 'pickLegends'
+        
+        if state['name'] == 'pickLegends':
+            self._getNextLegendStep(match)
+        
+        if state['name'] == 'chooseMap':
+            self._getNextMapStep(match)
+        
+        if state['name'] == 'createRoom':
+            self._getNextRoomStep(match)
+        
     
     def _getNextLegendStep(self, match):
         """
@@ -28,26 +50,22 @@ class BanRule:
         This could be the next person to pick or ban.
         """
         raise NotImplementedError('No generic getNextMapStep')
-
+    
+    def _getNextRoomStep(self, match):
+        """
+        Intended to determine the next step in the room picking process.
+        Generic implementation checks to see if room is set, if it isn't
+        then it passes. If it is then it advances to the inGame state.
+        """
+        if match.roomNumber is not None:
+            state = match.state
+            state.clear()
+            state['name'] = 'inGame'
+            
 class BasicRules:
     """
     A basic implementation of rules.
-    """
-    # override
-    def advanceState(self, match):
-        state = match.state
-        # Entry point into the cyclic states, straight to pickLegends
-        if state['name'] == 'waitingForPlayers':
-            state.clear()
-            state['name'] = 'pickLegends'
-        
-        if state['name'] == 'pickLegends':
-            self._getNextLegendStep(match)
-        
-        # Note that this is intentionally not elif
-        if state['name'] == 'chooseMap':
-            self._getNextMapStep(match)
-            
+    """     
     # override
     def _getNextLegendStep(self, match):
         """
@@ -106,20 +124,6 @@ class ESLRules:
     """
     Rules for ESL style tournaments
     """
-    # override
-    def advanceState(self, match):
-        state = match.state
-        # Entry point into the cyclic states, straight to pickLegends
-        if state['name'] == 'waitingForPlayers':
-            state.clear()
-            state['name'] = 'pickLegends'
-        
-        if state['name'] == 'pickLegends':
-            self._getNextLegendStep(match)
-        
-        # Note that this is intentionally not elif
-        if state['name'] == 'chooseMap':
-            self._getNextMapStep(match)
             
     # override
     def _getNextLegendStep(self, match):

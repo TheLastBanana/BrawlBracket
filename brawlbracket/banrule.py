@@ -88,10 +88,10 @@ class BanRule:
             # Match done move forwards
             if max(match.score) > (match.bestOf // 2):
                 # TODO: Make this move people to next match and eliminate others
-                return false
+                return False
             else:
                 # Reset things to pregame state
-                match.clearRealmsBans()
+                match.clearRealmBans()
                 match.currentRealm = None
                 for team in match.teams:
                     for player in team.players:

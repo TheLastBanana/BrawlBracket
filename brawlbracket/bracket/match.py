@@ -150,7 +150,7 @@ class Match():
         if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
             self._dbCallback(self)
     
-    def incrementScore(teamIndex, amount = 1):
+    def incrementScore(self, teamIndex, amount = 1):
         """
         Increment a team's score.
         teamIndex is the index in the score array.

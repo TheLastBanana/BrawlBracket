@@ -690,7 +690,6 @@ def report_win(data):
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
             room = match.id)
-    print('Picked {}'.format(data['realmId']))
 
 # A chat message was sent by a client
 @socketio.on('send', namespace='/chat')

@@ -201,6 +201,12 @@ class Tournament():
         Returns (Match, Team, Player) if user is in tournament.
         Returns None otherwise.
         """
+        # Check if this player is eliminated
+        for t in self.teams:
+            for p in t.players:
+                if p.user.id == user.id and t.eliminated:
+                    return (None, t, p)
+                
         for m in self.matches:
             # We want an active game, not one that's already done
             if m.winner is not None:
@@ -232,16 +238,18 @@ class Tournament():
         for match in self.matches:
             matchesData[str(match.id)] = {
                 'id': match.number,
-                'teams': [team.id if team else None for team in match.teams],
-                'prereqMatches': [prereq.id if prereq else None for prereq in match.prereqMatches],
+                'teams': [str(team.id) if team else None 
+                           for team in match.teams],
+                'prereqMatches': [str(prereq.id) if prereq else None
+                                    for prereq in match.prereqMatches],
                 'score': match.score,
-                'winner': match.winner or None
+                'winner': str(match.winner.id) if match.winner else None
             }
         
         return {
             'teams': teamsData,
             'matches': matchesData,
-            'root': self.root.id if self.root else None
+            'root': str(self.root.id) if self.root else None
         }
         
 class TreeTournament(Tournament):

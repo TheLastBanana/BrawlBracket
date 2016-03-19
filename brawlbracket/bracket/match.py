@@ -65,7 +65,7 @@ class Match():
             self.chat = chatmanager.createChat()
         
         self.score = [0, 0]
-        self.currentGameNumber = 0
+        self.oldScore = [0, 0]
         
         # Set to None to begin with, this should be set later
         self.bestOf = 3 # XXX Change me
@@ -91,7 +91,7 @@ class Match():
         
         # Could be picky about names of vars changing where we don't want to 
         # write out to the database
-        if name in ['_dbCallback', 'currentGameNumber']:
+        if name in ['_dbCallback', 'oldScore']:
             return
         
         if '_dbCallback' in self.__dict__ and self._dbCallback is not None:

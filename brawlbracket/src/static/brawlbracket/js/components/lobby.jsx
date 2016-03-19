@@ -178,7 +178,7 @@ var MatchupDisplay = React.createClass({
 /* The whole lobby structure */
 var Lobby = React.createClass({
     getInitialState: function() {
-        return $.extend(true, {
+        return $.extend(false, {
             modal: null,
             selectedWinner: null
         }, this.props.lobbyData);
@@ -612,7 +612,7 @@ var Lobby = React.createClass({
     
     // Select the winning team. This will show a confirmation modal
     _selectWinner: function(teamIndex) {
-        var newData = $.extend(true, this.state, {
+        var newData = $.extend(false, this.state, {
             modal: 'confirmWinner',
             selectedWinner: teamIndex
         });
@@ -632,7 +632,7 @@ var Lobby = React.createClass({
     
     // Close the visible modal
     _closeModal: function() {
-        var newData = $.extend(true, this.state, {
+        var newData = $.extend(false, this.state, {
             modal: null
         });
         this.setState(newData);

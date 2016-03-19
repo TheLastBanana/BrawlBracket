@@ -563,7 +563,7 @@ var Lobby = React.createClass({
     // Tell the server that the room number has been set
     _setRoom: function(roomNumber) {
         this.props.mainSocket.emit('set room', {
-            realmId: roomNumber
+            roomNumber: roomNumber
         });
     },
     

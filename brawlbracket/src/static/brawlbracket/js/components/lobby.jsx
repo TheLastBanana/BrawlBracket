@@ -469,33 +469,17 @@ var Lobby = React.createClass({
                 {callout}
                 
                 <div className="row">
-                    <div className="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
+                    <div className="col-lg-6 col-lg-push-3 col-md-6 col-md-push-6">
+                        <MatchupDisplay teams={this.state.teams} bestOf={this.state.bestOf} />
+                        
+                        {stateBox}
+                    </div>
+                    
+                    <div className="col-lg-3 col-lg-pull-6 col-md-6 col-md-pull-6">
                         <PlayerTable
                             teams={this.state.teams}
                         />
-                    </div>
-                    
-                    <div className="col-xs-12 col-lg-9 pull-right">
-                        <div className="row">
-                            <div className="col-lg-8">
-                                <MatchupDisplay teams={this.state.teams} bestOf={this.state.bestOf} />
-                            </div>
-                  
-                            <div className="col-lg-4">
-                                <div className="row">
-                                    {infoWidgets}
-                                </div>
-                            </div>
-                        </div>
                         
-                        <div className="row">
-                            <div className="col-lg-8">
-                                {stateBox}
-                            </div>
-                        </div>
-                    </div>
-                
-                    <div className="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
                         <Chat
                             height="450px"
                             socket={this.props.chatSocket}
@@ -503,6 +487,12 @@ var Lobby = React.createClass({
                             chatCache={this.props.chatCache}
                             userId={this.props.userId}
                         />
+                    </div>
+          
+                    <div className="col-lg-3">
+                        <div className="row">
+                            {infoWidgets}
+                        </div>
                     </div>
                 </div>
             </div>

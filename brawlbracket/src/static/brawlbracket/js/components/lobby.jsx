@@ -553,7 +553,7 @@ var Lobby = React.createClass({
     },
     
     _updateLobby: function(data) {
-        var newData = $.extend(true, this.state, data);
+        var newData = $.extend(false, this.state, data);
         this.setState(newData);
         
         this._updateLobbyNumber();

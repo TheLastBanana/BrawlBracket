@@ -313,11 +313,17 @@ var Lobby = React.createClass({
             case 'chooseMap':
                 var choosePlayer = this._getPlayerDataByUserId(this.state.state.turn)[1];
                 
+                // If multiple bans are remaining, show plural form and remaining count
+                var countText = 'a realm';
+                if (this.state.state.remaining) {
+                    countText = 'realms (' + this.state.state.remaining  + ' remaining)';
+                }
+                
                 if (this.state.state.turn == this.props.userId) {
                     switch (this.state.state.action) {
                         case 'ban':
                             stateBoxData = {
-                                title: 'Ban a realm',
+                                title: 'Ban ' + countText,
                                 icon: 'ban',
                                 contents: (
                                     <RealmPicker
@@ -331,7 +337,7 @@ var Lobby = React.createClass({
                             
                         case 'pick':
                             stateBoxData = {
-                                title: 'Pick a realm',
+                                title: 'Pick ' + countText,
                                 icon: 'check-circle-o',
                                 contents: (
                                     <RealmPicker
@@ -347,7 +353,7 @@ var Lobby = React.createClass({
                 } else {
                     // Another user is picking maps
                     stateBoxData = {
-                        title: choosePlayer.name + '\'s turn to ' + this.state.state.action + ' a realm',
+                        title: choosePlayer.name + '\'s turn to ' + this.state.state.action + ' ' + countText,
                         icon: 'hourglass-half',
                         contents: (
                             <RealmPicker

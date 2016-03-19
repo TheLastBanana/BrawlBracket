@@ -1,5 +1,8 @@
 'use strict';
 
+var Modal = ReactBootstrap.Modal;
+var Button = ReactBootstrap.Button;
+
 /* Icon to select a winning team */
 var WinnerPickIcon = React.createClass({
     render: function() {
@@ -175,7 +178,10 @@ var MatchupDisplay = React.createClass({
 /* The whole lobby structure */
 var Lobby = React.createClass({
     getInitialState: function() {
-        return $.extend(true, {}, this.props.lobbyData);
+        return $.extend(true, {
+            modal: null,
+            selectedWinner: null
+        }, this.props.lobbyData);
     },
     
     render: function() {
@@ -404,8 +410,8 @@ var Lobby = React.createClass({
                 break;
                 
             case 'inGame':
-                if (leader.id == myPlayer.id) {
-                    var reportWin = this._reportWin;
+                if (leader.id != myPlayer.id) {
+                    var selectWinner = this._selectWinner;
                     
                     stateBoxData = {
                         title: 'Score reporting',
@@ -421,7 +427,7 @@ var Lobby = React.createClass({
                                                 index={index}
                                                 avatar={team.avatar}
                                                 name={team.name}
-                                                callback={reportWin}
+                                                callback={selectWinner}
                                             />
                                         );
                                     })}
@@ -443,6 +449,7 @@ var Lobby = React.createClass({
                 break;
         }
         
+        // Callout at top of page
         var callout;
         if (calloutData) {
             callout = (
@@ -453,6 +460,7 @@ var Lobby = React.createClass({
             );
         }
         
+        // Box holding interactive lobby state (legend picker, etc.)
         var stateBox;
         if (stateBoxData) {
             stateBox = (
@@ -470,8 +478,35 @@ var Lobby = React.createClass({
             );
         }
         
+        // Modal to display
+        var modal;
+        switch (this.state.modal) {
+            case 'confirmWinner':
+                var teamName = this.state.teams[this.state.selectedWinner].name;
+            
+                modal = (
+                    <Modal show={true} onHide={this.close}>
+                        <Modal.Header>
+                            <Modal.Title>Confirm your selection</Modal.Title>
+                        </Modal.Header>
+
+                        <Modal.Body>
+                            Are you sure you want to set {teamName} as the winner for this game?
+                        </Modal.Body>
+
+                        <Modal.Footer>
+                            <div className="pull-left"><Button onClick={this._closeModal}>Cancel</Button></div>
+                            <Button bsStyle="primary" onClick={this._reportWin}>Yes</Button>
+                        </Modal.Footer>
+                    </Modal>
+                );
+                break;
+        }
+        
         return (
             <div>
+                {modal}
+            
                 {callout}
                 
                 <div className="row">
@@ -516,7 +551,7 @@ var Lobby = React.createClass({
     },
     
     _updateLobby: function(data) {
-        var newData = $.extend(true, this.state.lobbyData, data);
+        var newData = $.extend(true, this.state, data);
         this.setState(newData);
         
         this._updateLobbyNumber();
@@ -573,12 +608,31 @@ var Lobby = React.createClass({
         });
     },
     
+    // Select the winning team. This will show a confirmation modal
+    _selectWinner: function(teamIndex) {
+        var newData = $.extend(true, this.state, {
+            modal: 'confirmWinner',
+            selectedWinner: teamIndex
+        });
+        this.setState(newData);
+    },
+    
     // Report a win for a team.
     // Note that we report the team's index in lobbyData.teams, so we assume that the order of teams is the same on the
     // server and the client.
-    _reportWin: function(teamIndex) {
+    _reportWin: function() {
         this.props.mainSocket.emit('report win', {
-            teamIndex: teamIndex
+            teamIndex: this.state.selectedWinner
         });
+        
+        this._closeModal();
+    },
+    
+    // Close the visible modal
+    _closeModal: function() {
+        var newData = $.extend(true, this.state, {
+            modal: null
+        });
+        this.setState(newData);
     }
 });

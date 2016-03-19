@@ -220,7 +220,6 @@ class ESLRules(BanRule):
                 state.clear()
                 state['name'] = 'chooseMap'
                 state['action'] = 'ban'
-                state['remaining'] = len(util.eslRealms) - len(currentBans) - 1
                 
                 # Player 0 == captain
                 state['turn'] = str(sortedTeams[len(currentBans)%2]\

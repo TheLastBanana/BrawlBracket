@@ -398,6 +398,58 @@ Realm picker
 }
 
 /*
+Team icons for winner selection
+*/
+.winner-team-picker {
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
+  
+  .winner-team-icon {
+    display: inline-block;
+    margin: {
+      left: 20px;
+      right: 20px;
+      bottom: 10px;
+    }
+    
+    & > a {
+      & img {
+        border-radius: 50%;
+        height: 98px;
+      }
+      
+      & p {
+        margin: 0px;
+        max-width: 200px;
+        
+        color: #333;
+        font: {
+          weight: bold;
+          size: 14px;
+          transform: uppercase;
+        }
+        
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      
+      &:hover {
+        & img {
+          filter: opacity(75%);
+          -webkit-filter: opacity(75%);
+        }
+        
+        & p {
+          color: #555;
+        }
+      }
+    }
+  }
+}
+
+/*
 AdminLTE tweaks
 */
 .info-box {

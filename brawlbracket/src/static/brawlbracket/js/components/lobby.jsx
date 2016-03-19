@@ -1,5 +1,27 @@
 'use strict';
 
+/* Icon to select a winning team */
+var WinnerPickIcon = React.createClass({
+    render: function() {
+        return (
+            <li className="winner-team-icon">
+                <a href="" onClick={this._callback}>
+                    <div>
+                        <img src={this.props.avatar} />
+                        <p>{this.props.name}</p>
+                    </div>
+                </a>
+            </li>
+        );
+    },
+    
+    _callback: function(e) {
+        this.props.callback(this.props.index);
+        
+        e.preventDefault();
+    }
+});
+
 /* Text for a timer */
 var Timer = React.createClass({
     getInitialState: function() {
@@ -374,6 +396,45 @@ var Lobby = React.createClass({
                     }
                 }
                 break;
+                
+            case 'inGame':
+                if (leader.id == myPlayer.id) {
+                    var reportWin = this._reportWin;
+                    
+                    stateBoxData = {
+                        title: 'Score reporting',
+                        icon: 'trophy',
+                        contents: (
+                            <div>
+                                <p>When you've finished playing the current game, report the score by clicking the winner below:</p>
+                                <ul className="winner-team-picker">
+                                    {this.state.teams.map(function (team, index) {
+                                        return (
+                                            <WinnerPickIcon
+                                                key={index}
+                                                index={index}
+                                                avatar={team.avatar}
+                                                name={team.name}
+                                                callback={reportWin}
+                                            />
+                                        );
+                                    })}
+                                </ul>
+                            </div>
+                        )
+                    }
+                } else {
+                    stateBoxData = {
+                        title: 'Ready to play!',
+                        icon: 'gamepad',
+                        contents: (
+                            <div>
+                                Go to Custom Online > Private Game in Brawlhalla and join <strong>room #{this.state.roomNumber}</strong>!
+                            </div>
+                        )
+                    }
+                }
+                break;
         }
         
         var callout;
@@ -513,6 +574,15 @@ var Lobby = React.createClass({
     _setRoom: function(roomNumber) {
         this.props.mainSocket.emit('set room', {
             realmId: roomNumber
+        });
+    },
+    
+    // Report a win for a team.
+    // Note that we report the team's index in lobbyData.teams, so we assume that the order of teams is the same on the
+    // server and the client.
+    _reportWin: function(teamIndex) {
+        this.props.mainSocket.emit('report win', {
+            teamIndex: teamIndex
         });
     }
 });

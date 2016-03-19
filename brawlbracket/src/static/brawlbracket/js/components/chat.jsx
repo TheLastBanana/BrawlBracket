@@ -86,7 +86,7 @@ var Chat = React.createClass({
                 </div>
                 <div className="box-footer">
                     <div className="input-group">
-                        <input type="text" placeholder="Type Message ..." className="form-control direct-chat-input" autoComplete="off" onKeyPress={this._handleKeyPress} ref="msgInput"></input>
+                        <input type="text" className="form-control direct-chat-input" autoComplete="off" onKeyPress={this._handleKeyPress} ref="msgInput"></input>
                         <span className="input-group-btn">
                             <button type="button" className="btn btn-primary btn-flat direct-chat-send" onClick={this._sendMessage}>Send</button>
                         </span>

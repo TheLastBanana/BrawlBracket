@@ -214,11 +214,9 @@ class ESLRules(BanRule):
                 # Player 0 == captain
                 state['turn'] = str(match.teams[len(currentBans)%2]\
                                     .players[0].user.id)
+                                    
             # Auto pick the last realm
-            elif match.currentRealm is None:
-                state.clear()
-                state['name'] = 'chooseMap'
-                
+            else:
                 for realm in util.eslRealms:
                     if realm not in currentBans:
                         match.currentRealm = realm
@@ -226,10 +224,11 @@ class ESLRules(BanRule):
                 else:
                     raise AssertionError('Only one realm left but couldn\'t '
                                          'find it.')
-            # Advance to next state
-            else:
+                
+                # Advance to next state
                 state.clear()
                 state['name'] = 'createRoom'
+                
         # After first game
         else:
             # Ban up to two realms

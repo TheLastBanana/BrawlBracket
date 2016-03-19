@@ -7,19 +7,7 @@
 <script src="/static/brawlbracket/js/components/general.min.js"></script>
 <script src="/static/brawlbracket/js/components/picker.min.js"></script>
 <script src="/static/brawlbracket/js/components/lobby.min.js"></script>
+<script src="/static/brawlbracket/js/pages/lobby.min.js"></script>
 <script>
-  ReactDOM.render(
-    React.createElement(Lobby,
-      {
-        lobbyData: lobbyData,
-        mainSocket: pSocket,
-        chatSocket: chatSocket,
-        chatCache: chatCache,
-        legendData: {{ legendData|tojson }},
-        realmData: {{ realmData|tojson }},
-        userId: userId
-      }
-    ),
-    $('#lobby').get(0)
-  );
+  initLobby({{ legendData|tojson }}, {{ realmData|tojson }});
 </script>

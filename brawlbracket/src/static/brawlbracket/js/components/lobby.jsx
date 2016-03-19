@@ -449,6 +449,34 @@ var Lobby = React.createClass({
                     }
                 }
                 break;
+                
+            case 'complete':
+                var winnerTeam = this.state.teams[this.state.state.winnerIndex];
+                
+                if (winnerTeam.seed == myTeam.seed) {
+                    stateBoxData = {
+                        title: 'You win!',
+                        icon: 'trophy',
+                        contents: (
+                            <div>
+                                <p>When you're ready to go to your next match, click here:</p>
+                                <Button bsStyle="primary" bsSize="large" onClick={this._advanceLobby}>Continue</Button>
+                            </div>
+                        )
+                    }
+                    
+                } else {
+                    stateBoxData = {
+                        title: 'You lose',
+                        icon: 'frown-o',
+                        contents: (
+                            <div>
+                                You've been eliminated from the tournament. Better luck next time!
+                            </div>
+                        )
+                    }
+                }
+                break;
         }
         
         // Callout at top of page
@@ -628,6 +656,11 @@ var Lobby = React.createClass({
         });
         
         this._closeModal();
+    },
+    
+    // Tell the server to send info for the next lobby.
+    _advanceLobby: function() {
+        this.props.mainSocket.emit('advance lobby');
     },
     
     // Close the visible modal

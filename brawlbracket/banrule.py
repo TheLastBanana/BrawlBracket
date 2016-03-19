@@ -83,12 +83,12 @@ class BanRule:
                                  '{}, {}'.format(currentScore, oldScore))
         # Nothing to do
         elif currentScore == oldScore:
-            return
+            return False
         # Game done, update
         else:
             # Match done move forwards
             if max(currentScore) > (match.bestOf // 2):
-                # TODO: Make this move people to next match and eliminate others
+                self._advanceToNewMatch(match)
                 return False
             else:
                 self._resetForNewGame(match)
@@ -99,6 +99,13 @@ class BanRule:
         """
         Intended to reset a match's state such that it is ready to start a new
         game.
+        """
+        raise NotImplementedError('No generic resetForNewGame')
+    
+    def _advanceToNewMatch(self, match):
+        """
+        Intended to clean up this match's final state and then move players
+        appropriately to new states.
         """
         raise NotImplementedError('No generic resetForNewGame')
 

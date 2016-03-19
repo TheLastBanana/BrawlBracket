@@ -93,6 +93,7 @@ class BanRule:
                 # Reset things to pregame state
                 match.clearRealmBans()
                 match.currentRealm = None
+                match.currentGameNumber = realGameNumber
                 for team in match.teams:
                     for player in team.players:
                         player.currentLegend = None

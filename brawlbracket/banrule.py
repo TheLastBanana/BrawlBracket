@@ -98,7 +98,7 @@ class BanRule:
                         player.currentLegend = None
                 
                 state.clear()
-                state['name'] = 'pickLegend'
+                state['name'] = 'pickLegends'
                 
                 return True
 

@@ -176,7 +176,7 @@ class ESLRules(BanRule):
         state = match.state
         
         teams = list(match.teams)
-        teams.sort(key = lambda t: t.seed, reverse = True)
+        teams.sort(key = lambda t: t.seed)
         
         userIds = None
         if any(p.currentLegend is None for p in teams[0].players):

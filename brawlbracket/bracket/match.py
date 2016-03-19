@@ -289,7 +289,6 @@ class Match():
         lobbyData['currentRealm'] = self.currentRealm
         
         lobbyData['teams'] = []
-        lobbyData['players'] = []
         for i, (t, wins) in enumerate(zip(self.teams, self.score)):
             if t is None:
                 continue

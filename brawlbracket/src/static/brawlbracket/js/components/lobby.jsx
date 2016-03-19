@@ -347,7 +347,7 @@ var Lobby = React.createClass({
                 } else {
                     // Another user is picking maps
                     stateBoxData = {
-                        title: 'Realm banning in progress (' + choosePlayer.name + '\'s turn)',
+                        title: choosePlayer.name + '\'s turn to ' + this.state.state.action + ' a realm',
                         icon: 'hourglass-half',
                         contents: (
                             <RealmPicker

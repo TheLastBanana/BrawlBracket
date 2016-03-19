@@ -584,7 +584,6 @@ def ban_realm(data):
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
             room = match.id)
-    print('Lobby data: ', lobbyData)
     print('Banned {}'.format(data['realmId']))
     
 # Someone picked a realm
@@ -625,7 +624,6 @@ def pick_realm(data):
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
             room = match.id)
-    print('Lobby data: ', lobbyData)
     print('Picked {}'.format(data['realmId']))
 
 # A chat message was sent by a client

@@ -160,6 +160,14 @@ class Match():
         if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
             self._dbCallback(self)
     
+    def setTeam(self, team, index):
+        """
+        Set one of the teams in this match.
+        """
+        self.teams[index] = team
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
+        
     def _getTreeDepth(self):
         """
         Get the maximum depth of the match tree.

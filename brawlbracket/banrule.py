@@ -297,13 +297,24 @@ class ESLRules(BanRule):
         teams = match.teams
         nextMatch = match.nextMatch
         
-        winners = teams[0] if oldScore[0] < currentScore[0] else teams[1]
-        winnerIndex = 0 if oldScore[0] < currentScore[0] else 1
-        losers = teams[1] if oldScore[0] > currentScore[0] else teams[0]
+        winners = None
+        winnerIndex = None
+        losers = None
+        if oldScore[0] < currentScore[0]:
+            winners = teams[0]
+            winnerIndex = 0
+            losers = teams[1]
+        elif oldScore[1] < currentScore[1]:
+            winners = teams[1]
+            winnerIndex = 1
+            losers = teams[0]
+        else:
+            raise AssertionError('Advancing to new state without a winner')
         
         match.winner = winners
         nextMatch.setTeam(winners, match.nextMatchSide)
         losers.eliminated = True
+        nextMatch._updateState() # XXX Fix this
         
         state.clear()
         state['name'] = 'complete'

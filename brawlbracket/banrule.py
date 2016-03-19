@@ -213,6 +213,7 @@ class ESLRules(BanRule):
                 state.clear()
                 state['name'] = 'chooseMap'
                 state['action'] = 'ban'
+                state['remaining'] = len(util.eslRealms) - len(currentBans) - 1
                 
                 # Player 0 == captain
                 state['turn'] = str(sortedTeams[len(currentBans)%2]\
@@ -242,6 +243,7 @@ class ESLRules(BanRule):
                 state['name'] = 'chooseMap'
                 state['action'] = 'ban'
                 state['turn'] = str(highestSeed.players[0].user.id)
+                state['remaining'] = 2 - len(currentBans)
             # Low seed picks realm
             elif match.currentRealm is None:
                 lowestSeed = min(match.teams, key=lambda t: t.seed)

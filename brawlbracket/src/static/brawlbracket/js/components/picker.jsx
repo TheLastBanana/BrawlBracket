@@ -101,7 +101,7 @@ var RealmPicker = React.createClass({
                         <RealmIcon
                             id={realm[0]}
                             name={realm[1]}
-                            callback={callback}
+                            callback={callback ? callback : null}
                             banned={bans.indexOf(realm[0]) >= 0}
                             key={realm[0]}
                         />

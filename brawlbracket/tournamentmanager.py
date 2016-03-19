@@ -89,7 +89,9 @@ def tournamentNameExists(shortName):
     
     Returns True if the shortName is in use, False otherwise.
     """
-    return shortName in _tournamentsByName
+    # TODO this can be optimized to only check if a tournament exists in the
+    # data base not have to reconstruct the entire thing if we haven't already
+    return getTournamentByName(shortName) is not None
 
 def _getTournamentFromDBById(id):
     """

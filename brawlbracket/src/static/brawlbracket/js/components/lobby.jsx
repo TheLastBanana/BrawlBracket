@@ -159,6 +159,21 @@ var Lobby = React.createClass({
     render: function() {
         var infoWidgets = [];
         
+        // Get info about player
+        var myPlayerData = this._getPlayerDataByUserId(this.props.userId);
+        var myTeam = myPlayerData[0];
+        var myPlayer = myPlayerData[1];
+        
+        // Get the lowest seed team
+        var sortedTeams = this.state.teams.slice();
+        sortedTeams.sort(function(a, b) {
+            return a.seed - b.seed;
+        });
+        var lowSeedTeam = sortedTeams[0];
+        
+        // This player is responsible for reporting scores, creating the room, etc.
+        var leader = lowSeedTeam.players[0];
+        
         // Timer widget
         if (this.state.startTime) {
             infoWidgets.push(
@@ -234,7 +249,7 @@ var Lobby = React.createClass({
                         title: 'Please wait',
                         icon: 'hourglass-half',
                         contents: (
-                            <p>Your opponent is currently picking their legend!</p>
+                            <div>Your opponent is currently picking their legend!</div>
                         )
                     }
                     
@@ -254,7 +269,6 @@ var Lobby = React.createClass({
                 break;
                 
             case 'chooseMap':
-                var myPlayer = this._getPlayerDataByUserId(this.props.userId)[1];
                 var choosePlayer = this._getPlayerDataByUserId(this.state.state.turn)[1];
                 
                 if (this.state.state.turn == this.props.userId) {
@@ -301,6 +315,45 @@ var Lobby = React.createClass({
                         )
                     }
                 }
+                break;
+                
+            case 'createRoom':
+                if (leader.id == myPlayer.id) {
+                    // Tell the user to create a room
+                    stateBoxData = {
+                        title: 'Time to create a room in-game',
+                        icon: 'plus-circle',
+                        contents:
+                            <div>
+                                <p>Create a <strong>private</strong> game in Brawlhalla by going to Custom Online > Private Game in the main menu.</p>
+                                <p>Make sure you've changed the following game settings:</p>
+                                <ul>
+                                    <li>Game mode: <strong>Stock</strong></li>
+                                </ul>
+                                <p>When you're done, enter the room number here:</p>
+                                <TextEntry
+                                    extraClass="input-lg"
+                                    placeholder="Room number"
+                                    number={true}
+                                    maxLength={5}
+                                    callback={this._setRoom}
+                                />
+                            </div>
+                    }
+                    
+                } else {
+                    // Another user is creating the room
+                    stateBoxData = {
+                        title: 'Please wait',
+                        icon: 'hourglass-half',
+                        contents: (
+                            <div>
+                                {leader.name} is creating a room for you to join in-game. You'll be notified when it's ready.
+                            </div>
+                        )
+                    }
+                }
+                break;
         }
         
         var callout;
@@ -308,7 +361,7 @@ var Lobby = React.createClass({
             callout = (
                 <div className={'callout callout-' + calloutData.color}>
                     <h4>{calloutData.title}</h4>
-                    <p>{calloutData.body}</p>
+                    {calloutData.body}
                 </div>
             );
         }
@@ -433,6 +486,13 @@ var Lobby = React.createClass({
     _pickRealm: function(realmId) {
         this.props.mainSocket.emit('pick realm', {
             realmId: realmId
+        });
+    },
+    
+    // Tell the server that the room number has been set
+    _setRoom: function(roomNumber) {
+        this.props.mainSocket.emit('set room', {
+            realmId: roomNumber
         });
     }
 });

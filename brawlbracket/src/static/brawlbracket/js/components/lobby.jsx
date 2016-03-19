@@ -336,6 +336,7 @@ var Lobby = React.createClass({
                                         realmData={this.props.realmData}
                                         bans={this.state.realmBans}
                                         callback={this._banRealm}
+                                        action="ban"
                                     />
                                 )
                             }
@@ -350,6 +351,7 @@ var Lobby = React.createClass({
                                         realmData={this.props.realmData}
                                         bans={this.state.realmBans}
                                         callback={this._pickRealm}
+                                        action="pick"
                                     />
                                 )
                             }

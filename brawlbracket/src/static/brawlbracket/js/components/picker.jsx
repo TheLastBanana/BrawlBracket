@@ -56,12 +56,31 @@ var RealmIcon = React.createClass({
             className += ' disabled';
         }
         
+        var actionIcon;
+        switch (this.props.action) {
+            case 'pick':
+                actionIcon = 'check';
+                break;
+                
+            case 'ban':
+                actionIcon = 'times';
+        }
+        
+        var inner = (
+            <div>
+                <div className="realm-icon">
+                    <div className="action-symbol"><i className={'fa fa-' + actionIcon} /></div>
+                    <img src={'/static/brawlbracket/img/realms/' + this.props.id + '.png'}></img>
+                </div>
+                <p>{this.props.name}</p>
+            </div>
+        );
+        
         // No callback, so just display maps
         if (this.props.callback === null || this.props.banned) {
             return (
                 <li className={className}>
-                    <img src={'/static/brawlbracket/img/realms/' + this.props.id + '.png'}></img>
-                    <p>{this.props.name}</p>
+                    {inner}
                 </li>
             );
             
@@ -70,8 +89,7 @@ var RealmIcon = React.createClass({
             return (
                 <li className={className}>
                     <a href="" onClick={this._onClick}>
-                        <img src={'/static/brawlbracket/img/realms/' + this.props.id + '.png'}></img>
-                        <p>{this.props.name}</p>
+                        {inner}
                     </a>
                 </li>
             );
@@ -93,9 +111,10 @@ var RealmPicker = React.createClass({
     render: function() {
         var callback = this.props.callback;
         var bans = this.props.bans;
+        var action = this.props.action;
         
         return (
-            <ul className="realm-picker">
+            <ul className={'realm-picker ' + action}>
                 {this.props.realmData.map(function(realm) {
                     return (
                         <RealmIcon
@@ -103,6 +122,7 @@ var RealmPicker = React.createClass({
                             name={realm[1]}
                             callback={callback ? callback : null}
                             banned={bans.indexOf(realm[0]) >= 0}
+                            action={action}
                             key={realm[0]}
                         />
                     );

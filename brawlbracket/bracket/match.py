@@ -67,7 +67,7 @@ class Match():
         self.score = [0, 0]
         
         # Set to None to begin with, this should be set later
-        self.bestOf = None
+        self.bestOf = 3 # XXX Change me
         
         self.winner = None
         
@@ -79,7 +79,7 @@ class Match():
         self.startTime = None
         self.roomNumber = None
         self.currentRealm = None
-        self.banRule = 'basic'
+        self.banRule = 'esl' # XXX Change me
     
     def __setattr__(self, name, value):
         """
@@ -146,6 +146,16 @@ class Match():
         Clears the realm bans.
         """
         self._realmBans.clear()
+        if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
+            self._dbCallback(self)
+    
+    def incrementScore(teamIndex, amount = 1):
+        """
+        Increment a team's score.
+        teamIndex is the index in the score array.
+        amount is the amount to change by. By default this is 1.
+        """
+        self.score[teamIndex] += amount
         if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
             self._dbCallback(self)
     

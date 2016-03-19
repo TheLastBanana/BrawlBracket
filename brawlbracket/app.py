@@ -435,8 +435,7 @@ def user_connect():
         
     # TODO: update match state and post lobby updates to room 
     updatedLobbyData = {}
-    updatedLobbyData['teams'] = lobbyData['teams'] # Maybe only push teams ready
-    updatedLobbyData['players'] = lobbyData['players']
+    updatedLobbyData['teams'] = lobbyData['teams']
     updatedLobbyData['state'] = lobbyData['state']
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=False,
@@ -478,8 +477,7 @@ def user_disconnect():
     
     lobbyData = match.lobbyData
     updatedLobbyData = {}
-    updatedLobbyData['teams'] = lobbyData['teams'] # Maybe only push teams ready
-    updatedLobbyData['players'] = lobbyData['players']
+    updatedLobbyData['teams'] = lobbyData['teams']
     updatedLobbyData['state'] = lobbyData['state']
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=False,
@@ -539,7 +537,7 @@ def pick_legend(data):
     lobbyData = match.lobbyData
     updatedLobbyData = {}
     updatedLobbyData['state'] = lobbyData['state']
-    updatedLobbyData['players'] = lobbyData['players']
+    updatedLobbyData['teams'] = lobbyData['teams']
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
             room = match.id)

@@ -281,7 +281,7 @@ class Match():
             team['ready'] = all([p.online > 0 for p in t.players])
             team['wins'] = wins
             team['avatar'] = t.players[0].user.avatar
-            lobbyData['teams'].append(team)
+            team['players'] = []
             
             for p in t.players:
                 player = {}
@@ -290,8 +290,9 @@ class Match():
                 player['status'] = 'Online' if p.online > 0 else 'Offline'
                 player['legend'] = p.currentLegend\
                     if p.currentLegend is not None else 'none'
-                player['team'] = i
-                lobbyData['players'].append(player)
+                team['players'].append(player)
+                
+            lobbyData['teams'].append(team)
         
         return lobbyData
     

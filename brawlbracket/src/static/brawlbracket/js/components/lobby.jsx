@@ -66,8 +66,6 @@ var PlayerInfo = React.createClass({
 /* The player info table */
 var PlayerTable = React.createClass({
     render: function() {
-        var teams = this.props.teams;
-        
         return (
             <div className="box box-solid bb-wait-for-match">
                 <div className="box-header with-border">
@@ -76,11 +74,11 @@ var PlayerTable = React.createClass({
                 <div className="box-body no-padding">
                     <table className="table table-striped table-players">
                         <tbody>
-                            {this.props.players.map(function(player, i) {
+                            {this.props.teams.map(function(team, i) {
                                 return (
                                     <PlayerInfo
-                                        player={player}
-                                        seed={teams[player.team].seed}
+                                        player={team.players[0]}
+                                        seed={team.seed}
                                         key={i}
                                     />
                                 );
@@ -256,8 +254,8 @@ var Lobby = React.createClass({
                 break;
                 
             case 'chooseMap':
-                var myPlayer = this._getPlayerByUserId(this.props.userId);
-                var choosePlayer = this._getPlayerByUserId(this.state.state.turn);
+                var myPlayer = this._getPlayerDataByUserId(this.props.userId)[1];
+                var choosePlayer = this._getPlayerDataByUserId(this.state.state.turn)[1];
                 
                 if (this.state.state.turn == this.props.userId) {
                     switch (this.state.state.action) {
@@ -339,7 +337,6 @@ var Lobby = React.createClass({
                 <div className="row">
                     <div className="col-xs-12 col-lg-3 pull-left" id="sidebar-content">
                         <PlayerTable
-                            players={this.state.players}
                             teams={this.state.teams}
                         />
                     </div>
@@ -401,12 +398,18 @@ var Lobby = React.createClass({
         $('.bb-page-name').text(matchName);
     },
     
-    // Get the player corresponding to a user id
-    _getPlayerByUserId: function(userId) {
-        var players = this.state.players;
+    // Get the player and team corresponding to a user id
+    _getPlayerDataByUserId: function(userId) {
+        var teams = this.state.teams;
         
-        for (var i = 0; i < players.length; ++i) {
-            if (players[i].id == userId) return players[i];
+        for (var i = 0; i < teams.length; ++i) {
+            var players = teams[i].players;
+            
+            for (var j = 0; j < players.length; ++j) {
+                if (players[j].id == userId) {
+                    return [teams[i], players[j]];
+                }
+            }
         }
         
         return null;

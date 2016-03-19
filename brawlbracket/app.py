@@ -486,22 +486,6 @@ def user_disconnect():
     print('User {} disconnected'.format(user.id))
     
 # State reporting from client
-    
-# A participant win was reported
-@socketio.on('report win', namespace='/participant')
-def participant_report_win(data):
-    participantId = data['player-id']
-    tourneyId = session['tourneyId']
-    matchId = brawlapi.getParticipantMatch(tourneyId, participantId)
-    
-    print('Participant #{} won a game. mID: {}, tId: {}'
-        .format(participantId, matchId, tourneyId))
-    
-    brawlapi.incrementMatchScore(tourneyId, matchId, (1, 0))
-    
-    lData = brawlapi.getLobbyData(tourneyId, matchId)
-    emit('update lobby', lData,
-        broadcast=True, include_self=True, room=matchId)
 
 # Someone picked their legend
 @socketio.on('pick legend', namespace='/participant')
@@ -623,6 +607,23 @@ def pick_realm(data):
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
             room = match.id)
     print('Picked {}'.format(data['realmId']))
+    
+# A participant win was reported
+@socketio.on('report win', namespace='/participant')
+def participant_report_win(data):
+    participantId = data['player-id']
+    tourneyId = session['tourneyId']
+    matchId = brawlapi.getParticipantMatch(tourneyId, participantId)
+    
+    print('Participant #{} won a game. mID: {}, tId: {}'
+        .format(participantId, matchId, tourneyId))
+    
+    brawlapi.incrementMatchScore(tourneyId, matchId, (1, 0))
+    
+    lData = brawlapi.getLobbyData(tourneyId, matchId)
+    emit('update lobby', lData,
+        broadcast=True, include_self=True, room=matchId)
+
 
 # A chat message was sent by a client
 @socketio.on('send', namespace='/chat')

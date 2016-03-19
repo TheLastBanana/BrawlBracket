@@ -187,10 +187,30 @@ var Lobby = React.createClass({
         
         // Room number widget
         if (this.state.roomNumber) {
+            var innerText;
+            
+            if (leader.id == myPlayer.id) {
+                // Editable room number for leader
+                innerText = (
+                    <EditableText
+                        text={this.state.roomNumber}
+                        extraClass="input-lg"
+                        placeholder="Room number"
+                        number={true}
+                        maxLength={5}
+                        callback={this._setRoom}
+                    />
+                );
+            } else {
+                innerText = (
+                    <span>{this.state.roomNumber}</span>
+                );
+            }
+            
             infoWidgets.push(
                 <div className="col-sm-12 col-lg-12" key="roomNumber">
                     <InfoWidget icon="users" title="Room Number">
-                        {this.state.roomNumber}
+                        {innerText}
                     </InfoWidget>
                 </div>
             );

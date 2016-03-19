@@ -1,5 +1,14 @@
 @import 'bracket.scss';
 
+/* Miscellaneous */
+.valign {
+  vertical-align: middle;
+}
+
+.text-light {
+  color: #BBB;
+}
+
 /* Outer wrapper for a tournament bracket */
 .bracket-scroll-wrapper {
   display: block;
@@ -426,4 +435,11 @@ AdminLTE tweaks
       margin-bottom: 0px;
     }
   }
+}
+
+/*
+FontAwesome tweaks
+*/
+.fa-sm {
+  font-size: 0.6em;
 }

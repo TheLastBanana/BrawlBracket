@@ -20,6 +20,11 @@ var TextEntry = React.createClass({
                     className={'form-control' + extraClass}
                     placeholder={this.props.placeholder}
                     onKeyPress={this._onKeyPress}
+                    onKeyDown={this._onKeyDown}
+                    defaultValue={this.props.initialValue}
+                    autoFocus={this.props.autoFocus}
+                    onFocus={this.props.onFocus}
+                    onBlur={this.props.onBlur}
                     ref="textField"
                 />
                 <span className="input-group-btn">
@@ -31,18 +36,30 @@ var TextEntry = React.createClass({
         );
     },
     
+    _onKeyDown: function(e) {
+        // Escape key
+        if (e.which == 27) {
+            if (this.props.onEscape) {
+                this.props.onEscape();
+            }
+        }
+    },
+    
     // Filter key presses
     _onKeyPress: function(e) {
+        // Enter key
         if (e.which == 13) {
             this._callback();
         }
         
+        // Validate numeric input
         if (this.props.number) {
             if (!(e.which > 47 && e.which < 58 || e.which == 8)) {
                 e.preventDefault();
             }
         }
         
+        // Validate length
         if (this.props.maxLength && this.refs.textField.value.length >= this.props.maxLength) {
             e.preventDefault();
         }
@@ -55,6 +72,67 @@ var TextEntry = React.createClass({
                 value = parseInt(value);
             }
             
+            this.props.callback(value);
+        }
+    }
+});
+
+// A text field which, when clicked, can be edited. The value will not actually be changed; the new value will be sent
+// to this.props.callback to be handled appropriately
+var EditableText = React.createClass({
+    getInitialState: function() {
+        return {
+            editing: false
+        };
+    },
+    
+    render: function() {
+        if (this.state.editing) {
+            return (
+                <TextEntry
+                    extraClass={this.props.extraClass}
+                    placeholder={this.props.placeholder}
+                    number={this.props.number}
+                    maxLength={this.props.maxLength}
+                    autoFocus={true}
+                    placeholder={this.props.text}
+                    onBlur={this._cancelEditing}
+                    onEscape={this._cancelEditing}
+                    callback={this._saveEditing}
+                />
+            );
+            
+        } else {
+            return (
+                <div style={{lineHeight: '1em'}} onClick={this._startEditing}>
+                    <span className="valign">{this.props.text}&nbsp;</span>
+                    <i className="fa fa-pencil fa-sm text-light valign" />
+                </div>
+            );
+        }
+    },
+    
+    // Switch to edit mode
+    _startEditing: function() {
+        this.setState({
+            editing: true
+        });
+    },
+    
+    // Exit edit mode and don't save changes
+    _cancelEditing: function() {
+        this.setState({
+            editing: false
+        });
+    },
+    
+    // Save edited value
+    _saveEditing: function(value) {
+        this.setState({
+            editing: false
+        });
+        
+        if (this.props.callback) {
             this.props.callback(value);
         }
     }

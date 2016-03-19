@@ -607,23 +607,90 @@ def pick_realm(data):
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
             room = match.id)
     print('Picked {}'.format(data['realmId']))
-    
-# A participant win was reported
-@socketio.on('report win', namespace='/participant')
-def participant_report_win(data):
-    participantId = data['player-id']
-    tourneyId = session['tourneyId']
-    matchId = brawlapi.getParticipantMatch(tourneyId, participantId)
-    
-    print('Participant #{} won a game. mID: {}, tId: {}'
-        .format(participantId, matchId, tourneyId))
-    
-    brawlapi.incrementMatchScore(tourneyId, matchId, (1, 0))
-    
-    lData = brawlapi.getLobbyData(tourneyId, matchId)
-    emit('update lobby', lData,
-        broadcast=True, include_self=True, room=matchId)
 
+# A room was selected
+@socketio.on('set room', namespace='/participant')
+def select_room(data):
+    userId = session.get('userId', None)
+    user = um.getUserById(userId)
+    tourneyId = session.get('tourneyId', None)
+    tournament = tm.getTournamentById(tourneyId)
+    
+    # User doesn't exist
+    if user is None:
+        print('User doesn\'t exist; connection rejected')
+        emit('error', {'code': 'bad-participant'},
+            broadcast=False, include_self=True)
+        return False
+    
+    #Tournament doesn't exist
+    if tournament is None:
+        abort(404)
+    
+    info = tournament.getUserInfo(user)
+    
+    if info is None:
+        # TODO: Issue error saying we somehow got into a tournament that
+        # we don't live in
+        pass
+    
+    match, team, player = info
+    
+    match.roomNumber = data['roomNumber']
+    match._updateState()
+    
+    lobbyData = match.lobbyData
+    updatedLobbyData = {}
+    updatedLobbyData['state'] = lobbyData['state']
+    updatedLobbyData['roomNumber'] = lobbyData['roomNumber']
+    
+    emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
+            room = match.id)
+    print('Selected room number {}'.format(data['roomNumber']))
+    
+    
+# A team win was reported
+@socketio.on('report win', namespace='/participant')
+def report_win(data):
+    userId = session.get('userId', None)
+    user = um.getUserById(userId)
+    tourneyId = session.get('tourneyId', None)
+    tournament = tm.getTournamentById(tourneyId)
+    
+    # User doesn't exist
+    if user is None:
+        print('User doesn\'t exist; connection rejected')
+        emit('error', {'code': 'bad-participant'},
+            broadcast=False, include_self=True)
+        return False
+    
+    #Tournament doesn't exist
+    if tournament is None:
+        abort(404)
+    
+    info = tournament.getUserInfo(user)
+    
+    if info is None:
+        # TODO: Issue error saying we somehow got into a tournament that
+        # we don't live in
+        pass
+    
+    match, team, player = info
+    
+    match.incrementScore(data['teamIndex'])
+    
+    match._updateState()
+    
+    lobbyData = match.lobbyData
+    updatedLobbyData = {}
+    updatedLobbyData['state'] = lobbyData['state']
+    updatedLobbyData['teams'] = lobbyData['teams']
+    updatedLobbyData['currentRealm'] = lobbyData['currentRealm']
+    updatedLobbyData['realmBans'] = lobbyData['realmBans']
+    
+    emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
+            room = match.id)
+    print('Picked {}'.format(data['realmId']))
 
 # A chat message was sent by a client
 @socketio.on('send', namespace='/chat')

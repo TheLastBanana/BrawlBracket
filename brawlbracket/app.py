@@ -35,10 +35,12 @@ oid = OpenID(app)
 _steam_id_re = re.compile('steamcommunity.com/openid/id/(.*?)$')
 
 # Start temp tournament generation
-steamIds = [76561198050490587, 76561198065399638, 76561198072175457,
+steamIds = [76561198042414835, 76561198065399638, 76561198072175457,
             76561198069178478, 76561198078549692, 76561197995127703,
-            76561198068388037, 76561198042414835, 76561197993702532,
-            76561198063265824, 76561198042403860, 76561198045082103]
+            76561198068388037, 76561198045082103, 76561197993702532,
+            76561198063265824, 76561198042403860, 76561198050490587]
+#steamIds = [76561197993702532, 76561197995127703, 76561198045082103,
+#            76561198042414835]
 tempUsers = []
 for id in steamIds:
     user = um.getUserBySteamId(id)
@@ -61,7 +63,8 @@ if tempTourney is None:
     tempTourney.generateMatches()
     
     tempTourney.addAdmins(um.getUserBySteamId(76561198042414835),
-                           um.getUserBySteamId(76561197993702532))
+                          um.getUserBySteamId(76561197993702532))
+#                          um.getUserBySteamId(76561197995127703))
     
     print('Admins: ', [a.username for a in tempTourney.admins])
 # End temp tournament generation
@@ -161,7 +164,11 @@ def user_settings():
         return redirect('/')
         
     user = um.getUserById(userId)
-        
+    
+    if user is None:
+        print('User doesn\'t exist; returned to index.')
+        return redirect(url_for('index'))
+    
     if request.method == 'GET':
         return render_template('settings.html',
                                legendData=util.orderedLegends,
@@ -489,6 +496,9 @@ def user_disconnect():
     if match is not None:
         # XXX update state, put in listener
         match._updateState()
+    # Match is none, player was eliminated
+    else:
+        return
     
     lobbyData = match.lobbyData
     updatedLobbyData = {}
@@ -708,8 +718,6 @@ def report_win(data):
             room = match.id)
     
     if match.winner is not None:
-        print('PUSHING UPDATE TO FUTURE MATCH.----------------')
-        
         nextLobbyData = match.nextMatch.lobbyData
         updatedNextLobbyData = {}
         updatedNextLobbyData['state'] = nextLobbyData['state']
@@ -718,8 +726,8 @@ def report_win(data):
                 include_self=False, room = match.nextMatch.id)
 
 # A team win was reported
-@socketio.on('report win', namespace='/participant')
-def advance_match():
+@socketio.on('advance lobby', namespace='/participant')
+def advance_lobby():
     userId = session.get('userId', None)
     user = um.getUserById(userId)
     tourneyId = session.get('tourneyId', None)
@@ -747,10 +755,10 @@ def advance_match():
     
     if team.eliminated:
         raise AssertionError('Eliminated player trying to advance match.')
-        
-    print('Rooms: ', rooms())
     
     for m in match.prereqMatches:
+        if m is None:
+            continue
         for t in m.teams:
             # This user's team in a previous match, we want to leave rooms
             # associated with this match

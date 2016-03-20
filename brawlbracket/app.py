@@ -220,6 +220,28 @@ def tournament_index(tourneyName):
                            tourneyName=tourneyName,
                            tournament=tournament)
 
+@app.route('/t/<tourneyName>/finalize')
+def finalize(tourneyName):
+    tournament = tm.getTournamentByName(tourneyName)
+    
+    if tournament is None:
+        abort(404)
+    
+    userId = session.get('userId', None)
+    user = um.getUserById(userId)
+    if user is None:
+        print('User doesn\'t exist; returned to index.')
+        return redirect(url_for('tournament_index', tourneyName=tourneyName))
+    
+    if tournament.isAdmin(user):
+        print('FINALIZING TOURNAMENT')
+        print('Tournament has {} users!'.format(len(tournament.teams)))
+        tournament.generateMatches()
+        print(tournament)
+        print('Tournament has {} matches!'.format(len(tournament.matches)))
+    
+    return redirect(url_for('tournament_index', tourneyName=tourneyName))
+
 #----- User pages -----#
 
 # User app page

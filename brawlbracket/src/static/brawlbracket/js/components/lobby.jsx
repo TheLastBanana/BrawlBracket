@@ -100,13 +100,13 @@ var PlayerTable = React.createClass({
                     <table className="table table-striped table-players">
                         <tbody>
                             {this.props.teams.map(function(team, i) {
-                                return (
+                                return team ? (
                                     <PlayerInfo
                                         player={team.players[0]}
                                         seed={team.seed}
                                         key={i}
                                     />
-                                );
+                                ) : null;
                             })}
                         </tbody>
                     </table>
@@ -197,6 +197,9 @@ var Lobby = React.createClass({
         // Get the lowest seed team
         var sortedTeams = this.state.teams.slice();
         sortedTeams.sort(function(a, b) {
+            if (!a) return b;
+            if (!b) return a;
+            
             return a.seed - b.seed;
         });
         var lowSeedTeam = sortedTeams[0];

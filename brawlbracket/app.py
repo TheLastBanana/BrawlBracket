@@ -35,40 +35,39 @@ oid = OpenID(app)
 _steam_id_re = re.compile('steamcommunity.com/openid/id/(.*?)$')
 
 # Start temp tournament generation
-steamIds = [76561198045082103, 76561198065399638, 76561198072175457,
-            76561198069178478, 76561198078549692, 76561197995127703,
-            76561198068388037, 76561198042414835, 76561197993702532,
-            76561198063265824, 76561198042403860, 76561198050490587]
+#steamIds = [76561198045082103, 76561198065399638, 76561198072175457,
+#            76561198069178478, 76561198078549692, 76561197995127703,
+#            76561198068388037, 76561198042414835, 76561197993702532,
+#            76561198063265824, 76561198042403860, 76561198050490587]
 #steamIds = [76561197993702532, 76561197995127703, 76561198045082103,
 #            76561198042414835]
-tempUsers = []
-for id in steamIds:
-    user = um.getUserBySteamId(id)
-    if user is None:
-        user = um.createUser(id)
-    tempUsers.append(user)
+#tempUsers = []
+#for id in steamIds:
+#    user = um.getUserBySteamId(id)
+#    if user is None:
+#        user = um.createUser(id)
+#    tempUsers.append(user)
 tempTourney = tm.getTournamentByName('test')
 if tempTourney is None:
     tempTourney = tm.createTournament(
                     'test',
                     name='BrawlBracket Test Tourney'
                     )
-    tempTourney.addAdmins(um.getUserBySteamId(76561198042414835),
-                          um.getUserBySteamId(76561197993702532))
-#                          um.getUserBySteamId(76561197995127703))
-
-if False:
-    for i, user in enumerate(tempUsers):
-        team = tempTourney.createTeam(i + 1) # i = seed, 1-indexed
-        team.name = user.username
-        player = tempTourney.createPlayer(user)
-        team.players.append(player)
-        print(team)
-    print('Temp tournament has {} users!'.format(len(tempTourney.teams)))
-    tempTourney.generateMatches()
-    
-    
+    tempTourney.addAdmins(um.getUserBySteamId(76561198042414835), #braaedy
+                          um.getUserBySteamId(76561197993702532), #banana
+                          um.getUserBySteamId(76561197995127703)) #sweepy
     print('Admins: ', [a.username for a in tempTourney.admins])
+
+#    for i, user in enumerate(tempUsers):
+#        team = tempTourney.createTeam(i + 1) # i = seed, 1-indexed
+#        team.name = user.username
+#        player = tempTourney.createPlayer(user)
+#        team.players.append(player)
+#        print(team)
+#    print('Temp tournament has {} users!'.format(len(tempTourney.teams)))
+#    tempTourney.generateMatches()
+    
+    
 # End temp tournament generation
     
 @app.context_processor

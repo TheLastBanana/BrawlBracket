@@ -706,6 +706,81 @@ def report_win(data):
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
             room = match.id)
+    
+    if match.winner is not None:
+        print('PUSHING UPDATE TO FUTURE MATCH.----------------')
+        
+        nextLobbyData = match.nextMatch.lobbyData
+        updatedNextLobbyData = {}
+        updatedNextLobbyData['state'] = nextLobbyData['state']
+        updatedNextLobbyData['teams'] = nextLobbyData['teams']
+        emit('update lobby', updatedNextLobbyData, broadcast=True, 
+                include_self=False, room = match.nextMatch.id)
+
+# A team win was reported
+@socketio.on('report win', namespace='/participant')
+def advance_match():
+    userId = session.get('userId', None)
+    user = um.getUserById(userId)
+    tourneyId = session.get('tourneyId', None)
+    tournament = tm.getTournamentById(tourneyId)
+    
+    # User doesn't exist
+    if user is None:
+        print('User doesn\'t exist; connection rejected')
+        emit('error', {'code': 'bad-participant'},
+            broadcast=False, include_self=True)
+        return False
+    
+    #Tournament doesn't exist
+    if tournament is None:
+        abort(404)
+    
+    info = tournament.getUserInfo(user)
+    
+    if info is None:
+        # TODO: Issue error saying we somehow got into a tournament that
+        # we don't live in
+        pass
+    
+    match, team, player = info
+    
+    if team.eliminated:
+        raise AssertionError('Eliminated player trying to advance match.')
+        
+    print('Rooms: ', rooms())
+    
+    for m in match.prereqMatches:
+        for t in m.teams:
+            # This user's team in a previous match, we want to leave rooms
+            # associated with this match
+            if t.id == team.id:
+                leave_room(m.id)
+                
+                # This needs to be done in the /chat namespace, so switch it temporarily
+                request.namespace = '/chat'
+                leave_room(m.chat.getRoom())
+                request.namespace = '/participant'
+                
+                break
+        # Continue if we didn't find it
+        else:
+            continue
+        # Break because we found it
+        break
+    else:
+        raise AssertionError('Didn\'t find rooms to leave.')
+    
+    # Join new match lobby
+    join_room(match.id)
+    
+    # This needs to be done in the /chat namespace, so switch it temporarily
+    request.namespace = '/chat'
+    join_room(m.chat.getRoom())
+    request.namespace = '/participant'
+    
+    emit('update lobby', match.lobbyData, broadcast=False, include_self=True,
+         room = match.id)
 
 # A chat message was sent by a client
 @socketio.on('send', namespace='/chat')

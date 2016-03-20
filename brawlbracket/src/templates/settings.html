@@ -74,6 +74,6 @@
   <script src="/static/brawlbracket/js/general.min.js"></script>
   
   <script>
-    initUserSettingsPage({{ userSettings|tojson }});
+    initUserSettingsPage({{ user.settings|tojson }});
   </script>
 {%- endblock -%}

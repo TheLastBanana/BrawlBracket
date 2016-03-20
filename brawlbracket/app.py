@@ -158,11 +158,6 @@ def index():
 @app.route('/settings/', methods=['GET', 'PUT'])
 def user_settings():
     userId = session.get('userId', None)
-    
-    if userId is None:
-        print('No userId; returned to index.')
-        return redirect('/')
-        
     user = um.getUserById(userId)
     
     if user is None:
@@ -172,8 +167,7 @@ def user_settings():
     if request.method == 'GET':
         return render_template('settings.html',
                                legendData=util.orderedLegends,
-                               serverRegions=util.orderedRegions,
-                               userSettings=user.getSettings())
+                               serverRegions=util.orderedRegions)
                                
     elif request.method == 'PUT':
         if user.setSettings(request.json):

@@ -367,7 +367,7 @@ def data_lobbies(tourneyName):
             'startTime': match.startTime.isoformat()\
                 if match.startTime is not None else '',
             'status': {
-                'stats': status,
+                'state': status,
                 'display': prettyStatus,
                 'sort': statusOrder
             }

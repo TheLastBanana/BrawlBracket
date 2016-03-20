@@ -129,6 +129,8 @@ var Chat = React.createClass({
     },
     
     componentWillUnmount: function() {
+        var socket = this.props.socket;
+        
         socket.off('receive');
         socket.off('receive log')
     },
@@ -150,7 +152,7 @@ var Chat = React.createClass({
                 
             // Request chat history to populate box
             } else {
-                socket.emit('request log', {
+                this.props.socket.emit('request log', {
                     'chatId': this.props.chatId
                 });
             }

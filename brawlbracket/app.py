@@ -784,7 +784,7 @@ def advance_lobby():
     
     # This needs to be done in the /chat namespace, so switch it temporarily
     request.namespace = '/chat'
-    join_room(m.chat.getRoom())
+    join_room(match.chat.getRoom())
     request.namespace = '/participant'
     
     emit('join lobby', {'lobbyData': match.lobbyData},

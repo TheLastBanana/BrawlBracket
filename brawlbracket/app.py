@@ -35,9 +35,9 @@ oid = OpenID(app)
 _steam_id_re = re.compile('steamcommunity.com/openid/id/(.*?)$')
 
 # Start temp tournament generation
-steamIds = [76561198042414835, 76561198065399638, 76561198072175457,
+steamIds = [76561198045082103, 76561198065399638, 76561198072175457,
             76561198069178478, 76561198078549692, 76561197995127703,
-            76561198068388037, 76561198045082103, 76561197993702532,
+            76561198068388037, 76561198042414835, 76561197993702532,
             76561198063265824, 76561198042403860, 76561198050490587]
 #steamIds = [76561197993702532, 76561197995127703, 76561198045082103,
 #            76561198042414835]
@@ -787,8 +787,8 @@ def advance_lobby():
     join_room(m.chat.getRoom())
     request.namespace = '/participant'
     
-    emit('update lobby', match.lobbyData, broadcast=False, include_self=True,
-        room = match.id)
+    emit('join lobby', {'lobbyData': match.lobbyData},
+            broadcast=False, include_self=True, room = match.id)
 
 # A chat message was sent by a client
 @socketio.on('send', namespace='/chat')

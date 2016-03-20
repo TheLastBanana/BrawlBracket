@@ -17,13 +17,29 @@
 {%- endblock -%}
 
 {%- block breakoutContent -%}
-  <div id="bracket" class="bracket-scroll-wrapper centered"></div>
+  {%- if tournament.matches -%}
+    <div id="bracket" class="bracket-scroll-wrapper centered"></div>
+  {%- else -%}
+    <div style="text-align: center;">
+      {%- if tournament.teams -%}
+        <p>Registered players:</p>
+        
+        {%- for team in tournament.teams -%}
+          <span class="label label-success">{{ team.name }}</span>&nbsp;
+        {%- endfor -%}
+      {%- else -%}
+        Nobody has joined this tournament yet, but you could be the first!
+      {%- endif -%}
+    </div>
+  {%- endif -%}
 {%- endblock -%}
 
 {%- block extraScripts -%}
-  {% include 'app/elements/bracket-scripts.html' %}
-  
-  <script>
-    createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});
-  </script>
+  {%- if tournament.matches -%}
+    {% include 'app/elements/bracket-scripts.html' %}
+    
+    <script>
+      createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});
+    </script>
+  {%- endif -%}
 {%- endblock extraScripts -%}

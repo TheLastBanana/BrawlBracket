@@ -231,6 +231,14 @@ var Bracket = React.createClass({
 
     render: function () {
         var matches = this.state.matches;
+        
+        if (!this.state.root) {
+            return (
+                <div className="bracket">
+                    <span className="text-muted">Nobody has joined yet, but you could be the first!</span>
+                </div>
+            );
+        }
 
         // Get the depth of the tree starting from a match
         var getDepth = function(matchId) {

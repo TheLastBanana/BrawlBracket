@@ -290,7 +290,7 @@ var Lobby = React.createClass({
                     title: 'Your opponent hasn\'t joined the lobby yet!',
                     body: (
                         <div>
-                            You'll be notified as soon as <strong>match #{this.state.state.matchNumber} ({this.state.state.teamNames[0]} vs {this.state.state.teamNames[1]})</strong> finishes.
+                            You'll be notified as soon as <strong>match #{this.state.state.matchNumber} ({this.state.state.teamNames[0] || '?'} vs {this.state.state.teamNames[1] || '?'})</strong> finishes.
                         </div>
                     ),
                     color: 'warning'

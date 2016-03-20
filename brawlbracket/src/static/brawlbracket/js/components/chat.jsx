@@ -33,7 +33,8 @@ var ChatMessage = React.createClass({
 var Chat = React.createClass({
     getInitialState: function() {
         return {
-            log: []
+            log: [],
+            currentChatId: null
         }
     },
     
@@ -102,23 +103,7 @@ var Chat = React.createClass({
         socket.on('receive', this._receiveMessage);
         socket.on('receive log', this._receiveLog);
         
-        // Don't animate scrolling the first time
-        this.instant = true;
-        
-        var cache = this.props.chatCache;
-        
-        // Already have a cached copy of this chat
-        if (cache && this.props.chatId in cache) {
-            this.setState({
-                log: cache[this.props.chatId].slice()
-            });
-            
-        // Request chat history to populate box
-        } else {
-            socket.emit('request log', {
-                'chatId': this.props.chatId
-            });
-        }
+        this._setupLog();
     },
     
     componentWillUpdate: function() {
@@ -129,9 +114,10 @@ var Chat = React.createClass({
     },
     
     componentDidUpdate: function() {
+        this._setupLog();
+        
         var msgBox = $(this.refs.msgBox);
         
-        // Do this after append so we can get the actual height
         if (this.instant) {
             msgBox.scrollTop(msgBox[0].scrollHeight);
             
@@ -145,6 +131,30 @@ var Chat = React.createClass({
     componentWillUnmount: function() {
         socket.off('receive');
         socket.off('receive log')
+    },
+    
+    _setupLog: function() {
+        // chatId prop has changed
+        if (this.state.currentChatId != this.props.chatId) {
+            // Don't animate scrolling the first time
+            this.instant = true;
+            
+            var cache = this.props.chatCache;
+            
+            // Already have a cached copy of this chat
+            if (cache && this.props.chatId in cache) {
+                this.setState({
+                    log: cache[this.props.chatId].slice(),
+                    currentChatId: this.props.chatId
+                });
+                
+            // Request chat history to populate box
+            } else {
+                socket.emit('request log', {
+                    'chatId': this.props.chatId
+                });
+            }
+        }
     },
     
     _handleKeyPress: function(e) {
@@ -163,7 +173,8 @@ var Chat = React.createClass({
         }
         
         this.setState({
-            log: data.log.slice()
+            log: data.log.slice(),
+            currentChatId: this.props.chatId
         });
     },
     
@@ -175,7 +186,8 @@ var Chat = React.createClass({
         localStorage.setItem('lastTime-' + this.props.chatId, data.messageData.sentTime);
         
         this.setState({
-            log: newLog
+            log: newLog,
+            currentChatId: this.state.currentChatId
         });
     },
     

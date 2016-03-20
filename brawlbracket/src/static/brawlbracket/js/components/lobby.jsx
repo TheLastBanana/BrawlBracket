@@ -462,15 +462,30 @@ var Lobby = React.createClass({
                 var winnerTeam = this.state.teams[this.state.state.winnerIndex];
                 
                 if (winnerTeam.seed == myTeam.seed) {
-                    stateBoxData = {
-                        title: 'You win!',
-                        icon: 'trophy',
-                        contents: (
-                            <div>
-                                <p>When you're ready to go to your next match, click here:</p>
-                                <Button bsStyle="primary" bsSize="large" onClick={this._advanceLobby}>Continue</Button>
-                            </div>
-                        )
+                    // Won the tournament
+                    if (this.state.state.finalRound) {
+                        stateBoxData = {
+                            title: 'Congratulations!',
+                            icon: 'trophy',
+                            contents: (
+                                <div>
+                                    You're the tournament winner!
+                                </div>
+                            )
+                        }
+                    
+                    // Won a match, but there are still others
+                    } else {
+                        stateBoxData = {
+                            title: 'You win!',
+                            icon: 'trophy',
+                            contents: (
+                                <div>
+                                    <p>When you're ready to go to your next match, click here:</p>
+                                    <Button bsStyle="primary" bsSize="large" onClick={this._advanceLobby}>Continue</Button>
+                                </div>
+                            )
+                        }
                     }
                     
                 } else {

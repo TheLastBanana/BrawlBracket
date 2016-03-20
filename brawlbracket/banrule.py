@@ -320,6 +320,7 @@ class ESLRules(BanRule):
         state.clear()
         state['name'] = 'complete'
         state['winnerIndex'] = winnerIndex
+        state['finalRound'] = nextMatch is None
 
 # List of rulesets
 rulesets = {

@@ -322,7 +322,28 @@ class Match():
         Returns (name, pretty name, sort order)
         """
         stateName = self.state['name']
-        if stateName == 'waitingForMatch':
+        if stateName == 'inGame':
+            return (stateName,
+                    'In-game',
+                    # Currently running matches are highest priority
+                    1)
+        
+        elif stateName == 'pickLegends':
+            return (stateName,
+                    'Picking legends',
+                    2)
+        
+        elif stateName == 'chooseMap':
+            return (stateName,
+                    'Selecting realm',
+                    2)
+        
+        elif stateName == 'createRoom':
+            return (stateName,
+                    'Creating room',
+                    2)
+        
+        elif stateName == 'waitingForMatch':
             prereqMatch = None
             for m in self.prereqMatches:
                 if m is None:

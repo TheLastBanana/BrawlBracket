@@ -311,6 +311,8 @@ class ESLRules(BanRule):
             raise AssertionError('Advancing to new state without a winner')
         
         match.winner = winners
+        for player in winners.players:
+            player.currentLegend = None
         nextMatch.setTeam(winners, match.nextMatchSide)
         losers.eliminated = True
         nextMatch._updateState() # XXX Fix this

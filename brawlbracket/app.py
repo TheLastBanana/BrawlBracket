@@ -787,9 +787,7 @@ def advance_lobby():
     join_room(m.chat.getRoom())
     request.namespace = '/participant'
     
-    emit('join lobby', {
-            'lobbyData': match.lobbyData
-        }, broadcast=False, include_self=True,
+    emit('update lobby', match.lobbyData, broadcast=False, include_self=True,
         room = match.id)
 
 # A chat message was sent by a client

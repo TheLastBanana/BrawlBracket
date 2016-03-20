@@ -769,7 +769,7 @@ def report_win(data):
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=True,
             room = match.id)
     
-    if match.winner is not None:
+    if match.winner is not None and match.nextMatch is not None:
         nextLobbyData = match.nextMatch.lobbyData
         updatedNextLobbyData = {}
         updatedNextLobbyData['state'] = nextLobbyData['state']

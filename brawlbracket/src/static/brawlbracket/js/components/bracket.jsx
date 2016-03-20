@@ -235,7 +235,7 @@ var Bracket = React.createClass({
         if (!this.state.root) {
             return (
                 <div className="bracket">
-                    <span className="text-muted">Nobody has joined the tournament yet!</span>
+                    <span className="text-muted">The bracket will be displayed when at least 2 players have joined.</span>
                 </div>
             );
         }

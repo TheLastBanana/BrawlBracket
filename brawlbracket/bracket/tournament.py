@@ -243,7 +243,7 @@ class Tournament():
                 'prereqMatches': [str(prereq.id) if prereq else None
                                     for prereq in match.prereqMatches],
                 'score': match.score,
-                'winner': str(match.winner.id) if match.winner else None
+                'winner': match.teams.index(match.winner) if match.winner else None
             }
         
         return {

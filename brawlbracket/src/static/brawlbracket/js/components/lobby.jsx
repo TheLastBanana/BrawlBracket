@@ -443,7 +443,8 @@ var Lobby = React.createClass({
                         icon: 'gamepad',
                         contents: (
                             <div>
-                                Go to Custom Online > Private Game in Brawlhalla and join <strong>room #{this.state.roomNumber}</strong>!
+                                <p>Go to Custom Online > Private Game in Brawlhalla and join <strong>room #{this.state.roomNumber}</strong>!</p>
+                                When the game is finished, {leader.name} will report the score.
                             </div>
                         )
                     }

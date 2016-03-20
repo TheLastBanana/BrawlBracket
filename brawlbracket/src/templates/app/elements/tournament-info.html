@@ -36,20 +36,26 @@
           {%- endif -%}
         {%- endif -%}
         
-        {# No buttons at all if in the app #}
         {%- if not inApp -%}
           <hr>
-        
+          
           {%- if user -%}
-            {%- if tournament.getUserInfo(user) -%}
-              <form action="app" method="get">
-                <button type="submit" class="btn btn-block btn-success btn-lg" href="app">Launch app</a>
-              </form>
-            {%- else -%}
+            {%- set tUserInfo = tournament.getUserInfo(user) -%}
+            {%- if not tUserInfo -%}
               <form action="." method="post">
                 <button type="submit" class="btn btn-block btn-success btn-lg">Register</button>
               </form>
+              
+            {# Check match data exists (tournament is ready) #}
+            {%- elif tUserInfo[0] -%}
+              <form action="app" method="get">
+                <button type="submit" class="btn btn-block btn-success btn-lg">Launch app</button>
+              </form>
+            {%- else -%}
+              You're registered! You'll be able to log in to the app as soon as the tournament starts.
             {%- endif -%}
+                
+          {# Not logged in #}
           {%- else -%}
             <button class="btn btn-block btn-success btn-lg disabled" href="app">Log in to register</button>
           {%- endif -%}

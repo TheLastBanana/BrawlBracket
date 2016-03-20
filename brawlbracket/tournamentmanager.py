@@ -163,7 +163,7 @@ def _buildTournament(tournamentData):
     if style == 'Single Elimination':
         tournament = trn.SingleElimTournament(
             shortName,
-            id = id,
+            uuid = id,
             name = name,
             startTime = startTime,
             checkInTime = checkInTime,
@@ -349,8 +349,10 @@ def _buildTournament(tournamentData):
     tournament.teams = teams
     tournament.matches = matches
     
-    # Now that we're done setting up tournament we can give it its callback
+    # Now that we're done setting up tournament we can give it its callbacks
     tournament._dbCallback = _tournamentDBCallback
+    tournament._callbacks = (_matchDBCallback, _teamDBCallback, _playerDBCallback)
+    tournament._fullCallback = _writeTournamentToDB
     
     return tournament
     

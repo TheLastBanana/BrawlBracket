@@ -81,6 +81,9 @@ class Tournament():
         """
         team = Team(*args, **kwargs)
         team._dbCallback = self._callbacks[1]
+        if self._callbacks[1] is not None:
+            self._callbacks[1](team)
+        
         self.teams.add(team)
         if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
             self._dbCallback(self)
@@ -105,6 +108,9 @@ class Tournament():
         
         match = Match(*args, **kwargs)
         match._dbCallback = self._callbacks[0]
+        if self._callbacks[0] is not None:
+            self._callbacks[0](match)
+        
         self.matches.add(match)
         if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
             self._dbCallback(self)
@@ -117,6 +123,9 @@ class Tournament():
         """
         player = Player(*args, **kwargs)
         player._dbCallback = self._callbacks[2]
+        if self._callbacks[2] is not None:
+            self._callbacks[2](player)
+        
         self.players.add(player)
         if '_dbCallback' in self.__dict__ and self._dbCallback is not None:
             self._dbCallback(self)

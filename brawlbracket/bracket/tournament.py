@@ -213,8 +213,9 @@ class Tournament():
         # Check if this player is eliminated
         for t in self.teams:
             for p in t.players:
-                if p.user.id == user.id and t.eliminated:
-                    return (None, t, p)
+                if p.user.id == user.id and\
+                (t.eliminated or len(self.matches) == 0):
+                        return (None, t, p)
                 
         for m in self.matches:
             # We want an active game, not one that's already done

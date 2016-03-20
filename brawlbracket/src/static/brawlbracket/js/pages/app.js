@@ -221,14 +221,14 @@ function brawlBracketParticipantInit() {
                 lobbyNotify('Your next match is ready!');
             }
             
-            // Lobby has a room chosen
-            if (property == 'roomNumber') {
-                lobbyNotify('The room number for your match has been set!');
+            // Lobby was inGame and has left the state
+            if (lobbyData.prevState.name == 'inGame' && lobbyData.state.name != 'inGame') {
+                lobbyNotify('The game score has been reported!');
             }
             
             // Lobby has a room chosen
-            if (lobbyData.prevState.name == 'inGame' && lobbyData.state.name != 'inGame') {
-                lobbyNotify('The game score has been reported!');
+            if (property == 'roomNumber' && lobbyData.roomNumber) {
+                lobbyNotify('The room number for your match has been set!');
             }
         }
     });

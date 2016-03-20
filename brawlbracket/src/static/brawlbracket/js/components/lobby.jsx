@@ -137,35 +137,37 @@ var MatchupDisplay = React.createClass({
     render: function() {
         var teams = this.props.teams;
         
+        var defaultAvatar = 'http://www.gravatar.com/avatar/?d=mm&s=100';
+        
         return (
             <div className="box box-widget widget-user bb-wait-for-match">
                 <div className="widget-user-header bg-green-active">
-                    <h3 className="widget-user-username-versus-1">{teams[0].name}</h3>
+                    <h3 className="widget-user-username-versus-1">{teams[0] ? teams[0].name : '?'}</h3>
                     <h3 className="widget-user-username-versus-center">vs</h3>
-                    <h3 className="widget-user-username-versus-2">{teams[1].name}</h3>
+                    <h3 className="widget-user-username-versus-2">{teams[1] ? teams[1].name : '?'}</h3>
                 </div>
                 <div className="widget-user-image-versus-1">
-                    <img className="img-circle" src={teams[0].avatar} alt="User Avatar"></img>
+                    <img className="img-circle" src={teams[0] ? teams[0].avatar : defaultAvatar} alt="User Avatar"></img>
                 </div>
                 <div className="widget-user-image-versus-2">
-                    <img className="img-circle" src={teams[1].avatar} alt="User Avatar"></img>
+                    <img className="img-circle" src={teams[1] ? teams[1].avatar : defaultAvatar} alt="User Avatar"></img>
                 </div>
                 <div className="box-footer">
                     <div className="row">
                         <div className="col-xs-5 border-right">
                             <div className="description-block">
-                                <TeamReadyState ready={teams[0].ready} />
+                                <TeamReadyState ready={teams[0] ? teams[0].ready : false} />
                             </div>
                         </div>
                     <div className="col-xs-2">
                         <div className="description-block" style={{margin: '0px', height: '85px'}}>
-                            <h2 className="description-score">{teams[0].wins + '-' + teams[1].wins}</h2>
+                            <h2 className="description-score">{(teams[0] ? teams[0].wins : 0) + '-' + (teams[1] ? teams[1].wins : 0)}</h2>
                             <span className="description-text">{'BEST OF ' + this.props.bestOf}</span>
                         </div>
                     </div>
                         <div className="col-xs-5 border-left">
                             <div className="description-block">
-                                <TeamReadyState ready={teams[1].ready} />
+                                <TeamReadyState ready={teams[1] ? teams[1].ready : false} />
                             </div>
                         </div>
                     </div>
@@ -283,9 +285,11 @@ var Lobby = React.createClass({
             case 'waitingForMatch':
                 calloutData = {
                     title: 'Your opponent hasn\'t joined the lobby yet!',
-                    body: 'You\'ll be notified as soon as match <strong>#' + this.state.state.matchNumber +
-                          '</strong> (<strong>' + this.state.state.teamNames[0] +
-                          '</strong> vs <strong>' + this.state.state.teamNames[1] + '</strong>) finishes.',
+                    body: (
+                        <div>
+                            You'll be notified as soon as <strong>match #{this.state.state.matchNumber} ({this.state.state.teamNames[0]} vs {this.state.state.teamNames[1]})</strong> finishes.
+                        </div>
+                    ),
                     color: 'warning'
                 }
                 break;

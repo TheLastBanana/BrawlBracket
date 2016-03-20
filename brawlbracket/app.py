@@ -53,6 +53,11 @@ if tempTourney is None:
                     'test',
                     name='BrawlBracket Test Tourney'
                     )
+    tempTourney.addAdmins(um.getUserBySteamId(76561198042414835),
+                          um.getUserBySteamId(76561197993702532))
+#                          um.getUserBySteamId(76561197995127703))
+
+if False:
     for i, user in enumerate(tempUsers):
         team = tempTourney.createTeam(i + 1) # i = seed, 1-indexed
         team.name = user.username
@@ -62,9 +67,6 @@ if tempTourney is None:
     print('Temp tournament has {} users!'.format(len(tempTourney.teams)))
     tempTourney.generateMatches()
     
-    tempTourney.addAdmins(um.getUserBySteamId(76561198042414835),
-                          um.getUserBySteamId(76561197993702532))
-#                          um.getUserBySteamId(76561197995127703))
     
     print('Admins: ', [a.username for a in tempTourney.admins])
 # End temp tournament generation
@@ -191,6 +193,27 @@ def tournament_index(tourneyName):
         # Not logged in and trying to register
         if user is None:
             return
+        
+        existing = False
+        for player in tournament.players:
+            if player.user.id == user.id:
+                existing = True
+                break
+        
+        if not existing:
+            team = tournament.createTeam(
+                len(tournament.teams) + 1,
+                name = user.username)
+            
+            player = tournament.createPlayer(user)
+            
+            team.addPlayer(player)
+            
+            print('ADDED TEAM: {}, PLAYERS: {}'.format(team, team.players))
+            print('TOURNAMENT NOW HAS {} TEAMS'.format(len(tournament.teams)))
+        else:
+            print('ADD TEAM FAILED, ALREADY JOINED! {}'.format(user.username))
+        
     
     tournament = tm.getTournamentByName(tourneyName)
     return render_template('tournament.html',

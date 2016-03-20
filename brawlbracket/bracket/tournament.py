@@ -469,12 +469,16 @@ class SingleElimTournament(TreeTournament):
                     break
             if match is not None:
                 break
-                
+        
         # All of these states have the match appended to them
         state = ''
         subPrettyState = ''
         
-        if match.state['name'] in ['waitingForMatch', 'waitingForPlayers']:
+        if match is None:
+            state = 'waiting'
+            subPrettyState = 'No Match'
+            return (state, subPrettyState)
+        elif match.state['name'] in ['waitingForMatch', 'waitingForPlayers']:
             state = 'waiting'
             subPrettyState = 'Waiting'
         elif match.state['name'] == 'inGame':

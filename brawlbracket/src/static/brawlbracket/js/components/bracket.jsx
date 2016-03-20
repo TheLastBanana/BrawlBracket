@@ -235,7 +235,7 @@ var Bracket = React.createClass({
         if (!this.state.root) {
             return (
                 <div className="bracket">
-                    <span className="text-muted">Nobody has joined yet, but you could be the first!</span>
+                    <span className="text-muted">Nobody has joined the tournament yet!</span>
                 </div>
             );
         }

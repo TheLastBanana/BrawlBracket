@@ -291,7 +291,6 @@ class Match():
         lobbyData['teams'] = []
         for i, (t, wins) in enumerate(zip(self.teams, self.score)):
             if t is None:
-                lobbyData['teams'].append(None)
                 continue
             
             team = {}

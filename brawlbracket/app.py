@@ -442,9 +442,15 @@ def user_connect():
     request.namespace = '/participant'
     
     lobbyData = match.lobbyData
-    emit('join lobby', {
-            'lobbyData': lobbyData,
+    # Extra data since we can't send things in the connect event
+    emit('handshake', {
             'playerSettings': user.getSettings()
+        },
+        broadcast=False, include_self=True)
+        
+    # Tell the user to join their first match too
+    emit('join lobby', {
+            'lobbyData': lobbyData
         },
         broadcast=False, include_self=True)
         
@@ -781,8 +787,10 @@ def advance_lobby():
     join_room(m.chat.getRoom())
     request.namespace = '/participant'
     
-    emit('update lobby', match.lobbyData, broadcast=False, include_self=True,
-         room = match.id)
+    emit('join lobby', {
+            'lobbyData': match.lobbyData
+        }, broadcast=False, include_self=True,
+        room = match.id)
 
 # A chat message was sent by a client
 @socketio.on('send', namespace='/chat')

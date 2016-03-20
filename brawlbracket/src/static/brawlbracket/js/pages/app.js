@@ -214,20 +214,18 @@ function brawlBracketParticipantInit() {
                 lobbyData.prevState.name == 'waitingForMatch') &&
                 lobbyData.state.name != 'waitingForPlayers' &&
                 lobbyData.state.name != 'waitingForMatch') {
-                    
-                // Add notifications
-                if (!isActive || currentPage != 'lobby') {
-                    createjs.Sound.play('state');
-                    
-                    if (!isActive) {
-                        desktopNotify('BrawlBracket update',
-                                      'Your next match is ready!');
-                    }
-                    
-                    addPageNotification('lobby');
-                }
                 
-                // TODO: Add notifications for room chosen and score changed
+                lobbyNotify('Your next match is ready!');
+            }
+            
+            // Lobby has a room chosen
+            if (property == 'roomNumber') {
+                lobbyNotify('The room number for your match has been set!');
+            }
+            
+            // Lobby has a room chosen
+            if (lobbyData.prevState.name == 'inGame' && lobbyData.state.name != 'inGame') {
+                lobbyNotify('The game score has been reported!');
             }
         }
     });
@@ -359,6 +357,22 @@ function chatNotify(chatId, senderId, silent) {
         if (!silent && (!isActive || currentPage != notifyPage)) {
             createjs.Sound.play('message');
         }
+    }
+}
+
+/**
+ * Notify about a lobbyData change if necessary
+ * @param {string} message - The notification message.
+ */
+function lobbyNotify(message) {
+    // Add notifications
+    if (!isActive || currentPage != 'lobby') {
+        if (!isActive) {
+            desktopNotify('BrawlBracket update', message);
+        }
+        
+        addPageNotification('lobby');
+        createjs.Sound.play('state');
     }
 }
 

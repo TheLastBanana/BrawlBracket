@@ -47,6 +47,14 @@ _steam_id_re = re.compile('steamcommunity.com/openid/id/(.*?)$')
 #    if user is None:
 #        user = um.createUser(id)
 #    tempUsers.append(user)
+
+# Generate admins as users
+admins = [76561198042414835, 76561197993702532, 76561197995127703]
+for id in admins:
+    user = um.getUserBySteamId(id)
+    if user is None:
+        user = um.createUser(id)
+
 tempTourney = tm.getTournamentByName('test')
 if tempTourney is None:
     tempTourney = tm.createTournament(

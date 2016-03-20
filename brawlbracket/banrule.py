@@ -23,7 +23,7 @@ class BanRule:
         """
         state = match.state
         # Entry point into the cyclic states, straight to pickLegends
-        if state['name'] == 'waitingForPlayers':
+        if state['name'] in ['waitingForMatch', 'waitingForPlayers']:
             state.clear()
             state['name'] = 'pickLegends'
         

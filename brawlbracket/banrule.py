@@ -296,6 +296,7 @@ class ESLRules(BanRule):
         teams = match.teams
         nextMatch = match.nextMatch
         
+        
         winners = None
         winnerIndex = None
         losers = None
@@ -311,16 +312,19 @@ class ESLRules(BanRule):
             raise AssertionError('Advancing to new state without a winner')
         
         match.winner = winners
-        for player in winners.players:
-            player.currentLegend = None
-        nextMatch.setTeam(winners, match.nextMatchSide)
         losers.eliminated = True
-        nextMatch._updateState() # XXX Fix this
         
         state.clear()
         state['name'] = 'complete'
         state['winnerIndex'] = winnerIndex
         state['finalRound'] = nextMatch is None
+        
+        if nextMatch is not None:
+            for player in winners.players:
+                player.currentLegend = None
+            nextMatch.setTeam(winners, match.nextMatchSide)
+            nextMatch._updateState() # XXX Fix this
+            
 
 # List of rulesets
 rulesets = {

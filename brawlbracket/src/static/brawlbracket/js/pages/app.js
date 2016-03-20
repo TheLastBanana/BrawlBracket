@@ -178,9 +178,14 @@ function brawlBracketParticipantInit() {
         console.log('connected');
     });
     
+    pSocket.on('handshake', function(data) {
+        playerSettings = data.playerSettings;
+        
+        showPage(currentPage || defaultPage, true);
+    });
+    
     pSocket.on('join lobby', function(data) {
         lobbyData = data.lobbyData;
-        playerSettings = data.playerSettings;
         
         // Request chat log so we get notifications
         chatSocket.emit('request log', {
@@ -194,8 +199,6 @@ function brawlBracketParticipantInit() {
         lobbyData.prevState = {
             'name': null
         };
-        
-        showPage(currentPage || defaultPage, true);
     });
     
     pSocket.on('update lobby', function(data) {

@@ -36,9 +36,24 @@
           {%- endif -%}
         {%- endif -%}
         
-        <hr>
+        {# No buttons at all if in the app #}
+        {%- if not inApp -%}
+          <hr>
         
-        <button class="btn btn-block btn-success btn-lg">Register</button>
+          {%- if user -%}
+            {%- if tournament.getUserInfo(user) -%}
+              <form action="app" method="get">
+                <button type="submit" class="btn btn-block btn-success btn-lg" href="app">Launch app</a>
+              </form>
+            {%- else -%}
+              <form action="." method="post">
+                <button type="submit" class="btn btn-block btn-success btn-lg">Register</button>
+              </form>
+            {%- endif -%}
+          {%- else -%}
+            <button class="btn btn-block btn-success btn-lg disabled" href="app">Log in to register</button>
+          {%- endif -%}
+        {%- endif -%}
       </div><!-- /.box-body -->
     </div>
   </div>

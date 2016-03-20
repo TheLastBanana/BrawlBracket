@@ -582,10 +582,16 @@ var Lobby = React.createClass({
         this._updateLobbyNumber();
         
         this.props.mainSocket.on('update lobby', this._updateLobby);
+        this.props.mainSocket.on('join lobby', this._joinLobby);
     },
     
     componentWillUnmount: function() {
         this.props.mainSocket.off('update lobby', this._updateLobby);
+        this.props.mainSocket.off('join lobby', this._joinLobby);
+    },
+    
+    _joinLobby: function(data) {
+        this._updateLobby(data.lobbyData);
     },
     
     _updateLobby: function(data) {

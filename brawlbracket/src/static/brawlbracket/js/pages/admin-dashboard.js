@@ -181,7 +181,7 @@ $(function () {
                         default:
                             return data == ''
                                    ? 'N/A'
-                                   : getTimerString(new Date() - new Date(data));
+                                   : getTimerString(new Date(new Date() - new Date(data)));
                     }
                 },
                 'responsivePriority': 4

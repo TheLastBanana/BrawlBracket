@@ -166,7 +166,7 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
 /**
  * Connect to the participant socket.
  */
-function brawlBracketParticipantInit() {
+function brawlBracketParticipantInit () {
     pSocket = io.connect(location.protocol + "//" + location.host + '/participant');
     defaultPage = 'lobby';
 
@@ -240,42 +240,6 @@ function brawlBracketParticipantInit() {
 function brawlBracketAdminInit() {
     defaultPage = 'admin-dashboard';
     showPage(currentPage || defaultPage, true);
-}
-
-
-//////////////////////
-// HELPER FUNCTIONS //
-//////////////////////
-
-/**
- * Get a content page's URL including tourney and participant data.
- * @param {string} pageName - The name of the page to load. Should exist at
- *   /app-pages/<pageName>/<tourneyName>
- */
-function getContentURL(pageName) {
-    return '/app-pages/' + pageName + '/' + tourneyName;
-}
-
-/**
- * Left-pad a string with a given character.
- * @param {string} str - The string.
- * @param {number} count - The number of characters to pad to.
- * @param {string} padChar - The character to use for padding.
- */
-function padString(str, count, padChar) {
-    var pad = Array(count + 1).join(padChar);
-    return pad.substring(0, pad.length - str.length) + str;
-}
-
-/**
- * Get a string representing the time since a timer began.
- * @param {string} timeDiff - Time difference in ISO 8601 format.
- */
-function getTimerString(timeDiff) {
-    var minStr = "" + timeDiff.getMinutes();
-    var secStr = "" + timeDiff.getSeconds();
-    
-    return padString(minStr, 2, '0') + ":" + padString(secStr, 2, '0');
 }
 
 //////////////////

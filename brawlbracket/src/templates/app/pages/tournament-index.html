@@ -8,13 +8,8 @@
   <hr class="divider">
 
   <div id="bracket" class="bracket-scroll-wrapper centered"></div>
-  
-  <!-- jquery.pin -->
-  <script src="/static/jquery-pin/jquery.pin.min.js"></script>
-  <!-- Bracket script -->
-  <script src="/static/brawlbracket/js/components/bracket.min.js"></script>
-  
-  <script>
-    createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});
-  </script>
 </section>
+
+<script>
+  createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});
+</script>

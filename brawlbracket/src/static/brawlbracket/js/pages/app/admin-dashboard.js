@@ -134,7 +134,10 @@ function formatTeamOnline(data) {
     return '<span class="label label-' + labelType + '">' + data + '</span>';
 }
 
-$(function () {
+/**
+ * Initialize the admin dashboard.
+ */
+ function initAdminDashboard () {
     // Set up the lobby table
     var lobbyTable = $('#bb-lobby-table').DataTable({
         // Sort by status, then by id
@@ -269,4 +272,4 @@ $(function () {
     $('.content').on('destroy', function() {
         window.clearInterval(tableRefresh);
     });
-});
+}

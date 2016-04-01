@@ -63,8 +63,9 @@
 
 {% include 'app/elements/bracket-scripts.html' %}
 
-<!-- Dashboard script -->
-<script src="/static/brawlbracket/js/pages/admin-dashboard.min.js"></script>
 <script>
-    createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});
+  initAdminDashboard();
+    
+  // Create the bracket display
+  createBracket('bracket', {{ tournament.getDisplayJSON()|tojson }});
 </script>

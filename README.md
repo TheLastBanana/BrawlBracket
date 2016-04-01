@@ -16,8 +16,10 @@ Finally, in this directory, run `gulp`. It'll stay running in the background and
 the 'watch' task has finished, this actually just means that the 'watch' task was successfully executed, so it should
 still be running.
 
-Alternatively, you can run `gulp all-dev`, which will update the web files without starting the watcher task.
+Alternatively, you can run `gulp deploy`, which will update the web files without starting the watcher task.
 
+To run in production mode, use `gulp --production`. This will combine and minify files, making them smaller but much
+harder to debug.
 
 ## Running
 Run `python wsgi.py` to start the development web server. It will be hosted at `localhost:5000`.

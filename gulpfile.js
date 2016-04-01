@@ -4,14 +4,16 @@ var gulp = require('gulp');
 // Include plugins
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
-var gulpIf = require('gulp-if');
 var useref = require('gulp-useref');
+var gulpIf = require('gulp-if');
 var imagemin = require('gulp-imagemin');
 var cleanCSS = require('gulp-clean-css');
 var rename = require('gulp-rename');
 var cache = require('gulp-cache');
 var sass = require('gulp-sass');
 var babel = require('gulp-babel');
+var util = require('gulp-util');
+var mode = require('gulp-mode')();
 var del = require('del');
 var merge = require('merge-stream');
 var runSequence = require('run-sequence');
@@ -63,38 +65,79 @@ gulp.task('jsx', function() {
           console.log(e);
           this.emit('end');
         })
+        .pipe(mode.production(uglify()))
         .pipe(rename({
           extname: '.min.js'
         }))
         .pipe(gulp.dest('brawlbracket/dist/static/'));
 });
 
-// Just copy JavaScript files, but treat them as .min files so they can be included easily
-gulp.task('rename-js', function() {
-    return gulp.src(['brawlbracket/src/static/**/*.js', '!brawlbracket/src/static/**/*.min.js'])
+// Rename .js files to .min.js, and in production mode, actually minify brawlbracket files
+gulp.task('minify-js', function() {
+    var pattern = ['!brawlbracket/src/static/brawlbracket/**/*'];
+    
+    // In production mode, we want actual minified files. In development, just rename them
+    if (util.env.production) {
+        pattern += ['brawlbracket/src/static/**/*.min.js'];
+    } else {
+        pattern += ['brawlbracket/src/static/**/*.js', '!**/*.min.js'];
+    }
+    
+    // Outside libraries. Separated because we never minify these.
+    var libs = gulp.src(pattern)
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('brawlbracket/dist/static/'));
+    
+    // BrawlBracket source hasn't been minified yet, so it needs to be handled differently
+    var source = gulp.src(['brawlbracket/src/static/brawlbracket/**/*.js'])
+        .pipe(mode.production(gulpIf('*.js', uglify())))
+        .pipe(rename({suffix: '.min'}))
+        .pipe(gulp.dest('brawlbracket/dist/static/brawlbracket/'));
+        
+    return merge(libs, source);
 });
 
 // Set up JavaScript for development
-gulp.task('js-dev', function(cb) {
-    runSequence('copy-min-js', ['jsx', 'rename-js'], cb);
+gulp.task('js', function(cb) {
+    runSequence('copy-min-js', ['jsx', 'minify-js'], cb);
 });
 
-// Copy HTML files and combine + minify JS files
-gulp.task('useref', function() {
+// Run all the parts of the useref task
+gulp.task('useref', function(cb) {
+    runSequence(
+        'useref-parse',
+        'useref-copy',
+        'useref-clean',
+        cb
+    );
+});
+
+// Copy HTML files and combine + minify included JS files
+gulp.task('useref-parse', function() {
     return gulp.src('brawlbracket/src/templates/**/*.html')
 
         // These files will end up in /templates/static. There's a 'base' option to send them elsewhere,
         // but when used, some files go missing for reasons unknown... so instead, we'll move them manually.
         .pipe(useref({
-            searchPath: 'brawlbracket/src'
+            searchPath: 'brawlbracket/dist'
         }))
-
-        // Minify JS files
-        .pipe(gulpIf('*.js', uglify()))
+        .on('error', function(e) {
+          console.log(e);
+          this.emit('end');
+        })
 
         .pipe(gulp.dest('brawlbracket/dist/templates/'));
+});
+
+// Copy combined files from useref to the right place
+gulp.task('useref-copy', function() {
+    return gulp.src('brawlbracket/dist/templates/static/**/*')
+        .pipe(gulp.dest('brawlbracket/dist/static'));
+});
+
+// Remove static files sitting in templates dir
+gulp.task('useref-clean', function() {
+    return del('brawlbracket/dist/templates/static');
 });
 
 // Optimize images
@@ -116,17 +159,6 @@ gulp.task('fonts', function() {
         .pipe(gulp.dest('brawlbracket/dist/static'));
 });
 
-// Copy combined files from useref to the right place
-gulp.task('useref-copy', function() {
-    return gulp.src('brawlbracket/dist/templates/static/**/*')
-        .pipe(gulp.dest('brawlbracket/dist/static'));
-});
-
-// Remove static files sitting in templates dir
-gulp.task('useref-clean', function() {
-    return del('brawlbracket/dist/templates/static');
-});
-
 // Clear the cache
 gulp.task('clear-cache', function(cb) {
     return cache.clearAll(cb);
@@ -137,7 +169,7 @@ gulp.task('clear-cache', function(cb) {
 // This also causes browser-sync to reload when files change.
 gulp.task('watch', function() {
     gulp.watch('brawlbracket/src/**/*.html', ['html', 'reload']);
-    gulp.watch(['brawlbracket/src/**/*.js', 'brawlbracket/src/**/*.jsx'], ['js-dev', 'reload']);
+    gulp.watch(['brawlbracket/src/**/*.js', 'brawlbracket/src/**/*.jsx'], ['js', 'reload']);
     gulp.watch(['brawlbracket/src/**/*.css', 'brawlbracket/src/**/*.scss'], ['css', 'reload']);
     gulp.watch('brawlbracket/src/**/*.+(png|jpg|gif|svg)', ['img', 'reload']);
     gulp.watch('brawlbracket/src/**/*.+(mp3|ogg)', ['sfx', 'reload']);
@@ -153,7 +185,7 @@ gulp.task('browser-sync', function() {
 });
 
 // Reload browser-sync
-gulp.task('reload', ['html', 'js-dev', 'css', 'img', 'sfx', 'fonts'], function() {
+gulp.task('reload', ['html', 'js', 'css', 'img', 'sfx', 'fonts', 'useref'], function() {
     console.log('Reloading browser');
 
     browserSync.reload();
@@ -161,19 +193,22 @@ gulp.task('reload', ['html', 'js-dev', 'css', 'img', 'sfx', 'fonts'], function()
 
 
 // Combine all the tasks for deployment
-gulp.task('all-deploy', function(cb) {
-    runSequence('clean',
-                ['css', 'js', 'useref', 'img', 'sfx', 'fonts'],
-                'useref-copy',
-                'useref-clean',
-                cb);
-});
-
-// Combine all the tasks for development
-gulp.task('all-dev', function(cb) {
-    runSequence('clean',
-                ['css', 'js-dev', 'html', 'img', 'sfx', 'fonts'],
-                cb);
+gulp.task('deploy', function(cb) {
+    if (util.env.production) {
+        runSequence(
+            'clean',
+            ['css', 'js', 'img', 'sfx', 'fonts'],
+            'useref',
+            cb
+        );
+        
+    } else {
+        runSequence(
+            'clean',
+            ['css', 'js', 'img', 'sfx', 'fonts'],
+            cb
+        );
+    }
 });
 
 // Do a development run, then start the watcher and browser sync.

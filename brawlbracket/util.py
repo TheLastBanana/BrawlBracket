@@ -1,4 +1,5 @@
 import uuid
+import os
 
 # +-----------+
 # | Util Data |
@@ -6,7 +7,7 @@ import uuid
 
 # Name and path of data base
 dbName = 'brawlbracketdata'
-dbPath = './data'
+dbPath = os.path.join(os.environ['OPENSHIFT_DATA_DIR'], 'data')
 
 # Mapping from legend internal name to full name
 legendData = {

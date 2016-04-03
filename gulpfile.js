@@ -213,5 +213,5 @@ gulp.task('deploy', function(cb) {
 
 // Do a development run, then start the watcher and browser sync.
 gulp.task('default', function(cb) {
-    runSequence('all-dev', ['watch', 'browser-sync'], cb);
+    runSequence('deploy', ['watch', 'browser-sync'], cb);
 });

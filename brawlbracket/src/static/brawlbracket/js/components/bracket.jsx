@@ -1,5 +1,15 @@
 'use strict';
 
+/**
+ * A single team's information in a bracket.
+ *
+ * @prop {string}   name                - The team's name
+ * @prop {number}   seed                - The team's seed in the tournament
+ * @prop {number}   score               - The team's current score in the containing
+ * @prop {boolean}  loser               - Whether the team lost the containing match
+ * @prop {boolean}  highlight           - Whether the team should be highlighted
+ * @prop {function} setHighlightTeam    - Callback function to set the highlighted team
+ */
 var BracketTeam = React.createClass({
     render: function() {
         return (
@@ -33,6 +43,17 @@ var BracketTeam = React.createClass({
     }
 });
 
+/**
+ * A node in the bracket. This contains a root match on the right side, and any child matches in their own BracketNodes
+ * on the left side.
+ *
+ * @prop {dict}     teams               - The teams in the tournament (by id)
+ * @prop {dict}     matches             - The matches in the tournament (by id)
+ * @prop {string}   highlightTeam       - The team to highlight
+ * @prop {function} setHighlightTeam    - Callback function to set the highlighted team
+ * @prop {string}   root                - The id of the root match for this node
+ * @prop {boolean}  hasParent           - Whether this has a parent match
+ */
 var BracketNode = React.createClass({
     render: function () {
         var teamData = this.props.teams;
@@ -176,6 +197,11 @@ var BracketNode = React.createClass({
     }
 });
 
+/**
+ * The list of round names at the top of the bracket.
+ *
+ * @prop {number}   numRounds   - The number of rounds in the tournament
+ */
 var BracketRounds = React.createClass({
     render: function () {
         var rounds = [];
@@ -219,6 +245,11 @@ var BracketRounds = React.createClass({
     }
 });
 
+/**
+ * A tournament bracket.
+ *
+ * @prop {object}   bracket     - The bracket object. See documentation for createBracket.
+ */
 var Bracket = React.createClass({
     getInitialState: function() {
         return {

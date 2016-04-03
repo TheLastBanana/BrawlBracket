@@ -1,6 +1,12 @@
 'use strict';
 
-/* Icon for a legend in the picker */
+/**
+ * Icon for a legend in the picker.
+ *
+ * @prop {string}   id          - Legend's short id name
+ * @prop {string}   name        - Legend's full name
+ * @prop {function} callback    - Callback function when clicked
+ */
 var LegendIcon = React.createClass({
     render: function() {
         return (
@@ -26,7 +32,12 @@ var LegendIcon = React.createClass({
     }
 });
 
-/* Lets the user click a legend in the list and returns the data to a callback */
+/**
+ * Lists legends for the player to select.
+ *
+ * @prop {array}    legendData  - Data for selectable legends. Pairs of (short name, full name)
+ * @prop {function} callback    - Callback when a legend is clicked
+ */
 var LegendPicker = React.createClass({
     render: function() {
         var callback = this.props.callback;
@@ -48,7 +59,15 @@ var LegendPicker = React.createClass({
     }
 });
 
-/* Icon for a realm in the picker */
+/**
+ * Icon for a realm in the picker.
+ *
+ * @prop {string}   id          - Realm's short id name
+ * @prop {string}   name        - Realm's full name
+ * @prop {function} callback    - Callback function when clicked
+ * @prop {boolean}  banned      - Whether this realm has been banned
+ * @prop {string}   action      - What the player is doing. One of ['pick', 'ban']
+ */
 var RealmIcon = React.createClass({
     render: function() {
         var className = 'realm-option';
@@ -106,7 +125,14 @@ var RealmIcon = React.createClass({
     }
 });
 
-/* Lets the user click a realm in the list and returns the data to a callback */
+/**
+ * Lists legends for the player to pick/ban.
+ *
+ * @prop {array}    realmData   - Data for selectable realms. Pairs of (short name, full name)
+ * @prop {array}    bans        - Short names of banned realms
+ * @prop {string}   action      - What the player is doing. One of ['pick', 'ban']
+ * @prop {function} callback    - Callback when a legend is clicked
+ */
 var RealmPicker = React.createClass({
     render: function() {
         var callback = this.props.callback;

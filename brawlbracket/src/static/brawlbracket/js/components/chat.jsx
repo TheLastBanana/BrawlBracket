@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * A single message in the chatbox.
+ *
+ * @prop {array}    group   - The group of messages, each entry being a message JSON object
+ * @prop {string}   userId  - The id of the user viewing the chatbox
+ */
 var ChatMessage = React.createClass({
     render: function() {
         var firstMsg = this.props.group[0];
@@ -30,6 +36,15 @@ var ChatMessage = React.createClass({
     }
 });
 
+/**
+ * A chatbox.
+ *
+ * @prop {string}   chatId      - The id of the chat on the server
+ * @prop {socket}   socket      - The Socket.IO socket to use for sending + receiving chat data
+ * @prop {dict}     chatCache   - Cached chat logs by id
+ * @prop {string}   userId      - The id of the user viewing the chatbox
+ * @prop {string}   height      - The height of the box
+ */
 var Chat = React.createClass({
     getInitialState: function() {
         return {

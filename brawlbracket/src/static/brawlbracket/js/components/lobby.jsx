@@ -3,7 +3,14 @@
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 
-/* Icon to select a winning team */
+/**
+ * Icon to select a winning team.
+ *
+ * @prop {string}   avatar      - Team avatar URL
+ * @prop {string}   name        - Team name
+ * @prop {string}   index       - Team index in the list of choices
+ * @prop {function} callback    - Callback for when this is clicked
+ */
 var WinnerPickIcon = React.createClass({
     render: function() {
         return (
@@ -25,7 +32,11 @@ var WinnerPickIcon = React.createClass({
     }
 });
 
-/* Text for a timer */
+/**
+ * A timer.
+ *
+ * @prop {Date}     startTime   - The timer's start time
+ */
 var Timer = React.createClass({
     getInitialState: function() {
         return {
@@ -58,7 +69,12 @@ var Timer = React.createClass({
     }
 });
 
-/* Displays a small piece of information */
+/**
+ * Displays a small piece of information with an icon. Children will be displayed as contents.
+ *
+ * @prop {string}   icon    - FontAwesome icon name
+ * @prop {string}   title   - Widget title
+ */
 var InfoWidget = React.createClass({
     render: function() {
         return (
@@ -73,7 +89,12 @@ var InfoWidget = React.createClass({
     }
 });
 
-/* A row in the player info table */
+/**
+ * A row in the player info table.
+ *
+ * @prop {Object}   player  - Lobby data player JSON
+ * @prop {int}      seed    - The player's team's seed
+ */
 var PlayerInfo = React.createClass({
     render: function() {
         var player = this.props.player;
@@ -88,7 +109,11 @@ var PlayerInfo = React.createClass({
     }
 });
 
-/* The player info table */
+/**
+ * Shows info specific to each player in the lobby.
+ *
+ * @prop {dict}     teams   - The teams in the lobby's match.
+ */
 var PlayerTable = React.createClass({
     render: function() {
         return (
@@ -116,7 +141,11 @@ var PlayerTable = React.createClass({
     }
 });
 
-/* Displays whether a team is ready */
+/** 
+ * Fancy text to show whether a team is ready.
+ *
+ * @param {boolean}     ready   - Is the team ready?
+ */
 var TeamReadyState = React.createClass({
     render: function() {
         var ready = this.props.ready;
@@ -132,7 +161,12 @@ var TeamReadyState = React.createClass({
     }
 });
 
-/* Displays the matchup between the two teans, including readiness state and score reporting where appropriate */
+/**
+ * Displays the matchup between the two teans, including readiness state and score reporting where appropriate.
+ *
+ * @prop {array}    teams   - The teams in the match
+ * @prop {number}   bestOf  - The maximum number of games in this match (e.g. best of 3)
+ */
 var MatchupDisplay = React.createClass({
     render: function() {
         var teams = this.props.teams;
@@ -177,7 +211,18 @@ var MatchupDisplay = React.createClass({
     }
 });
 
-/* The whole lobby structure */
+/**
+ * The UI for a match lobby.
+ *
+ * @prop {object}   lobbyData   - Lobby data JSON (see wiki)
+ * @prop {string}   userId      - The id of the user viewing the lobby
+ * @prop {array}    realmData   - Data for each of the realms allowed in the tournament. Pairs of (short name, full name)
+ * @prop {array}    legendData  - Data for each of the legends allowed in the tournament. Pairs of (short name, full name)
+ * @prop {string}   chatId      - The id of the lobby's chat box
+ * @prop {dict}     chatCache   - Cached chat logs by id
+ * @prop {socket}   mainSocket  - The Socket.IO socket to use for sending + receiving tourney participant data
+ * @prop {socket}   chatSocket  - The Socket.IO socket to use for sending + receiving chat data
+ */
 var Lobby = React.createClass({
     getInitialState: function() {
         return $.extend(false, {

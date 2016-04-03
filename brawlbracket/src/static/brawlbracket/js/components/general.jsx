@@ -1,6 +1,20 @@
 'use strict';
 
-/* A simple text input with a submit button. Also responds to enter key. */
+/**
+ * A simple text input with a submit button. Also responds to enter key.
+ *
+ * @prop {string}       extraClass      - Extra class(es) added to both text and button input
+ * @prop {string}       placeholder     - Placeholder message of the text input
+ * @prop {string}       btnContents     - Contents to place in the button (defaults to right arrow icon)
+ * @prop {string}       initialValue    - Initial value of the text input
+ * @prop {boolean}      number          - If true, only accept numeric input
+ * @prop {number}       maxLength       - If set, cut off inputs longer than this
+ * @prop {boolean}      autoFocus       - If true, focus on the text input when created
+ * @prop {function}     onFocus         - Callback when focused
+ * @prop {function}     onBlur          - Callback when blurred
+ * @prop {function}     onEscape        - Callback when escape is pressed
+ * @prop {function}     callback        - Callback when enter or go button is pressed
+ */
 var TextEntry = React.createClass({
     render: function() {
         // Contents of button. Defaults to right arrow icon
@@ -77,8 +91,17 @@ var TextEntry = React.createClass({
     }
 });
 
-// A text field which, when clicked, can be edited. The value will not actually be changed; the new value will be sent
-// to this.props.callback to be handled appropriately
+/**
+ * A text field which, when clicked, can be edited. The value will not actually be changed; the new value will be sent
+ * to this.props.callback to be handled appropriately
+ *
+ * @prop {string}       text            - Text to display
+ * @prop {string}       extraClass      - Extra class(es) added to both text and button input
+ * @prop {string}       placeholder     - Placeholder message of the text input
+ * @prop {boolean}      number          - If true, only accept numeric input
+ * @prop {number}       maxLength       - If set, cut off inputs longer than this
+ * @prop {function}     callback        - Callback when enter or go button is pressed in the editable input
+ */
 var EditableText = React.createClass({
     getInitialState: function() {
         return {

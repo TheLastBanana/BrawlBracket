@@ -62,7 +62,7 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
     basePath = newBasePath;
     currentPage = startPage;
     
-    chatSocket = io.connect(location.protocol + "//" + location.host + '/chat:8000');
+    chatSocket = io.connect(location.protocol + "//" + location.host + '/chat');
     
     chatSocket.on('receive', function(data) {
         chatNotify(data.chatId, data.messageData.senderId, false);
@@ -167,7 +167,7 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
  * Connect to the participant socket.
  */
 function brawlBracketParticipantInit () {
-    pSocket = io.connect(location.protocol + "//" + location.host + '/participant:8000');
+    pSocket = io.connect(location.protocol + "//" + location.host + '/participant');
     defaultPage = 'lobby';
 
     pSocket.on('error', function() {

@@ -12,6 +12,7 @@ setup(
         'Flask-Login==0.3.2',
         'Flask-SocketIO==1.2',
         'eventlet==0.17.4',
-        'pytest==2.8.7'
+        'pytest==2.8.7',
+        'requests==2.7.0'
     ]
 )

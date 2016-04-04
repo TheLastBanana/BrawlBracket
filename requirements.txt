@@ -6,3 +6,4 @@ Flask-SocketIO==2.2
 eventlet==0.18.4
 Flask-OpenID==1.2.5
 pytest==2.8.7
+requests==2.7.0

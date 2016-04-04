@@ -62,3 +62,6 @@ data/
 
 # NodeJS
 node_modules/
+
+# Production repo
+production/

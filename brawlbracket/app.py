@@ -12,6 +12,7 @@ from brawlbracket import tournamentmanager as tm
 __version__ = '0.1.0'
 
 app = Flask(__name__, static_folder='dist/static', template_folder='dist/templates')
+app.root_path = os.path.dirname(os.path.abspath(__file__))
 app.secret_key = os.environ.get('BB_SECRET_KEY')
 socketio = SocketIO(app)
 oid = OpenID(app)

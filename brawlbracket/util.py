@@ -7,7 +7,7 @@ import os
 
 # Name and path of data base
 dbName = 'brawlbracketdata'
-dbPath = os.path.join(os.environ['OPENSHIFT_DATA_DIR'], 'data')
+dbPath = './data'
 
 # Mapping from legend internal name to full name
 legendData = {

@@ -143,7 +143,7 @@ gulp.task('useref-clean', function() {
 // Optimize images
 gulp.task('img', function() {
     return gulp.src('brawlbracket/src/static/**/*.+(png|jpg|gif|svg)')
-        .pipe(cache(imagemin()))
+//        .pipe(cache(imagemin()))
         .pipe(gulp.dest('brawlbracket/dist/static'));
 });
 

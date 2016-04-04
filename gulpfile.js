@@ -28,7 +28,7 @@ gulp.task('clean', function() {
 gulp.task('css', function() {
     // Exclude already minified files
     var minify = gulp.src(['brawlbracket/src/static/**/*.css', '!brawlbracket/src/static/**/*.min.css'])
-        .pipe(cleanCSS())
+        .pipe(cleanCSS({processImport: false}))
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('brawlbracket/dist/static/'));
 
@@ -38,7 +38,7 @@ gulp.task('css', function() {
 
     var compSass = gulp.src('brawlbracket/src/static/**/*.scss')
         .pipe(sass().on('error', sass.logError))
-        .pipe(cleanCSS())
+        .pipe(cleanCSS({processImport: false}))
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('brawlbracket/dist/static/'));
 

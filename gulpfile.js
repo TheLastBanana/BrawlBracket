@@ -206,6 +206,7 @@ gulp.task('deploy', function(cb) {
         runSequence(
             'clean',
             ['css', 'js', 'img', 'sfx', 'fonts'],
+            'html'
             cb
         );
     }

@@ -22,10 +22,11 @@ To run in production mode, use `gulp --production`. This will combine and minify
 harder to debug.
 
 ## Running
-Run `python wsgi.py` to start the development web server. It will be hosted at `localhost:5000`.
+Run `python run.py -d` to start the development web server. It will be hosted at `localhost:5000`. To run the production
+server, omit the `-d`.
 
-If you ran `gulp`, you can also visit `localhost:3000` to view a version of the site that will automatically reload
-whenever any of the files in `brawlbracket/src` change.
+If you run `gulp` and leave it running, you can also visit `localhost:3000` to view a version of the site that will
+automatically reload whenever any of the files in `brawlbracket/src` change.
 
 
 ## Testing

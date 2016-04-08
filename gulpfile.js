@@ -164,16 +164,27 @@ gulp.task('clear-cache', function(cb) {
     return cache.clearAll(cb);
 });
 
-// Watch for file changes. Note that this doesn't minify anything, as this is aimed at dev mode, where we don't want to
-// minify files for debugging reasons.
-// This also causes browser-sync to reload when files change.
+// Watch for file changes, update dist and reload browser-sync.
+// Note that this is aimed at dev mode and may not work in production mode.
 gulp.task('watch', function() {
-    gulp.watch('brawlbracket/src/**/*.html', ['html', 'reload']);
-    gulp.watch(['brawlbracket/src/**/*.js', 'brawlbracket/src/**/*.jsx'], ['js', 'reload']);
-    gulp.watch(['brawlbracket/src/**/*.css', 'brawlbracket/src/**/*.scss'], ['css', 'reload']);
-    gulp.watch('brawlbracket/src/**/*.+(png|jpg|gif|svg)', ['img', 'reload']);
-    gulp.watch('brawlbracket/src/**/*.+(mp3|ogg)', ['sfx', 'reload']);
-    gulp.watch('brawlbracket/src/**/*.+(woff2|woff|ttf)', ['fonts', 'reload']);
+    gulp.watch('brawlbracket/src/**/*.html', function() {
+        runSequence('html', 'reload', function() {});
+    });
+    gulp.watch(['brawlbracket/src/**/*.js', 'brawlbracket/src/**/*.jsx'], function() {
+        runSequence('js', 'reload');
+    });
+    gulp.watch(['brawlbracket/src/**/*.css', 'brawlbracket/src/**/*.scss'], function() {
+        runSequence('css', 'reload');
+    });
+    gulp.watch('brawlbracket/src/**/*.+(png|jpg|gif|svg)', function() {
+        runSequence('img', 'reload');
+    });
+    gulp.watch('brawlbracket/src/**/*.+(mp3|ogg)', function() {
+        runSequence('sfx', 'reload');
+    });
+    gulp.watch('brawlbracket/src/**/*.+(woff2|woff|ttf)', function() {
+        runSequence('fonts', 'reload');
+    });
 });
 
 // Start browser-sync server
@@ -185,9 +196,7 @@ gulp.task('browser-sync', function() {
 });
 
 // Reload browser-sync
-gulp.task('reload', ['html', 'js', 'css', 'img', 'sfx', 'fonts', 'useref'], function() {
-    console.log('Reloading browser');
-
+gulp.task('reload', function() {
     browserSync.reload();
 });
 

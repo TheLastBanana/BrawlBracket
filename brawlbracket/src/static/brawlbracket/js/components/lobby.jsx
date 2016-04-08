@@ -342,7 +342,7 @@ var Lobby = React.createClass({
                 }
                 break;
                 
-            case 'pickLegends':
+            case 'selectLegends':
                 // Not currently picking
                 if (this.state.state.canPick.indexOf(this.props.userId) == -1) {
                     stateBoxData = {

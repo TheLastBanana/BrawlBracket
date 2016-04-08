@@ -15,20 +15,20 @@ class BanRule:
         
         State order:
             - waitingForPlayers
-            - pickLegends
+            - selectLegends
             - chooseRealm
             - createRoom
         
         Directly modifies match.state.
         """
         state = match.state
-        # Entry point into the cyclic states, straight to pickLegends
+        # Entry point into the cyclic states, straight to selectLegends
         if state['name'] in ['waitingForMatch', 'waitingForPlayers']:
             state.clear()
-            state['name'] = 'pickLegends'
+            state['name'] = 'selectLegends'
         
         while True:
-            if state['name'] == 'pickLegends':
+            if state['name'] == 'selectLegends':
                 self._getNextLegendStep(match)
             
             if state['name'] == 'chooseRealm':
@@ -137,7 +137,7 @@ class BasicRules(BanRule):
             return
         
         state.clear()
-        state['name'] = 'pickLegends'
+        state['name'] = 'selectLegends'
         match.state['canPick'] = userIds
     
     def _getNextRealmStep(self, match):
@@ -198,7 +198,7 @@ class ESLRules(BanRule):
             return
         
         state.clear()
-        state['name'] = 'pickLegends'
+        state['name'] = 'selectLegends'
         match.state['canPick'] = userIds
     
     def _getNextRealmStep(self, match):
@@ -284,7 +284,7 @@ class ESLRules(BanRule):
             player.currentLegend = None
         
         state.clear()
-        state['name'] = 'pickLegends'
+        state['name'] = 'selectLegends'
     
     def _advanceToNewMatch(self, match):
         """

@@ -328,7 +328,7 @@ class Match():
                     # Currently running matches are highest priority
                     1)
         
-        elif stateName == 'pickLegends':
+        elif stateName == 'selectLegends':
             return (stateName,
                     'Picking legends',
                     2)
@@ -400,7 +400,7 @@ class Match():
         
         # States we don't want to regress from
         cycleStates = [
-            'pickLegends',
+            'selectLegends',
             'chooseRealm',
             'createRoom',
             'inGame',

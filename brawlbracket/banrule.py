@@ -16,7 +16,7 @@ class BanRule:
         State order:
             - waitingForPlayers
             - selectLegends
-            - chooseRealm
+            - selectRealm
             - createRoom
         
         Directly modifies match.state.
@@ -31,7 +31,7 @@ class BanRule:
             if state['name'] == 'selectLegends':
                 self._getNextLegendStep(match)
             
-            if state['name'] == 'chooseRealm':
+            if state['name'] == 'selectRealm':
                 self._getNextRealmStep(match)
             
             if state['name'] == 'createRoom':
@@ -133,7 +133,7 @@ class BasicRules(BanRule):
         # We're done picking, advance.
         else:
             state.clear()
-            match.state['name'] = 'chooseRealm'
+            match.state['name'] = 'selectRealm'
             return
         
         state.clear()
@@ -149,7 +149,7 @@ class BasicRules(BanRule):
         # Ban up until 2 realms left
         if len(currentBans) < (len(util.eslRealms) - 2):
             state.clear()
-            state['name'] = 'chooseRealm'
+            state['name'] = 'selectRealm'
             
             # Player 0 == captain
             state['turn'] = str(match.teams[len(currentBans)%2]\
@@ -157,7 +157,7 @@ class BasicRules(BanRule):
             state['action'] = 'ban'
         elif match.currentRealm is None:
             state.clear()
-            state['name'] = 'chooseRealm'
+            state['name'] = 'selectRealm'
             
             # Player 0 == captain
             state['turn'] = str(match.teams[len(currentBans)%2]\
@@ -194,7 +194,7 @@ class ESLRules(BanRule):
         # We're done picking, advance.
         else:
             state.clear()
-            match.state['name'] = 'chooseRealm'
+            match.state['name'] = 'selectRealm'
             return
         
         state.clear()
@@ -218,7 +218,7 @@ class ESLRules(BanRule):
                                      key = lambda t: t.seed,
                                      reverse = True)
                 state.clear()
-                state['name'] = 'chooseRealm'
+                state['name'] = 'selectRealm'
                 state['action'] = 'ban'
                 
                 # Player 0 == captain
@@ -246,7 +246,7 @@ class ESLRules(BanRule):
                 highestSeed = max(match.teams, key=lambda t: t.seed)
                 
                 state.clear()
-                state['name'] = 'chooseRealm'
+                state['name'] = 'selectRealm'
                 state['action'] = 'ban'
                 state['turn'] = str(highestSeed.players[0].user.id)
                 state['remaining'] = 2 - len(currentBans)
@@ -255,7 +255,7 @@ class ESLRules(BanRule):
                 lowestSeed = min(match.teams, key=lambda t: t.seed)
                 
                 state.clear()
-                state['name'] = 'chooseRealm'
+                state['name'] = 'selectRealm'
                 state['action'] = 'pick'
                 state['turn'] = str(lowestSeed.players[0].user.id)
             # Advance to next state

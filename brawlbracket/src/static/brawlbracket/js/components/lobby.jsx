@@ -368,7 +368,7 @@ var Lobby = React.createClass({
                 }
                 break;
                 
-            case 'chooseRealm':
+            case 'selectRealm':
                 var choosePlayer = this._getPlayerDataByUserId(this.state.state.turn)[1];
                 
                 // If multiple bans are remaining, show plural form and remaining count

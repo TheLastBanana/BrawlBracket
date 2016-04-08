@@ -371,7 +371,7 @@ class Match():
                 if not all([p.online for p in team.players]):
                     notReady.append(team.name)
             
-            # We assume there are only 2 participants in a lobby
+            # We assume there are only 2 teams in a lobby
             if len(notReady) == 2:
                 return (stateName,
                         'Waiting for both teams',

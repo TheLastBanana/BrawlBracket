@@ -44,7 +44,7 @@ function removeCallout(id) {
 }
 
 /**
- * Get a content page's URL including tourney and participant data.
+ * Get a content page's URL including tourney name.
  * @param {string} pageName - The name of the page to load. Should exist at
  *   /app-pages/<pageName>/<tourneyName>
  */

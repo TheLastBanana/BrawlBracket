@@ -343,7 +343,7 @@ def report_win(data):
         emit('update lobby', updatedNextLobbyData, broadcast=True, 
                 include_self=False, room = match.nextMatch.id)
 
-# A team win was reported
+# A player is ready to advance to the next match
 @socketio.on('advance lobby', namespace='/participant')
 def advance_lobby():
     userId = session.get('userId', None)

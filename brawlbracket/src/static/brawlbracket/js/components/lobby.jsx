@@ -294,7 +294,7 @@ var Lobby = React.createClass({
             );
         }
         
-        // Current map widget
+        // Current realm widget
         if (this.state.currentRealm) {
             var currentRealm = this.state.currentRealm;
             var currentRealmData = this.props.realmData.find(function (realm) {
@@ -303,7 +303,7 @@ var Lobby = React.createClass({
             
             infoWidgets.push(
                 <div className="col-sm-12 col-lg-12" key="currentRealm">
-                    <InfoWidget icon="map" title="Current Map">
+                    <InfoWidget icon="map" title="Current Realm">
                         {currentRealmData ? currentRealmData[1] : 'Unsupported Realm'}
                     </InfoWidget>
                 </div>
@@ -368,7 +368,7 @@ var Lobby = React.createClass({
                 }
                 break;
                 
-            case 'chooseMap':
+            case 'chooseRealm':
                 var choosePlayer = this._getPlayerDataByUserId(this.state.state.turn)[1];
                 
                 // If multiple bans are remaining, show plural form and remaining count
@@ -411,7 +411,7 @@ var Lobby = React.createClass({
                     }
                     break;
                 } else {
-                    // Another user is picking maps
+                    // Another user is picking realms
                     stateBoxData = {
                         title: choosePlayer.name + '\'s turn to ' + this.state.state.action + ' ' + countText,
                         icon: 'hourglass-half',

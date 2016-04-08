@@ -16,7 +16,7 @@ class BanRule:
         State order:
             - waitingForPlayers
             - pickLegends
-            - chooseMap
+            - chooseRealm
             - createRoom
         
         Directly modifies match.state.
@@ -31,8 +31,8 @@ class BanRule:
             if state['name'] == 'pickLegends':
                 self._getNextLegendStep(match)
             
-            if state['name'] == 'chooseMap':
-                self._getNextMapStep(match)
+            if state['name'] == 'chooseRealm':
+                self._getNextRealmStep(match)
             
             if state['name'] == 'createRoom':
                 self._getNextRoomStep(match)
@@ -49,12 +49,12 @@ class BanRule:
         """
         raise NotImplementedError('No generic getNextLegendStep')
     
-    def _getNextMapStep(self, match):
+    def _getNextRealmStep(self, match):
         """
         Intended to determine the next step in the realm picking process.
         This could be the next person to pick or ban.
         """
-        raise NotImplementedError('No generic getNextMapStep')
+        raise NotImplementedError('No generic getNextRealmStep')
     
     def _getNextRoomStep(self, match):
         """
@@ -133,23 +133,23 @@ class BasicRules(BanRule):
         # We're done picking, advance.
         else:
             state.clear()
-            match.state['name'] = 'chooseMap'
+            match.state['name'] = 'chooseRealm'
             return
         
         state.clear()
         state['name'] = 'pickLegends'
         match.state['canPick'] = userIds
     
-    def _getNextMapStep(self, match):
+    def _getNextRealmStep(self, match):
         """
         Basic pick ban order.
         """
         currentBans = match.getRealmBans()
         state = match.state
-        # Ban up until 2 maps left
+        # Ban up until 2 realms left
         if len(currentBans) < (len(util.eslRealms) - 2):
             state.clear()
-            state['name'] = 'chooseMap'
+            state['name'] = 'chooseRealm'
             
             # Player 0 == captain
             state['turn'] = str(match.teams[len(currentBans)%2]\
@@ -157,7 +157,7 @@ class BasicRules(BanRule):
             state['action'] = 'ban'
         elif match.currentRealm is None:
             state.clear()
-            state['name'] = 'chooseMap'
+            state['name'] = 'chooseRealm'
             
             # Player 0 == captain
             state['turn'] = str(match.teams[len(currentBans)%2]\
@@ -194,17 +194,17 @@ class ESLRules(BanRule):
         # We're done picking, advance.
         else:
             state.clear()
-            match.state['name'] = 'chooseMap'
+            match.state['name'] = 'chooseRealm'
             return
         
         state.clear()
         state['name'] = 'pickLegends'
         match.state['canPick'] = userIds
     
-    def _getNextMapStep(self, match):
+    def _getNextRealmStep(self, match):
         """
         First game players ban until one realm is left. Subsequent games
-        higher seed bans two maps and low seed picks from remaining.
+        higher seed bans two realms and low seed picks from remaining.
         """
         currentBans = match.getRealmBans()
         state = match.state
@@ -218,7 +218,7 @@ class ESLRules(BanRule):
                                      key = lambda t: t.seed,
                                      reverse = True)
                 state.clear()
-                state['name'] = 'chooseMap'
+                state['name'] = 'chooseRealm'
                 state['action'] = 'ban'
                 
                 # Player 0 == captain
@@ -246,7 +246,7 @@ class ESLRules(BanRule):
                 highestSeed = max(match.teams, key=lambda t: t.seed)
                 
                 state.clear()
-                state['name'] = 'chooseMap'
+                state['name'] = 'chooseRealm'
                 state['action'] = 'ban'
                 state['turn'] = str(highestSeed.players[0].user.id)
                 state['remaining'] = 2 - len(currentBans)
@@ -255,7 +255,7 @@ class ESLRules(BanRule):
                 lowestSeed = min(match.teams, key=lambda t: t.seed)
                 
                 state.clear()
-                state['name'] = 'chooseMap'
+                state['name'] = 'chooseRealm'
                 state['action'] = 'pick'
                 state['turn'] = str(lowestSeed.players[0].user.id)
             # Advance to next state

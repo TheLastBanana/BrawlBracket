@@ -95,7 +95,7 @@ var RealmIcon = React.createClass({
             </div>
         );
         
-        // No callback, so just display maps
+        // No callback, so just display realms
         if (this.props.callback === null || this.props.banned) {
             return (
                 <li className={className}>

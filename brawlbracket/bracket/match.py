@@ -333,7 +333,7 @@ class Match():
                     'Picking legends',
                     2)
         
-        elif stateName == 'chooseMap':
+        elif stateName == 'chooseRealm':
             return (stateName,
                     'Selecting realm',
                     2)
@@ -401,7 +401,7 @@ class Match():
         # States we don't want to regress from
         cycleStates = [
             'pickLegends',
-            'chooseMap',
+            'chooseRealm',
             'createRoom',
             'inGame',
             ]

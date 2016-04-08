@@ -16,7 +16,7 @@ def roster():
     return render_template('app/elements/lobby-roster.html',
     legendData=util.orderedLegends)
     
-# Map picker
+# Realm picker
 @app.route('/app-elements/realms')
 def realms():
     return render_template('app/elements/lobby-realms.html',

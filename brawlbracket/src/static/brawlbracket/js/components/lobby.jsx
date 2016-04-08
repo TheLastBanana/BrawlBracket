@@ -361,7 +361,7 @@ var Lobby = React.createClass({
                         contents: (
                             <LegendPicker
                                 legendData={this.props.legendData}
-                                callback={this._pickLegend}
+                                callback={this._selectLegend}
                             />
                         )
                     }
@@ -685,7 +685,7 @@ var Lobby = React.createClass({
     },
     
     // Tell the server a legend has been picked
-    _pickLegend: function(legendId) {
+    _selectLegend: function(legendId) {
         this.props.mainSocket.emit('pick legend', {
             legendId: legendId
         });

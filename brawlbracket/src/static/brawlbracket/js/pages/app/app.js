@@ -87,6 +87,10 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
         // Add notifications
         chatNotifyLog(data.chatId, data.log);
     });
+    
+    chatSocket.on('error', function(data) {
+        handleError(data);
+    });
 
     var menuOptions = $('.bb-menu-option');
     
@@ -170,8 +174,8 @@ function brawlBracketParticipantInit () {
     pSocket = io.connect(location.protocol + "//" + location.host + '/participant');
     defaultPage = 'lobby';
 
-    pSocket.on('error', function() {
-        $('.content-wrapper').load(getContentURL('lobby-error'));
+    pSocket.on('error', function(data) {
+        handleError(data);
     });
     
     pSocket.on('connect', function() {
@@ -382,6 +386,28 @@ function desktopNotify(title, body, icon) {
     
     // Close after desktopNotifyLength elapses
     setTimeout(notification.close.bind(notification), desktopNotifyLength);
+}
+
+/**
+ * Handle a error from the SocketIO server.
+ * @param {json} error - The error data sent by the server.
+ */
+function handleError(error) {
+    console.log('ERROR: ' + error);
+    
+    var message = '';
+    
+    switch (error.code) {
+        case 'bad-participant':
+            message = 'Something went wrong with your user ID. Try refreshing the page.';
+            break;
+            
+        default:
+            message = 'Something went wrong, but we\'re not sure what. Try refreshing the page.';
+            break;
+    }
+    
+    addCallout('error', 'danger', 'Error!', message);
 }
 
 $.fn.extend({

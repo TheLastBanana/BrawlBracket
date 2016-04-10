@@ -1,0 +1,35 @@
+{% extends "app/layout.html" %}
+
+{%- block menu -%}
+  {{ super() }}
+  
+  <li class="header">PLAYER MENU</li>
+
+  <li class="bb-menu-option" page="index"><a href="#">
+    <i class="fa fa-home"></i> <span>Home</span>
+  </a></li>
+
+  <li class="bb-menu-option active" page="lobby"><a href="#">
+    <i class="fa fa-gamepad"></i> <span>Current Match</span>
+  </a></li>
+
+  <li class="bb-menu-option" page="contact-admin"><a href="#">
+    <i class="fa fa-bullhorn"></i> <span>Contact Admin</span>
+  </a></li>
+  
+  {%- if tournament.isAdmin(user) -%}
+    <li class="header">ADMIN MENU</li>
+
+    <li class="bb-menu-option active" page="admin-dashboard"><a href="#">
+      <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+    </a></li>
+
+    <li class="bb-menu-option" page="admin-participants"><a href="#">
+      <i class="fa fa-users"></i> <span>Participants</span>
+    </a></li>
+
+    <li class="bb-menu-option" page="tournament-settings"><a href="#">
+      <i class="fa fa-cogs"></i> <span>Tournament Settings</span>
+    </a></li>
+  {%- endif -%}
+{%- endblock -%}

@@ -11,29 +11,6 @@ from brawlbracket import util
 
 print('Registering user pages routes...')
 
-# User app page
-@app.route('/t/<tourneyName>/app/', defaults={'startPage': None})
-@app.route('/t/<tourneyName>/app/<startPage>/')
-def user_app(tourneyName, startPage):
-    if not tm.tournamentNameExists(tourneyName):
-        abort(404)
-    
-    userId = session.get('userId', None)
-    user = um.getUserById(userId)
-    if user is None:
-        print('User doesn\'t exist; returned to index.')
-        return redirect(url_for('tournament_index', tourneyName=tourneyName))
-
-    tournament = tm.getTournamentByName(tourneyName)
-    session['tourneyId'] = tournament.id
-    
-    
-    return render_template('app/user-app.html',
-                           startPage=startPage,
-                           tourneyName=tourneyName,
-                           tournament=tournament,
-                           basePath='/t/{}/app/'.format(tourneyName))
-
 # Contact admin page
 @app.route('/app-pages/contact-admin/<tourneyName>')
 def contact_admin(tourneyName):

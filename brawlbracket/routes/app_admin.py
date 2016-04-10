@@ -11,29 +11,6 @@ from brawlbracket import usermanager as um
 from brawlbracket import tournamentmanager as tm
 
 print('Registering admin pages routes...')
-
-# Admin app page
-@app.route('/t/<tourneyName>/admin/', defaults={'startPage': None})
-@app.route('/t/<tourneyName>/admin/<startPage>/')
-def admin_app(tourneyName, startPage):
-    tournament = tm.getTournamentByName(tourneyName)
-    userId = session.get('userId')
-    user = um.getUserById(userId)
-    
-    if tournament is None:
-        abort(404)
-    
-    if user is None:
-        return redirect(url_for('tournament_index', tourneyName = tourneyName))
-    
-    if not tournament.isAdmin(user):
-        abort(403)
-
-    return render_template('app/admin-app.html',
-                           startPage=startPage,
-                           tourneyName=tourneyName,
-                           tournament=tournament,
-                           basePath='/t/{}/admin/'.format(tourneyName))
                            
 # Admin dashboard
 @app.route('/app-pages/admin-dashboard/<tourneyName>')

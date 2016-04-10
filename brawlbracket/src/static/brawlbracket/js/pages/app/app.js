@@ -51,12 +51,13 @@ var desktopNotifyEnabled;
 
 /**
  * Connect to the server. Called when the app is first loaded.
- * @param {string} newTourneyName - The short tourney name (Challonge URL suffix).
- * @param {string} newUserId - The user's id.
- * @param {string} newBasePath - The base path of the app.
- * @param {string} startPage - The page to start on.
+ * @param {string}  newTourneyName - The short tourney name (Challonge URL suffix).
+ * @param {string}  newUserId - The user's id.
+ * @param {string}  newBasePath - The base path of the app.
+ * @param {string}  startPage - The page to start on.
+ * @param {boolean} inTourney - true if the user is participating in the tourney (may be false for admins).
  */
-function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
+function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage, inTourney) {
     tourneyName = newTourneyName;
     userId = newUserId;
     basePath = newBasePath;
@@ -165,14 +166,17 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage) {
         desktopNotifyEnabled = notifyCheckbox.is(':checked');
         localStorage.setItem('desktopNotifyEnabled', desktopNotifyEnabled);
     });
+    
+    defaultPage = inTourney ? 'admin-dashboard' : 'lobby';
+    
+    setupParticipantSocket();
 }
 
 /**
  * Connect to the participant socket.
  */
-function brawlBracketParticipantInit () {
+function setupParticipantSocket () {
     pSocket = io.connect(location.protocol + "//" + location.host + '/participant');
-    defaultPage = 'lobby';
 
     pSocket.on('error', function(data) {
         handleError(data);
@@ -242,8 +246,6 @@ function brawlBracketParticipantInit () {
  * Connect to the admin socket.
  */
 function brawlBracketAdminInit() {
-    defaultPage = 'admin-dashboard';
-    showPage(currentPage || defaultPage, true);
 }
 
 //////////////////

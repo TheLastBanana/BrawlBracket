@@ -23,8 +23,7 @@ oid = OpenID(app)
 # Import our routes after creating app
 from brawlbracket.routes import root
 from brawlbracket.routes import login
-from brawlbracket.routes import userpages
-from brawlbracket.routes import adminpages
+from brawlbracket.routes import app_base
 from brawlbracket.routes import elements
 from brawlbracket.routes import lobbyio
 from brawlbracket.routes import chatio

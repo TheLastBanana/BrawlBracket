@@ -1,2 +1,2 @@
-__all__ = ['login', 'static', 'userpages', 'adminpages', 'elements', 'lobbyio',
-           'chatio']
+__all__ = ['login', 'static', 'apppages', 'userpages', 'adminpages', 'elements',
+           'lobbyio', 'chatio']

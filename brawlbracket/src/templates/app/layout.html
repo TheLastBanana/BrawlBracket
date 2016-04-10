@@ -84,7 +84,6 @@
           <!-- Sidebar Menu -->
           <ul class="sidebar-menu">
             {% block menu %}
-            <li class="header">MENU</li>
             {% endblock %}
           </ul><!-- /.sidebar-menu -->
         </section>
@@ -177,7 +176,13 @@
     
     <script>
       {% block script %}
-      brawlBracketInit("{{ tourneyName }}", "{{ user.id }}", "{{ basePath }}", "{{ startPage or null }}");
+      brawlBracketInit(
+        "{{ tourneyName }}",
+        "{{ user.id }}",
+        "{{ basePath }}",
+        "{{ startPage or null }}",
+        {{ (tournament.getUserInfo(user) == None)|tojson }}
+      );
       {% endblock %}
     </script>
   </body>

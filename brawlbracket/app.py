@@ -25,7 +25,7 @@ from brawlbracket.routes import root
 from brawlbracket.routes import login
 from brawlbracket.routes import app_base
 from brawlbracket.routes import elements
-from brawlbracket.routes import lobbyio
+from brawlbracket.routes import tournamentio
 from brawlbracket.routes import chatio
 
 # Start temp tournament generation

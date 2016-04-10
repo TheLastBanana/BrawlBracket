@@ -220,7 +220,7 @@ var MatchupDisplay = React.createClass({
  * @prop {array}    legendData  - Data for each of the legends allowed in the tournament. Pairs of (short name, full name)
  * @prop {string}   chatId      - The id of the lobby's chat box
  * @prop {dict}     chatCache   - Cached chat logs by id
- * @prop {socket}   mainSocket  - The Socket.IO socket to use for sending + receiving tourney participant data
+ * @prop {socket}   mainSocket  - The Socket.IO socket to use for sending + receiving tourney data
  * @prop {socket}   chatSocket  - The Socket.IO socket to use for sending + receiving chat data
  */
 var Lobby = React.createClass({

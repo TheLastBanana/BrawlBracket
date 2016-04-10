@@ -112,15 +112,15 @@ function initUserSettingsPage(initialSettings) {
     resetUserSettingsForm();
     
     /*
-    pSocket.on('update settings', onUpdateSettings);
-    pSocket.on('invalid settings', onInvalidSettings);
+    tSocket.on('update settings', onUpdateSettings);
+    tSocket.on('invalid settings', onInvalidSettings);
 
 
     // Called when the inner page content is removed to load a new page.
     // Clean up socketIO handlers.
     $('.content').on('destroy', function() {
-        pSocket.off('update settings', onUpdateSettings);
-        pSocket.off('invalid settings', onInvalidSettings);
+        tSocket.off('update settings', onUpdateSettings);
+        tSocket.off('invalid settings', onInvalidSettings);
     });
     */
 }

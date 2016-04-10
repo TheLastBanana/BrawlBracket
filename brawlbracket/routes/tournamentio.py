@@ -8,9 +8,9 @@ from brawlbracket.app import socketio
 from brawlbracket import usermanager as um
 from brawlbracket import tournamentmanager as tm
 
-print('Registering lobbyio routes...')
+print('Registering tournamentio routes...')
 
-@socketio.on('connect', namespace='/participant')
+@socketio.on('connect', namespace='/tournament')
 def user_connect():
     userId = session.get('userId', None)
     user = um.getUserById(userId)
@@ -57,7 +57,7 @@ def user_connect():
     # This needs to be done in the /chat namespace, so switch it temporarily
     request.namespace = '/chat'
     join_room(match.chat.getRoom())
-    request.namespace = '/participant'
+    request.namespace = '/tournament'
     
     lobbyData = match.lobbyData
     # Extra data since we can't send things in the connect event
@@ -78,9 +78,9 @@ def user_connect():
     updatedLobbyData['state'] = lobbyData['state']
     
     emit('update lobby', updatedLobbyData, broadcast=True, include_self=False,
-            room = match.id, namespace='/participant')
+            room = match.id, namespace='/tournament')
     
-@socketio.on('disconnect', namespace='/participant')
+@socketio.on('disconnect', namespace='/tournament')
 def user_disconnect():
     userId = session.get('userId', None)
     tournamentId = session.get('tourneyId', None)
@@ -131,7 +131,7 @@ def user_disconnect():
 # State reporting from client
 
 # Someone picked their legend
-@socketio.on('pick legend', namespace='/participant')
+@socketio.on('pick legend', namespace='/tournament')
 def pick_legend(data):
     userId = session.get('userId', None)
     user = um.getUserById(userId)
@@ -172,7 +172,7 @@ def pick_legend(data):
     print('User {} selected {}'.format(user.id, data['legendId']))
     
 # Someone banned a realm
-@socketio.on('ban realm', namespace='/participant')
+@socketio.on('ban realm', namespace='/tournament')
 def ban_realm(data):
     userId = session.get('userId', None)
     user = um.getUserById(userId)
@@ -213,7 +213,7 @@ def ban_realm(data):
     print('Banned {}'.format(data['realmId']))
     
 # Someone picked a realm
-@socketio.on('pick realm', namespace='/participant')
+@socketio.on('pick realm', namespace='/tournament')
 def pick_realm(data):
     userId = session.get('userId', None)
     user = um.getUserById(userId)
@@ -253,7 +253,7 @@ def pick_realm(data):
     print('Picked {}'.format(data['realmId']))
 
 # A room was selected
-@socketio.on('set room', namespace='/participant')
+@socketio.on('set room', namespace='/tournament')
 def select_room(data):
     userId = session.get('userId', None)
     user = um.getUserById(userId)
@@ -294,7 +294,7 @@ def select_room(data):
     
     
 # A team win was reported
-@socketio.on('report win', namespace='/participant')
+@socketio.on('report win', namespace='/tournament')
 def report_win(data):
     userId = session.get('userId', None)
     user = um.getUserById(userId)
@@ -344,7 +344,7 @@ def report_win(data):
                 include_self=False, room = match.nextMatch.id)
 
 # A player is ready to advance to the next match
-@socketio.on('advance lobby', namespace='/participant')
+@socketio.on('advance lobby', namespace='/tournament')
 def advance_lobby():
     userId = session.get('userId', None)
     user = um.getUserById(userId)
@@ -386,7 +386,7 @@ def advance_lobby():
                 # This needs to be done in the /chat namespace, so switch it temporarily
                 request.namespace = '/chat'
                 leave_room(m.chat.getRoom())
-                request.namespace = '/participant'
+                request.namespace = '/tournament'
                 
                 break
         # Continue if we didn't find it
@@ -403,7 +403,7 @@ def advance_lobby():
     # This needs to be done in the /chat namespace, so switch it temporarily
     request.namespace = '/chat'
     join_room(match.chat.getRoom())
-    request.namespace = '/participant'
+    request.namespace = '/tournament'
     
     emit('join lobby', {'lobbyData': match.lobbyData},
             broadcast=False, include_self=True, room = match.id)

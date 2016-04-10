@@ -3,7 +3,7 @@ function initLobby(legendData, realmData) {
         React.createElement(Lobby,
             {
                 lobbyData: lobbyData,
-                mainSocket: pSocket,
+                mainSocket: tSocket,
                 chatSocket: chatSocket,
                 chatCache: chatCache,
                 legendData: legendData,

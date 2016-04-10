@@ -22,9 +22,8 @@ var tourneyName;
 // Id of current user
 var userId;
 
-// Participant stuff
-// Participant socket connection
-var pSocket;
+// Tournament socket connection
+var tSocket;
 
 // JSON data for player settings
 var playerSettings;
@@ -169,30 +168,30 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage, inT
     
     defaultPage = inTourney ? 'admin-dashboard' : 'lobby';
     
-    setupParticipantSocket();
+    setupTournamentSocket();
 }
 
 /**
- * Connect to the participant socket.
+ * Connect to the tournament socket.
  */
-function setupParticipantSocket () {
-    pSocket = io.connect(location.protocol + "//" + location.host + '/participant');
+function setupTournamentSocket () {
+    tSocket = io.connect(location.protocol + "//" + location.host + '/tournament');
 
-    pSocket.on('error', function(data) {
+    tSocket.on('error', function(data) {
         handleError(data);
     });
     
-    pSocket.on('connect', function() {
+    tSocket.on('connect', function() {
         console.log('connected');
     });
     
-    pSocket.on('handshake', function(data) {
+    tSocket.on('handshake', function(data) {
         playerSettings = data.playerSettings;
         
         showPage(currentPage || defaultPage, true);
     });
     
-    pSocket.on('join lobby', function(data) {
+    tSocket.on('join lobby', function(data) {
         lobbyData = data.lobbyData;
         
         // Request chat log so we get notifications
@@ -209,7 +208,7 @@ function setupParticipantSocket () {
         };
     });
     
-    pSocket.on('update lobby', function(data) {
+    tSocket.on('update lobby', function(data) {
         for (property in data) {
             // Maintain previous state so we can compare
             if (property == 'state') {
@@ -258,7 +257,7 @@ function brawlBracketAdminInit() {
  * @param {boolean} replace - If true, replace the page rather than pushing.
  */
 function showPage(pageName, replace) {
-    if (!(pSocket in window) && !(aSocket in window)) return;
+    if (!(tSocket in window) && !(aSocket in window)) return;
 
     replace = replace || false;
     

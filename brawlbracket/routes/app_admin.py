@@ -31,6 +31,26 @@ def admin_dashboard(tourneyName):
     return render_template('app/pages/admin-dashboard.html',
                            tournament=tournament,
                            tourneyName=tourneyName)
+                                                      
+# Admin chat (for contacting players/other admins)
+@app.route('/app-pages/admin-chat/<tourneyName>')
+def admin_chat(tourneyName):
+   tournament = tm.getTournamentByName(tourneyName)
+   userId = session.get('userId')
+   user = um.getUserById(userId)
+   
+   if tournament is None:
+       abort(404)
+   
+   if user is None:
+       return redirect(url_for('tournament_index', tourneyName = tourneyName))
+   
+   if not tournament.isAdmin(user):
+       abort(403)
+
+   return render_template('app/pages/admin-chat.html',
+                          tournament=tournament,
+                          tourneyName=tourneyName)
 
 # Lobby data
 @app.route('/app-data/lobbies/<tourneyName>')
@@ -75,7 +95,7 @@ def data_lobbies(tourneyName):
     
     return json.dumps(ajaxData)
     
-# User data
+# Team data
 @app.route('/app-data/teams/<tourneyName>')
 def data_teams(tourneyName):
     tournament = tm.getTournamentByName(tourneyName)
@@ -101,6 +121,36 @@ def data_teams(tourneyName):
         }
         
         condensedData.append(condensed)
+        
+    ajaxData = {
+        'data': condensedData
+    }
+    
+    return json.dumps(ajaxData)
+    
+# User data
+@app.route('/app-data/users/<tourneyName>')
+def data_users(tourneyName):
+    tournament = tm.getTournamentByName(tourneyName)
+    
+    if tournament is None:
+        abort(404)
+    
+    # Get a condensed list of user data for display to the admin
+    condensedData = []
+    
+    for team in tournament.teams:
+        for player in team.players:
+            status, prettyStatus = tournament.getTeamStatus(team)
+            
+            condensed = {
+                'name': player.user.username,
+                'team': team.name,
+                'online': 'Online' if player.online else 'Offline',
+                'id': str(player.id)
+            }
+            
+            condensedData.append(condensed)
         
     ajaxData = {
         'data': condensedData

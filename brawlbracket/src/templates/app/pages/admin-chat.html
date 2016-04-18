@@ -1,0 +1,45 @@
+{% from 'app/elements/macros.html' import appHeader with context %}
+{{ appHeader('Contact Players') }}
+
+<!-- Main content -->
+<div class="content">
+  <!-- Tournament data -->
+  <div class="row">
+    <div class="col-lg-4 col-md-6">
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">
+            <i class="fa fa-users"></i>
+            Tournament Users
+          </h3>
+        </div>
+        <div class="box-body">
+          <table id="bb-chat-users-table" class="table table-striped dt-responsive nowrap table-valign-middle" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Team</th>
+                <th>Online?</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-8 col-md-6">
+      <div class="row">
+        <div class="col-lg-6">
+          
+        </div>
+        <div class="col-lg-6">
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  initAdminChat();
+</script>

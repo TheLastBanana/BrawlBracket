@@ -1,6 +1,11 @@
 @import 'bracket.scss';
 
 /* Miscellaneous */
+.table-valign-middle > tbody > tr > th,
+.table-valign-middle > tbody > tr > td {
+  vertical-align: middle;
+}
+
 .valign-middle {
   vertical-align: middle;
 }

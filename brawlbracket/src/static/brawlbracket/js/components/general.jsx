@@ -128,8 +128,8 @@ var EditableText = React.createClass({
         } else {
             return (
                 <div style={{lineHeight: '1em'}} onClick={this._startEditing}>
-                    <span className="valign">{this.props.text}&nbsp;</span>
-                    <i className="fa fa-pencil fa-sm text-light valign" />
+                    <span className="valign-middle">{this.props.text}&nbsp;</span>
+                    <i className="fa fa-pencil fa-sm text-light valign-middle" />
                 </div>
             );
         }

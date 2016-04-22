@@ -123,11 +123,11 @@ class Tournament():
         Create a player and add it to the tournament.
         """
         player = Player(*args, **kwargs)
+        player.adminChat = chatmanager.createChat()
+    
         player._dbCallback = self._callbacks[2]
         if self._callbacks[2] is not None:
             self._callbacks[2](player)
-        
-        player.adminChat = chatmanager.createChat()
         
         self.players.add(player)
         if '_dbCallback' in self.__dict__ and self._dbCallback is not None:

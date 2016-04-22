@@ -621,6 +621,7 @@ var Lobby = React.createClass({
                         
                         <Chat
                             height="450px"
+                            title="Lobby Chat"
                             socket={this.props.chatSocket}
                             chatId={this.state.chatId}
                             chatCache={this.props.chatCache}

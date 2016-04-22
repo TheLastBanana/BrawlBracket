@@ -44,6 +44,7 @@ var ChatMessage = React.createClass({
  * @prop {dict}     chatCache   - Cached chat logs by id
  * @prop {string}   userId      - The id of the user viewing the chatbox
  * @prop {string}   height      - The height of the box
+ * @prop {string}   title       - The title of the chat box
  */
 var Chat = React.createClass({
     getInitialState: function() {
@@ -93,7 +94,7 @@ var Chat = React.createClass({
         return (
             <div className="box box-primary direct-chat direct-chat-primary bb-wait-for-match">
                 <div className="box-header with-border">
-                    <h3 className="box-title">Lobby Chat</h3>
+                    <h3 className="box-title">{ this.props.title }</h3>
                 </div>
                 <div className="box-body">
                     <div className="direct-chat-messages" style={{height: this.props.height}} ref="msgBox">

@@ -17,6 +17,11 @@ def user_connect():
     tourneyId = session.get('tourneyId', None)
     tournament = tm.getTournamentById(tourneyId)
     
+    # Extra data that we'll send in the handshake event
+    extraData = {
+        'playerSettings': user.getSettings()
+    }
+    
     # User doesn't exist
     if user is None:
         print('User doesn\'t exist; connection rejected')
@@ -32,38 +37,45 @@ def user_connect():
     
     if info is None:
         # TODO: Issue error saying we somehow got into a tournament that
-        # we don't live in
+        # we don't live in (should also check if the player is an admin first)
         pass
+        
+    else:
+        match, team, player = info
+        
+        if team.eliminated:
+            # This can be handled more gracefully
+            abort(404)
+        
+        # Affect match state
+        player.online += 1
+        
+        # XXX update state, put in listener
+        match._updateState()
+        
+        # Join new room
+        session['matchId'] = match.id
+        join_room(match.id)
     
-    match, team, player = info
-    
-    if team.eliminated:
-        # This can be handled more gracefully
-        abort(404)
-    
-    # Affect match state
-    player.online += 1
-    
-    # XXX update state, put in listener
-    match._updateState()
-    
-    # Join new room
-    session['matchId'] = match.id
-    join_room(match.id)
+        # This needs to be done in the /chat namespace, so switch it temporarily
+        request.namespace = '/chat'
+        join_room(match.chat.getRoom())
+        if player.adminChat:
+            join_room(player.adminChat.getRoom())
+        request.namespace = '/tournament'
+        
+        extraData['adminChat'] = str(player.adminChat.id if player.adminChat else None)
     
     print('Participant {} connected, joined room #{}'
         .format(user.id, match.id))
     
-    # This needs to be done in the /chat namespace, so switch it temporarily
-    request.namespace = '/chat'
-    join_room(match.chat.getRoom())
-    request.namespace = '/tournament'
-    
     lobbyData = match.lobbyData
-    # Extra data since we can't send things in the connect event
-    emit('handshake', {
-            'playerSettings': user.getSettings()
-        },
+    
+    # Admin-only data
+    if tournament.isAdmin(user):
+        extraData['playerChats'] = { str(p.id): str(p.adminChat.id) for p in tournament.players }
+    
+    emit('handshake', extraData,
         broadcast=False, include_self=True)
         
     # Tell the user to join their first match too

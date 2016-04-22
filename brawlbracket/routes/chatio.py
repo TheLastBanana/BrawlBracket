@@ -43,6 +43,7 @@ def chat_send(data):
     
     # User not in this chat
     if room not in rooms():
+        # TODO: send an error here
         return
     
     messageData = {'senderId': str(user.id),

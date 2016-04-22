@@ -209,7 +209,8 @@ def _buildTournament(tournamentData):
                                  '{}'.format(playerData[1]))
         player = plr.Player(user, uuid = id)
         player.currentLegend = playerData[2]
-        player.online = 0
+        player.online = False
+        player.adminChat = cm.getChat(playerData[3])
         player._dbCallback = _playerDBCallback # Give db callback
         players.add(player)
     
@@ -434,7 +435,8 @@ def _constructPlayerDataForDB(player):
     playerData = (
         player.id,
         player.user.id,
-        player.currentLegend
+        player.currentLegend,
+        player.adminChat.id if player.adminChat else None
     )
     return playerData
 
@@ -630,12 +632,14 @@ def _initDB():
         fieldNames = [
             'id',
             'user',
-            'currentLegend'
+            'currentLegend',
+            'adminChat'
         ]
         fieldTypes = [
             'UUID',
             'UUID',
-            'TEXT'
+            'TEXT',
+            'UUID'
         ]
         _db.create_table('players', fieldNames, fieldTypes, 'id')
     

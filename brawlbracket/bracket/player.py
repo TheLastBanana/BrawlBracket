@@ -14,11 +14,13 @@ class Player:
         Tournament data:
          currentLegend: currently selected legend (string id)
          online: number of live connections (int)
+         adminChat: private chat with admin, which will be created by the tournament (Chat)
         """
         self.id = kwargs.get('uuid', uuid.uuid1())
         self.user = user
         self.currentLegend = None
         self.online = 0 # Change my name probably
+        self.adminChat = None
 
     def __setattr__(self, name, value):
         """

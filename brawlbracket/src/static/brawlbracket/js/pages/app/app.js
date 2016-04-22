@@ -25,6 +25,9 @@ var userId;
 // true if user is an admin
 var adminMode;
 
+// true if user is in the tournament as a player
+var inTourney;
+
 // Tournament socket connection
 var tSocket;
 
@@ -47,6 +50,12 @@ var notificationVolume;
 // Whether desktop notifications are enabled
 var desktopNotifyEnabled;
 
+// Chat ids for all player private admin chats (admin mode only)
+var playerChats;
+
+// Chat id for this player's admin chat (player mode only)
+var adminChatId;
+
 //////////////////
 // SOCKET STUFF //
 //////////////////
@@ -57,16 +66,17 @@ var desktopNotifyEnabled;
  * @param {string}  newUserId - The user's id.
  * @param {string}  newBasePath - The base path of the app.
  * @param {string}  startPage - The page to start on.
- * @param {boolean} inTourney - true if the user is participating in the tourney (may be false for admins).
+ * @param {boolean} isInTourney - true if the user is participating in the tourney (may be false for admins).
  * @param {boolean} isAdmin - true if the user is an admin.
  */
-function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage, inTourney, isAdmin) {
+function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage, isInTourney, isAdmin) {
     tourneyName = newTourneyName;
     userId = newUserId;
     basePath = newBasePath;
     currentPage = startPage;
+    inTourney = isInTourney;
     adminMode = isAdmin;
-    
+        
     chatSocket = io.connect(location.protocol + "//" + location.host + '/chat');
     
     chatSocket.on('receive', function(data) {
@@ -192,6 +202,22 @@ function setupTournamentSocket () {
     
     tSocket.on('handshake', function(data) {
         playerSettings = data.playerSettings;
+        
+        if (adminMode) {
+            playerChats = data.playerChats;
+        }
+        
+        if (inTourney) {
+            adminChatId = data.adminChat;
+            
+            // Request chat log so we get notifications
+            chatSocket.emit('request log', {
+                'chatId': adminChatId
+            });
+            
+            // Tie chat id to admin contact page's notifications
+            chatNotifies[adminChatId] = 'contact-admin';
+        }
         
         showPage(currentPage || defaultPage, true);
     });

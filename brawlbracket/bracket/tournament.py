@@ -2,6 +2,7 @@ import math
 import uuid
 from collections import deque
 
+from brawlbracket import chatmanager
 from .team import Team
 from .match import Match
 from .player import Player
@@ -125,6 +126,8 @@ class Tournament():
         player._dbCallback = self._callbacks[2]
         if self._callbacks[2] is not None:
             self._callbacks[2](player)
+        
+        player.adminChat = chatmanager.createChat()
         
         self.players.add(player)
         if '_dbCallback' in self.__dict__ and self._dbCallback is not None:

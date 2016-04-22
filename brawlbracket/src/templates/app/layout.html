@@ -182,7 +182,8 @@
         "{{ user.id }}",
         "{{ basePath }}",
         "{{ startPage or null }}",
-        {{ (tournament.getUserInfo(user) == None)|tojson }}
+        {{ (tournament.getUserInfo(user) == None)|tojson }},
+        {{ tournament.isAdmin(user)|tojson }}
       );
       {% endblock %}
     </script>

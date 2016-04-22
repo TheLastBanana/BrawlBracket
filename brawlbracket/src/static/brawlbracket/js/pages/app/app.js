@@ -22,6 +22,9 @@ var tourneyName;
 // Id of current user
 var userId;
 
+// true if user is an admin
+var adminMode;
+
 // Tournament socket connection
 var tSocket;
 
@@ -55,12 +58,14 @@ var desktopNotifyEnabled;
  * @param {string}  newBasePath - The base path of the app.
  * @param {string}  startPage - The page to start on.
  * @param {boolean} inTourney - true if the user is participating in the tourney (may be false for admins).
+ * @param {boolean} isAdmin - true if the user is an admin.
  */
-function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage, inTourney) {
+function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage, inTourney, isAdmin) {
     tourneyName = newTourneyName;
     userId = newUserId;
     basePath = newBasePath;
     currentPage = startPage;
+    adminMode = isAdmin;
     
     chatSocket = io.connect(location.protocol + "//" + location.host + '/chat');
     
@@ -166,7 +171,7 @@ function brawlBracketInit(newTourneyName, newUserId, newBasePath, startPage, inT
         localStorage.setItem('desktopNotifyEnabled', desktopNotifyEnabled);
     });
     
-    defaultPage = inTourney ? 'admin-dashboard' : 'lobby';
+    defaultPage = isAdmin ? 'admin-dashboard' : 'lobby';
     
     setupTournamentSocket();
 }

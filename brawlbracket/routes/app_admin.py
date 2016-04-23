@@ -147,7 +147,7 @@ def data_users(tourneyName):
                 'name': player.user.username,
                 'team': team.name,
                 'online': 'Online' if player.online else 'Offline',
-                'id': str(player.id)
+                'chatId': str(player.adminChat.id if player.adminChat else None)
             }
             
             condensedData.append(condensed)

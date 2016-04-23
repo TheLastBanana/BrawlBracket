@@ -1,6 +1,9 @@
 // Handle for table refresh interval
 var tableRefresh;
 
+// The user table
+var adminChatUserTable;
+
 /**
  * Return a formatted display string for a user's name, including a link to open their chat.
  * @param {json} fullData - The row data received from the DataTable.
@@ -34,23 +37,74 @@ function formatUserOnline(data) {
 }
 
 /**
- * Initialize the admin chat.
+ * Get the active chats (i.e. ones to display).
+ *
+ * @return {array}  The list of chat IDs.
  */
-function initAdminChat () {
+function getActiveAdminChats() {
+    var chats = localStorage.getItem('activeAdminChats');
+    if (chats) {
+        return JSON.parse(chats);
+    } else {
+        return [];
+    }
+}
+
+/**
+ * Add a player's chat to the active admin chats.
+ *
+ * @param {string}  name    - The player's name.
+ * @param {string}  chatId  - The chat's unique id.
+ */
+function addAdminChat(name, chatId) {
+    var chats = getActiveAdminChats();
+    chats.push(chatId);
+    
+    localStorage.setItem('activeAdminChats', JSON.stringify(chats));
+    
+    renderAdminChats();
+}
+
+/**
+ * Render the admin chats.
+ */
+function renderAdminChats() {
+    var chats = getActiveAdminChats();
+    var userData = adminChatUserTable.ajax.json();
+    
+    // Match up usernames with chat ids
+    var namedChats = [];
+    for (var i = 0; i < chats.length; ++i) {
+        for (var j = 0; j < userData.data.length; ++j) {
+            if (chats[i] == userData.data[j].chatId) {
+                namedChats.push({
+                    name: userData.data[j].name,
+                    id: chats[i]
+                });
+                continue;
+            }
+        }
+    }
+    
     ReactDOM.render(
         React.createElement(AdminChat,
             {
               socket: chatSocket,
               chatCache: chatCache,
               userId: userId,
-              chatIds: [{id: '4edfadd0-0822-11e6-a5c1-60a44c2cdcf6', name: '[k☠ʞ] TheLastBanana'}]
+              chats: namedChats
             }
         ),
         $('#bb-admin-chats').get(0)
     );
-    
+}
+
+/**
+ * Initialize the admin chat.
+ */
+function initAdminChat() {
     // Set up the team table
-    var userTable = $('#bb-chat-users-table').DataTable({
+    adminChatUserTable = $('#bb-chat-users-table').DataTable({
         'ajax': '/app-data/users/' + tourneyName,
         
         'columns': [
@@ -92,17 +146,17 @@ function initAdminChat () {
         ]
     });
     
-    userTable.on('click', 'button.open-chat', function() {
-        var data = userTable.row($(this).parents('tr')).data();
-        alert(data.id);
-    })
-    
-    // When tabs are switched, we need to recalculate the responsize table's width since it was hidden before
-    $('#bb-admin-dash-tables').on('shown.bs.tab', function(e) {
-        $(this).find('.table').DataTable().responsive.recalc();
+    adminChatUserTable.on('click', 'button.open-chat', function() {
+        var data = adminChatUserTable.row($(this).parents('tr')).data();
+        addAdminChat(data.name, data.chatId);
     });
     
-    // Refresh tables periodically
+    // Render admin chats once the table data has arrived
+    adminChatUserTable.on('xhr', function() {
+        renderAdminChats();
+    });
+    
+    // Refresh table periodically
     tableRefresh = setInterval(function() {
         //userTable.ajax.reload(null, false); // Don't reset paging
     }, 5000);

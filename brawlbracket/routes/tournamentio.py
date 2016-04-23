@@ -75,17 +75,17 @@ def user_connect():
     if tournament.isAdmin(user):
         extraData['playerChats'] = {
             str(p.id): {
-                    'id': str(p.adminChat.id),
-                    'name': p.user.username
-                } for p in tournament.players
-            }
+                'id': str(p.adminChat.id),
+                'name': p.user.username
+            } for p in tournament.players
+        }
         
         # This needs to be done in the /chat namespace, so switch it temporarily
         # Join all players' admin chats
         request.namespace = '/chat'
         for p in tournament.players:
             if p.adminChat:
-                join_room(player.adminChat.getRoom())
+                join_room(p.adminChat.getRoom())
         request.namespace = '/tournament'
     
     emit('handshake', extraData,

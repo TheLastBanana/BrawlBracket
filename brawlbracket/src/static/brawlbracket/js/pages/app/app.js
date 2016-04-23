@@ -278,12 +278,6 @@ function setupTournamentSocket () {
     });
 }
 
-/**
- * Connect to the admin socket.
- */
-function brawlBracketAdminInit() {
-}
-
 //////////////////
 // UI FUNCTIONS //
 //////////////////

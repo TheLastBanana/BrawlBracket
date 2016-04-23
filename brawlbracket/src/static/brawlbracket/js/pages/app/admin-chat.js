@@ -37,53 +37,23 @@ function formatUserOnline(data) {
 }
 
 /**
- * Get the active chats (i.e. ones to display).
- *
- * @return {array}  The list of chat IDs.
- */
-function getActiveAdminChats() {
-    var chats = localStorage.getItem('activeAdminChats');
-    if (chats) {
-        return JSON.parse(chats);
-    } else {
-        return [];
-    }
-}
-
-/**
- * Add a player's chat to the active admin chats.
+ * Add a player's chat to the active admin chats and render the chats.
  *
  * @param {string}  chatId  - The chat's unique id.
  */
-function addAdminChat(chatId) {
-    var chats = getActiveAdminChats();
-    
-    if (chats.indexOf(chatId) == -1) {
-        chats.push(chatId);
-        localStorage.setItem('activeAdminChats', JSON.stringify(chats));
-        
-        renderAdminChats();
-    }
+function addAdminChatAndRender(chatId) {
+    addAdminChat(chatId);
+    renderAdminChats();
 }
 
 /**
- * Remove a player's chat from the active admin chats.
+ * Remove a player's chat from the active admin chats and render the chats.
  *
  * @param {string}  chatId  - The chat's unique id.
  */
-function removeAdminChat(chatId) {
-    var chats = getActiveAdminChats();
-    var index = chats.indexOf(chatId)
-    
-    if (index != -1) {
-        chats.splice(index, 1);
-        
-        localStorage.setItem('activeAdminChats', JSON.stringify(chats));
-        
-        renderAdminChats();
-    } else {
-        console.log('Couldn\'t find chat with id', chatId, 'for removal');
-    }
+function removeAdminChatAndRender(chatId) {
+    removeAdminChat(chatId);
+    renderAdminChats();
 }
 
 /**
@@ -114,7 +84,7 @@ function renderAdminChats() {
               chatCache: chatCache,
               userId: userId,
               chats: namedChats,
-              removeCallback: removeAdminChat
+              removeCallback: removeAdminChatAndRender
             }
         ),
         $('#bb-admin-chats').get(0)
@@ -170,7 +140,7 @@ function initAdminChat() {
     
     adminChatUserTable.on('click', 'button.open-chat', function() {
         var data = adminChatUserTable.row($(this).parents('tr')).data();
-        addAdminChat(data.chatId);
+        addAdminChatAndRender(data.chatId);
     });
     
     // Render admin chats once the table data has arrived

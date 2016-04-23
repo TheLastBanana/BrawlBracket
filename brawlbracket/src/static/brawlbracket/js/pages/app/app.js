@@ -53,6 +53,10 @@ var desktopNotifyEnabled;
 // Chat id for this player's admin chat (player mode only)
 var adminChatId;
 
+// Chat ids of player/admin private chats (admin mode only)
+var playerChatIds;
+
+
 //////////////////
 // SOCKET STUFF //
 //////////////////
@@ -201,8 +205,10 @@ function setupTournamentSocket () {
         playerSettings = data.playerSettings;
         
         if (adminMode) {
+            playerChatIds = data.playerChats;
+            
             for (var i = 0; i < data.playerChats.length; ++i) {
-                var chatId = data.playerChats[i];
+                var chatId = playerChatIds[i];
                 
                 // Request chat logs so we get notifications
                 chatSocket.emit('request log', {
@@ -360,6 +366,13 @@ function chatNotify(chatId, senderId, silent) {
         if (!silent && (!isActive || currentPage != notifyPage)) {
             createjs.Sound.play('message');
         }
+        
+        if (adminMode) {
+            // This is a player/admin private chat, so open it
+            if (playerChatIds.indexOf(chatId) != -1) {
+                addAdminChat(chatId);
+            }
+        }
     }
 }
 
@@ -440,6 +453,54 @@ function handleError(error) {
     }
     
     addCallout('error', 'danger', 'Error!', message);
+}
+
+// ADMIN MODE FUNCTIONS
+
+/**
+ * Get the active chats (i.e. ones to display).
+ *
+ * @return {array}  The list of chat IDs.
+ */
+function getActiveAdminChats() {
+    var chats = localStorage.getItem('activeAdminChats');
+    if (chats) {
+        return JSON.parse(chats);
+    } else {
+        return [];
+    }
+}
+
+/**
+ * Add a player's chat to the active admin chats.
+ *
+ * @param {string}  chatId  - The chat's unique id.
+ */
+function addAdminChat(chatId) {
+    var chats = getActiveAdminChats();
+    
+    if (chats.indexOf(chatId) == -1) {
+        chats.push(chatId);
+        localStorage.setItem('activeAdminChats', JSON.stringify(chats));
+    }
+}
+
+/**
+ * Remove a player's chat from the active admin chats.
+ *
+ * @param {string}  chatId  - The chat's unique id.
+ */
+function removeAdminChat(chatId) {
+    var chats = getActiveAdminChats();
+    var index = chats.indexOf(chatId)
+    
+    if (index != -1) {
+        chats.splice(index, 1);
+        
+        localStorage.setItem('activeAdminChats', JSON.stringify(chats));
+    } else {
+        console.log('Couldn\'t find chat with id', chatId, 'for removal');
+    }
 }
 
 $.fn.extend({

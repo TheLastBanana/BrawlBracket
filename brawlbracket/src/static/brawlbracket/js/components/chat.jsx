@@ -174,8 +174,8 @@ var Chat = React.createClass({
     componentWillUnmount: function() {
         var socket = this.props.socket;
         
-        socket.off('receive');
-        socket.off('receive log')
+        socket.off('receive', this._receiveMessage);
+        socket.off('receive log', this._receiveLog);
     },
     
     _removed: function() {

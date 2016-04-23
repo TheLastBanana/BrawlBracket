@@ -78,12 +78,13 @@ gulp.task('minify-js', function() {
     
     // In production mode, we want actual minified files. In development, just rename them
     if (util.env.production) {
-        pattern += ['brawlbracket/src/static/**/*.min.js'];
+        pattern = pattern.concat(['brawlbracket/src/static/**/*.min.js']);
     } else {
-        pattern += ['brawlbracket/src/static/**/*.js', '!**/*.min.js'];
+        pattern = pattern.concat(['brawlbracket/src/static/**/*.js', '!brawlbracket/**/*.min.js']);
     }
     
     // Outside libraries. Separated because we never minify these.
+    console.log(pattern);
     var libs = gulp.src(pattern)
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('brawlbracket/dist/static/'));

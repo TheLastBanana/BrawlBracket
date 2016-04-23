@@ -73,12 +73,7 @@ def user_connect():
     
     # Admin-only data
     if tournament.isAdmin(user):
-        extraData['playerChats'] = {
-            str(p.id): {
-                'id': str(p.adminChat.id),
-                'name': p.user.username
-            } for p in tournament.players
-        }
+        extraData['playerChats'] = [ str(p.adminChat.id) for p in tournament.players ]
         
         # This needs to be done in the /chat namespace, so switch it temporarily
         # Join all players' admin chats

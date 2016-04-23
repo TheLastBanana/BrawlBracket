@@ -50,9 +50,6 @@ var notificationVolume;
 // Whether desktop notifications are enabled
 var desktopNotifyEnabled;
 
-// Chat ids for all player private admin chats (admin mode only)
-var playerChats;
-
 // Chat id for this player's admin chat (player mode only)
 var adminChatId;
 
@@ -204,7 +201,16 @@ function setupTournamentSocket () {
         playerSettings = data.playerSettings;
         
         if (adminMode) {
-            playerChats = data.playerChats;
+            for (var i = 0; i < data.playerChats.length; ++i) {
+                var chatId = data.playerChats[i];
+                
+                // Request chat logs so we get notifications
+                chatSocket.emit('request log', {
+                    'chatId': chatId
+                });
+                
+                chatNotifies[chatId] = 'admin-chat';
+            }
         }
         
         if (inTourney) {

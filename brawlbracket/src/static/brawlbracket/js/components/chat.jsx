@@ -39,12 +39,15 @@ var ChatMessage = React.createClass({
 /**
  * A chatbox.
  *
- * @prop {string}   chatId      - The id of the chat on the server
- * @prop {socket}   socket      - The Socket.IO socket to use for sending + receiving chat data
- * @prop {dict}     chatCache   - Cached chat logs by id
- * @prop {string}   userId      - The id of the user viewing the chatbox
- * @prop {string}   height      - The height of the box
- * @prop {string}   title       - The title of the chat box
+ * @prop {string}   chatId          - The id of the chat on the server
+ * @prop {socket}   socket          - The Socket.IO socket to use for sending + receiving chat data
+ * @prop {dict}     chatCache       - Cached chat logs by id
+ * @prop {string}   userId          - The id of the user viewing the chatbox
+ * @prop {string}   height          - The height of the box
+ * @prop {string}   title           - The title of the chat box
+ * @prop {boolean}  collapsible     - If true, show a button to collapse the chat
+ * @prop {boolean}  removable       - If true, show a button to remove the chat
+ * @prop {function} removeCallback  - Function called when this is removed. It will be passed chatId
  */
 var Chat = React.createClass({
     getInitialState: function() {
@@ -91,10 +94,34 @@ var Chat = React.createClass({
             }
         }
         
+        var collapseButton;
+        if (this.props.collapsible) {
+            collapseButton = (
+                <button type="button" className="btn btn-box-tool" data-widget="collapse"><i className="fa fa-minus"></i></button>
+            );
+        }
+        
+        var removeButton;
+        if (this.props.removable) {
+            removeButton = (
+                <button
+                    type="button"
+                    className="btn btn-box-tool"
+                    data-widget="remove"
+                    onClick={this._removed}>
+                    <i className="fa fa-times"></i>
+                </button>
+            );
+        }
+        
         return (
             <div className="box box-primary direct-chat direct-chat-primary bb-wait-for-match">
                 <div className="box-header with-border">
                     <h3 className="box-title">{ this.props.title }</h3>
+                    <div className="box-tools pull-right">
+                        {collapseButton}
+                        {removeButton}
+                    </div>
                 </div>
                 <div className="box-body">
                     <div className="direct-chat-messages" style={{height: this.props.height}} ref="msgBox">
@@ -149,6 +176,12 @@ var Chat = React.createClass({
         
         socket.off('receive');
         socket.off('receive log')
+    },
+    
+    _removed: function() {
+        if (this.props.removeCallback) {
+            this.props.removeCallback(this.props.chatId);
+        }
     },
     
     _setupLog: function() {

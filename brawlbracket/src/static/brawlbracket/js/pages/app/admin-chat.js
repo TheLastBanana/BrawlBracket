@@ -53,16 +53,37 @@ function getActiveAdminChats() {
 /**
  * Add a player's chat to the active admin chats.
  *
- * @param {string}  name    - The player's name.
  * @param {string}  chatId  - The chat's unique id.
  */
-function addAdminChat(name, chatId) {
+function addAdminChat(chatId) {
     var chats = getActiveAdminChats();
-    chats.push(chatId);
     
-    localStorage.setItem('activeAdminChats', JSON.stringify(chats));
+    if (chats.indexOf(chatId) == -1) {
+        chats.push(chatId);
+        localStorage.setItem('activeAdminChats', JSON.stringify(chats));
+        
+        renderAdminChats();
+    }
+}
+
+/**
+ * Remove a player's chat from the active admin chats.
+ *
+ * @param {string}  chatId  - The chat's unique id.
+ */
+function removeAdminChat(chatId) {
+    var chats = getActiveAdminChats();
+    var index = chats.indexOf(chatId)
     
-    renderAdminChats();
+    if (index != -1) {
+        chats.splice(index, 1);
+        
+        localStorage.setItem('activeAdminChats', JSON.stringify(chats));
+        
+        renderAdminChats();
+    } else {
+        console.log('Couldn\'t find chat with id', chatId, 'for removal');
+    }
 }
 
 /**
@@ -92,7 +113,8 @@ function renderAdminChats() {
               socket: chatSocket,
               chatCache: chatCache,
               userId: userId,
-              chats: namedChats
+              chats: namedChats,
+              removeCallback: removeAdminChat
             }
         ),
         $('#bb-admin-chats').get(0)
@@ -148,7 +170,7 @@ function initAdminChat() {
     
     adminChatUserTable.on('click', 'button.open-chat', function() {
         var data = adminChatUserTable.row($(this).parents('tr')).data();
-        addAdminChat(data.name, data.chatId);
+        addAdminChat(data.chatId);
     });
     
     // Render admin chats once the table data has arrived

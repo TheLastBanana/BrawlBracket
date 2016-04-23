@@ -6,7 +6,7 @@ var tableRefresh;
  * @param {json} fullData - The row data received from the DataTable.
  */
 function formatUserName(fullData) {
-    return '<button class="btn btn-sm btn-primary open-chat">' + fullData.name + '</button>';
+    return '<button class="btn btn-sm btn-primary open-chat" style="width: 100%;">' + fullData.name + '</button>';
 }
 
 /**
@@ -36,7 +36,19 @@ function formatUserOnline(data) {
 /**
  * Initialize the admin chat.
  */
- function initAdminChat () {
+function initAdminChat () {
+    ReactDOM.render(
+        React.createElement(AdminChat,
+            {
+              socket: chatSocket,
+              chatCache: chatCache,
+              userId: userId,
+              chatIds: [{id: '4edfadd0-0822-11e6-a5c1-60a44c2cdcf6', name: '[k☠ʞ] TheLastBanana'}]
+            }
+        ),
+        $('#bb-admin-chats').get(0)
+    );
+    
     // Set up the team table
     var userTable = $('#bb-chat-users-table').DataTable({
         'ajax': '/app-data/users/' + tourneyName,

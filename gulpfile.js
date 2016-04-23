@@ -84,7 +84,6 @@ gulp.task('minify-js', function() {
     }
     
     // Outside libraries. Separated because we never minify these.
-    console.log(pattern);
     var libs = gulp.src(pattern)
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest('brawlbracket/dist/static/'));

@@ -63,6 +63,8 @@ function renderAdminChats() {
     var chats = getActiveAdminChats();
     var userData = adminChatUserTable.ajax.json();
     
+    if (!userData) return;
+    
     // Match up usernames with chat ids
     var namedChats = [];
     for (var i = 0; i < chats.length; ++i) {
@@ -148,6 +150,9 @@ function initAdminChat() {
         renderAdminChats();
     });
     
+    chatSocket.on('receive', adminChatReceive);
+    chatSocket.on('receive log', adminChatReceiveLog);
+    
     // Refresh table periodically
     tableRefresh = setInterval(function() {
         //userTable.ajax.reload(null, false); // Don't reset paging
@@ -156,5 +161,16 @@ function initAdminChat() {
     // Called when the inner page content is removed to load a new page.
     $('.content').on('destroy', function() {
         window.clearInterval(tableRefresh);
+        
+        chatSocket.off('receive', adminChatReceive);
+        chatSocket.off('receive log', adminChatReceiveLog);
     });
+}
+
+function adminChatReceive(data) {
+    renderAdminChats();
+}
+
+function adminChatReceiveLog(data) {
+    renderAdminChats();
 }

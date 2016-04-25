@@ -14,7 +14,7 @@ def lobby_error():
 @app.route('/app-elements/roster')
 def roster():
     return render_template('app/elements/lobby-roster.html',
-    legendData=util.orderedLegends)
+                           legendData=util.orderedLegends)
     
 # Realm picker
 @app.route('/app-elements/realms')

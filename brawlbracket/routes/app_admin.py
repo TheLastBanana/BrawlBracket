@@ -19,9 +19,6 @@ def admin_dashboard():
     userId = session.get('userId')
     user = um.getUserById(userId)
     
-    if g.tournament is None:
-        abort(404)
-    
     if user is None:
         return redirect(url_for('tournament_index', tourneyName = g.tourneyName))
     
@@ -38,9 +35,6 @@ def admin_chat():
    userId = session.get('userId')
    user = um.getUserById(userId)
    
-   if g.tournament is None:
-       abort(404)
-   
    if user is None:
        return redirect(url_for('tournament_index', tourneyName = g.tourneyName))
    
@@ -54,9 +48,6 @@ def admin_chat():
 # Lobby data
 @app.route('/app-data/lobbies/<tourneyName>')
 def data_lobbies():
-    if g.tournament is None:
-        abort(404)
-
     # Get a condensed list of lobby data for display to the admin
     condensedData = []
 
@@ -95,9 +86,6 @@ def data_lobbies():
 # Team data
 @app.route('/app-data/teams/<tourneyName>')
 def data_teams():
-    if g.tournament is None:
-        abort(404)
-    
     # Get a condensed list of user data for display to the admin
     condensedData = []
     
@@ -126,9 +114,6 @@ def data_teams():
 # User data
 @app.route('/app-data/users/<tourneyName>')
 def data_users():
-    if g.tournament is None:
-        abort(404)
-    
     # Get a condensed list of user data for display to the admin
     condensedData = []
     

@@ -7,6 +7,7 @@ from flask import Flask
 from flask import g
 from flask import render_template
 from flask import session
+from flask import abort
 from flask_socketio import SocketIO
 from flask.ext.openid import OpenID
 
@@ -92,6 +93,9 @@ def pull_tourney(endpoint, values):
     g.tournament = None
     if g.tourneyName:
         g.tournament = tm.getTournamentByName(g.tourneyName)
+        
+        if g.tournament is None:
+            abort(404)
                 
 @app.template_filter('datetime')
 def filter_datetime(date):

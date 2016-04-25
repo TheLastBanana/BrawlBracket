@@ -52,18 +52,12 @@ def user_settings():
 # Tournament index page
 @app.route('/t/<tourneyName>/')
 def tournament_index():
-    if g.tournament is None:
-        abort(404)
-    
     return render_template('tournament.html',
                            tourneyName=g.tourneyName,
                            tournament=g.tournament)
 
 @app.route('/t/<tourneyName>/register', methods=['POST'])
 def register():
-    if g.tournament is None:
-        abort(404)
-        
     userId = session.get('userId')
     user = um.getUserById(userId)
 
@@ -96,9 +90,6 @@ def register():
 # TODO: Make this POST-only to avoid accidental finalizes (once we have an actual button for it)
 @app.route('/t/<tourneyName>/finalize')
 def finalize():
-    if g.tournament is None:
-        abort(404)
-    
     userId = session.get('userId', None)
     user = um.getUserById(userId)
     if user is None:

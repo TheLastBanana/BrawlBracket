@@ -6,6 +6,7 @@ from flask import url_for
 from flask import render_template
 from flask import request
 from flask import abort
+from flask import g
 
 from brawlbracket.app import app
 from brawlbracket import usermanager as um
@@ -50,22 +51,17 @@ def user_settings():
 
 # Tournament index page
 @app.route('/t/<tourneyName>/')
-def tournament_index(tourneyName):
-    tournament = tm.getTournamentByName(tourneyName)
-    
-    if tournament is None:
+def tournament_index():
+    if g.tournament is None:
         abort(404)
     
-    tournament = tm.getTournamentByName(tourneyName)
     return render_template('tournament.html',
-                           tourneyName=tourneyName,
-                           tournament=tournament)
+                           tourneyName=g.tourneyName,
+                           tournament=g.tournament)
 
 @app.route('/t/<tourneyName>/register', methods=['POST'])
-def register(tourneyName):
-    tournament = tm.getTournamentByName(tourneyName)
-    
-    if tournament is None:
+def register():
+    if g.tournament is None:
         abort(404)
         
     userId = session.get('userId')
@@ -76,46 +72,44 @@ def register(tourneyName):
         return
 
     existing = False
-    for player in tournament.players:
+    for player in g.tournament.players:
         if player.user.id == user.id:
             existing = True
             break
 
     if not existing:
-        team = tournament.createTeam(
-            len(tournament.teams) + 1,
+        team = g.tournament.createTeam(
+            len(g.tournament.teams) + 1,
             name = user.username)
         
-        player = tournament.createPlayer(user)
+        player = g.tournament.createPlayer(user)
         
         team.addPlayer(player)
         
         print('ADDED TEAM: {}, PLAYERS: {}'.format(team, team.players))
-        print('TOURNAMENT NOW HAS {} TEAMS'.format(len(tournament.teams)))
+        print('TOURNAMENT NOW HAS {} TEAMS'.format(len(g.tournament.teams)))
     else:
         print('ADD TEAM FAILED, ALREADY JOINED! {}'.format(user.username))
         
-    return redirect(url_for('tournament_index', tourneyName=tourneyName))
+    return redirect(url_for('tournament_index', tourneyName=g.tourneyName))
     
 # TODO: Make this POST-only to avoid accidental finalizes (once we have an actual button for it)
 @app.route('/t/<tourneyName>/finalize')
-def finalize(tourneyName):
-    tournament = tm.getTournamentByName(tourneyName)
-    
-    if tournament is None:
+def finalize():
+    if g.tournament is None:
         abort(404)
     
     userId = session.get('userId', None)
     user = um.getUserById(userId)
     if user is None:
         print('User doesn\'t exist; returned to index.')
-        return redirect(url_for('tournament_index', tourneyName=tourneyName))
+        return redirect(url_for('tournament_index', tourneyName=g.tourneyName))
     
-    if tournament.isAdmin(user):
+    if g.tournament.isAdmin(user):
         print('FINALIZING TOURNAMENT')
-        print('Tournament has {} users!'.format(len(tournament.teams)))
-        tournament.generateMatches()
-        print(tournament)
-        print('Tournament has {} matches!'.format(len(tournament.matches)))
+        print('Tournament has {} users!'.format(len(g.tournament.teams)))
+        g.tournament.generateMatches()
+        print(g.tournament)
+        print('Tournament has {} matches!'.format(len(g.tournament.matches)))
     
-    return redirect(url_for('tournament_index', tourneyName=tourneyName))
+    return redirect(url_for('tournament_index', tourneyName=g.tourneyName))

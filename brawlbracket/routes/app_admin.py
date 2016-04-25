@@ -5,6 +5,7 @@ from flask import redirect
 from flask import url_for
 from flask import render_template
 from flask import abort
+from flask import g
 
 from brawlbracket.app import app
 from brawlbracket import usermanager as um
@@ -14,56 +15,52 @@ print('Registering admin pages routes...')
                            
 # Admin dashboard
 @app.route('/app-pages/admin-dashboard/<tourneyName>')
-def admin_dashboard(tourneyName):
-    tournament = tm.getTournamentByName(tourneyName)
+def admin_dashboard():
     userId = session.get('userId')
     user = um.getUserById(userId)
     
-    if tournament is None:
+    if g.tournament is None:
         abort(404)
     
     if user is None:
-        return redirect(url_for('tournament_index', tourneyName = tourneyName))
+        return redirect(url_for('tournament_index', tourneyName = g.tourneyName))
     
-    if not tournament.isAdmin(user):
+    if not g.tournament.isAdmin(user):
         abort(403)
 
     return render_template('app/pages/admin-dashboard.html',
-                           tournament=tournament,
-                           tourneyName=tourneyName)
+                           tournament=g.tournament,
+                           tourneyName=g.tourneyName)
                                                       
 # Admin chat (for contacting players/other admins)
 @app.route('/app-pages/admin-chat/<tourneyName>')
-def admin_chat(tourneyName):
-   tournament = tm.getTournamentByName(tourneyName)
+def admin_chat():
    userId = session.get('userId')
    user = um.getUserById(userId)
    
-   if tournament is None:
+   if g.tournament is None:
        abort(404)
    
    if user is None:
-       return redirect(url_for('tournament_index', tourneyName = tourneyName))
+       return redirect(url_for('tournament_index', tourneyName = g.tourneyName))
    
-   if not tournament.isAdmin(user):
+   if not g.tournament.isAdmin(user):
        abort(403)
 
    return render_template('app/pages/admin-chat.html',
-                          tournament=tournament,
-                          tourneyName=tourneyName)
+                          tournament=g.tournament,
+                          tourneyName=g.tourneyName)
 
 # Lobby data
 @app.route('/app-data/lobbies/<tourneyName>')
-def data_lobbies(tourneyName):
-    tournament = tm.getTournamentByName(tourneyName)
-    
-    if tournament is None:
+def data_lobbies():
+    if g.tournament is None:
         abort(404)
 
     # Get a condensed list of lobby data for display to the admin
     condensedData = []
 
-    for match in tournament.matches:
+    for match in g.tournament.matches:
         # Assemble score string 
         scoreString = '-'.join([str(s) for s in match.score])
             
@@ -97,17 +94,15 @@ def data_lobbies(tourneyName):
     
 # Team data
 @app.route('/app-data/teams/<tourneyName>')
-def data_teams(tourneyName):
-    tournament = tm.getTournamentByName(tourneyName)
-    
-    if tournament is None:
+def data_teams():
+    if g.tournament is None:
         abort(404)
     
     # Get a condensed list of user data for display to the admin
     condensedData = []
     
-    for team in tournament.teams:
-        status, prettyStatus = tournament.getTeamStatus(team)
+    for team in g.tournament.teams:
+        status, prettyStatus = g.tournament.getTeamStatus(team)
         
         condensed = {
             'seed': team.seed,
@@ -130,18 +125,16 @@ def data_teams(tourneyName):
     
 # User data
 @app.route('/app-data/users/<tourneyName>')
-def data_users(tourneyName):
-    tournament = tm.getTournamentByName(tourneyName)
-    
-    if tournament is None:
+def data_users():
+    if g.tournament is None:
         abort(404)
     
     # Get a condensed list of user data for display to the admin
     condensedData = []
     
-    for team in tournament.teams:
+    for team in g.tournament.teams:
         for player in team.players:
-            status, prettyStatus = tournament.getTeamStatus(team)
+            status, prettyStatus = g.tournament.getTeamStatus(team)
             
             condensed = {
                 'name': player.user.username,

@@ -7,7 +7,7 @@ print('Registering elements routes...')
     
 # Connect error
 @app.route('/app-elements/lobby-error/<tourneyName>')
-def lobby_error(tourneyName):
+def lobby_error():
     return render_template('app/elements/lobby-error.html')
     
 # Legend roster

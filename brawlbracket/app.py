@@ -3,7 +3,8 @@ eventlet.monkey_patch()
 
 import os
 
-from flask import Flask  
+from flask import Flask
+from flask import g
 from flask import render_template
 from flask import session
 from flask_socketio import SocketIO
@@ -79,6 +80,18 @@ def default_template_data():
     
     return dict(versionNumber = __version__,
                 user = user)
+                
+@app.url_value_preprocessor
+def pull_tourney(endpoint, values):
+    """
+    Get the tournament name and object.
+    """
+    if not values: return
+    
+    g.tourneyName = values.pop('tourneyName', None)
+    g.tournament = None
+    if g.tourneyName:
+        g.tournament = tm.getTournamentByName(g.tourneyName)
                 
 @app.template_filter('datetime')
 def filter_datetime(date):

@@ -16,13 +16,10 @@ print('Registering admin pages routes...')
 # Admin dashboard
 @app.route('/app-pages/admin-dashboard/<tourneyName>')
 def admin_dashboard():
-    userId = session.get('userId')
-    user = um.getUserById(userId)
-    
-    if user is None:
+    if g.user is None:
         return redirect(url_for('tournament_index', tourneyName = g.tourneyName))
     
-    if not g.tournament.isAdmin(user):
+    if not g.tournament.isAdmin(g.user):
         abort(403)
 
     return render_template('app/pages/admin-dashboard.html',
@@ -32,10 +29,7 @@ def admin_dashboard():
 # Admin chat (for contacting players/other admins)
 @app.route('/app-pages/admin-chat/<tourneyName>')
 def admin_chat():
-   userId = session.get('userId')
-   user = um.getUserById(userId)
-   
-   if user is None:
+   if g.user is None:
        return redirect(url_for('tournament_index', tourneyName = g.tourneyName))
    
    if not g.tournament.isAdmin(user):

@@ -18,9 +18,7 @@ print('Registering root routes...')
 @app.route('/')
 @app.route('/index/')
 def index():
-    userId = session.get('userId', None)
-    user = um.getUserById(userId)
-    if user is not None:
+    if g.user is not None:
         return render_template('user-tournaments.html')
         
     else:
@@ -30,10 +28,7 @@ def index():
 # Settings page
 @app.route('/settings/', methods=['GET', 'PUT'])
 def user_settings():
-    userId = session.get('userId', None)
-    user = um.getUserById(userId)
-    
-    if user is None:
+    if g.user is None:
         print('User doesn\'t exist; returned to index.')
         return redirect(url_for('index'))
     
@@ -43,7 +38,7 @@ def user_settings():
                                serverRegions=util.orderedRegions)
                                
     elif request.method == 'PUT':
-        if user.setSettings(request.json):
+        if g.user.setSettings(request.json):
             return json.dumps({'success': True}), 200
             
         else:
@@ -58,45 +53,40 @@ def tournament_index():
 
 @app.route('/t/<tourneyName>/register', methods=['POST'])
 def register():
-    userId = session.get('userId')
-    user = um.getUserById(userId)
-
     # Not logged in and trying to register
-    if user is None:
+    if g.user is None:
         return
 
     existing = False
     for player in g.tournament.players:
-        if player.user.id == user.id:
+        if player.user.id == g.user.id:
             existing = True
             break
 
     if not existing:
         team = g.tournament.createTeam(
             len(g.tournament.teams) + 1,
-            name = user.username)
+            name = g.user.username)
         
-        player = g.tournament.createPlayer(user)
+        player = g.tournament.createPlayer(g.user)
         
         team.addPlayer(player)
         
         print('ADDED TEAM: {}, PLAYERS: {}'.format(team, team.players))
         print('TOURNAMENT NOW HAS {} TEAMS'.format(len(g.tournament.teams)))
     else:
-        print('ADD TEAM FAILED, ALREADY JOINED! {}'.format(user.username))
+        print('ADD TEAM FAILED, ALREADY JOINED! {}'.format(g.user.username))
         
     return redirect(url_for('tournament_index', tourneyName=g.tourneyName))
     
 # TODO: Make this POST-only to avoid accidental finalizes (once we have an actual button for it)
 @app.route('/t/<tourneyName>/finalize')
 def finalize():
-    userId = session.get('userId', None)
-    user = um.getUserById(userId)
-    if user is None:
+    if g.user is None:
         print('User doesn\'t exist; returned to index.')
         return redirect(url_for('tournament_index', tourneyName=g.tourneyName))
     
-    if g.tournament.isAdmin(user):
+    if g.tournament.isAdmin(g.user):
         print('FINALIZING TOURNAMENT')
         print('Tournament has {} users!'.format(len(g.tournament.teams)))
         g.tournament.generateMatches()

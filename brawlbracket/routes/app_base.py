@@ -17,9 +17,7 @@ from brawlbracket.routes import app_player
 @app.route('/t/<tourneyName>/app/', defaults={'startPage': None})
 @app.route('/t/<tourneyName>/app/<startPage>/')
 def user_app(startPage):
-    userId = session.get('userId', None)
-    user = um.getUserById(userId)
-    if user is None:
+    if g.user is None:
         print('User doesn\'t exist; returned to index.')
         return redirect(url_for('tournament_index', tourneyName=g.tourneyName))
 

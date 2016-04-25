@@ -3,6 +3,7 @@ import re
 from flask import session
 from flask import redirect
 from flask import url_for
+from flask import g
 
 from brawlbracket.app import app
 from brawlbracket.app import oid
@@ -15,11 +16,8 @@ _steam_id_re = re.compile('steamcommunity.com/openid/id/(.*?)$')
 @app.route('/login/')
 @oid.loginhandler
 def login():
-    userId = session.get('userId', None)
-    user = um.getUserById(userId)
-    
-    if user is None:
-        if userId is not None:
+    if g.user is None:
+        if g.userId is not None:
             session.pop('userId')
         
         return oid.try_login('http://steamcommunity.com/openid')

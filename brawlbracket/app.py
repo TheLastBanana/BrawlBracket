@@ -76,11 +76,16 @@ if tempTourney is None:
     
 @app.context_processor
 def default_template_data():
-    userId = session.get('userId', None)
-    user = um.getUserById(userId)
-    
     return dict(versionNumber = __version__,
-                user = user)
+                user = g.user)
+                
+@app.before_request
+def get_user_data():
+    """
+    Get the user id and data.
+    """
+    g.userId = session.get('userId', None)
+    g.user = um.getUserById(g.userId)
                 
 @app.url_value_preprocessor
 def pull_tourney(endpoint, values):

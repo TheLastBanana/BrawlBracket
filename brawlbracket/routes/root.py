@@ -13,6 +13,8 @@ from brawlbracket import usermanager as um
 from brawlbracket import tournamentmanager as tm
 from brawlbracket import util
 
+from brawlbracket.viewdecorators import *
+
 print('Registering root routes...')
 
 @app.route('/')
@@ -81,16 +83,16 @@ def register():
     
 # TODO: Make this POST-only to avoid accidental finalizes (once we have an actual button for it)
 @app.route('/t/<tourneyName>/finalize')
+@tourney_admin_only
 def finalize():
     if g.user is None:
         print('User doesn\'t exist; returned to index.')
         return redirect(url_for('tournament_index', tourneyName=g.tourneyName))
     
-    if g.tournament.isAdmin(g.user):
-        print('FINALIZING TOURNAMENT')
-        print('Tournament has {} users!'.format(len(g.tournament.teams)))
-        g.tournament.generateMatches()
-        print(g.tournament)
-        print('Tournament has {} matches!'.format(len(g.tournament.matches)))
+    print('FINALIZING TOURNAMENT')
+    print('Tournament has {} users!'.format(len(g.tournament.teams)))
+    g.tournament.generateMatches()
+    print(g.tournament)
+    print('Tournament has {} matches!'.format(len(g.tournament.matches)))
     
     return redirect(url_for('tournament_index', tourneyName=g.tourneyName))

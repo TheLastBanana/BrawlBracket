@@ -11,16 +11,16 @@ from brawlbracket.app import app
 from brawlbracket import usermanager as um
 from brawlbracket import tournamentmanager as tm
 
+from brawlbracket.viewdecorators import *
+
 print('Registering admin pages routes...')
                            
 # Admin dashboard
 @app.route('/app-pages/admin-dashboard/<tourneyName>')
+@tourney_admin_only
 def admin_dashboard():
     if g.user is None:
         return redirect(url_for('tournament_index', tourneyName = g.tourneyName))
-    
-    if not g.tournament.isAdmin(g.user):
-        abort(403)
 
     return render_template('app/pages/admin-dashboard.html',
                            tournament=g.tournament,
@@ -28,12 +28,10 @@ def admin_dashboard():
                                                       
 # Admin chat (for contacting players/other admins)
 @app.route('/app-pages/admin-chat/<tourneyName>')
+@tourney_admin_only
 def admin_chat():
    if g.user is None:
        return redirect(url_for('tournament_index', tourneyName = g.tourneyName))
-   
-   if not g.tournament.isAdmin(user):
-       abort(403)
 
    return render_template('app/pages/admin-chat.html',
                           tournament=g.tournament,
@@ -41,6 +39,7 @@ def admin_chat():
 
 # Lobby data
 @app.route('/app-data/lobbies/<tourneyName>')
+@tourney_admin_only
 def data_lobbies():
     # Get a condensed list of lobby data for display to the admin
     condensedData = []
@@ -79,6 +78,7 @@ def data_lobbies():
     
 # Team data
 @app.route('/app-data/teams/<tourneyName>')
+@tourney_admin_only
 def data_teams():
     # Get a condensed list of user data for display to the admin
     condensedData = []
@@ -107,6 +107,7 @@ def data_teams():
     
 # User data
 @app.route('/app-data/users/<tourneyName>')
+@tourney_admin_only
 def data_users():
     # Get a condensed list of user data for display to the admin
     condensedData = []
